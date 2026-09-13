@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowUpRight, Check, ChevronRight, Info, Music2 } from "lucide-react";
+import { ArrowUpRight, Check, Info, Music2 } from "lucide-react";
 import { Downloader } from "@/components/downloader/Downloader";
 import { FaqAccordion } from "@/components/FaqAccordion";
 import { InteractiveBackground } from "@/components/InteractiveBackground";
@@ -168,31 +168,6 @@ export default function YouTubeToMp3Page() {
 
         <div className="section-shell relative z-10">
           <div className="mx-auto max-w-4xl text-center">
-            {/* Centered Breadcrumb */}
-            <nav aria-label="Breadcrumb" className="mb-6 flex justify-center">
-              <ol className="inline-flex flex-wrap items-center gap-1.5 rounded-full border border-border/70 bg-surface/70 px-3.5 py-1 text-xs text-muted-foreground shadow-soft backdrop-blur-md">
-                <li>
-                  <Link href="/" className="transition-colors hover:text-foreground">
-                    Home
-                  </Link>
-                </li>
-                <li aria-hidden="true">
-                  <ChevronRight className="h-3 w-3 opacity-60" />
-                </li>
-                <li>
-                  <Link href="/yt-downloader" className="transition-colors hover:text-foreground">
-                    YouTube Downloader
-                  </Link>
-                </li>
-                <li aria-hidden="true">
-                  <ChevronRight className="h-3 w-3 opacity-60" />
-                </li>
-                <li className="font-medium text-foreground" aria-current="page">
-                  YouTube to MP3
-                </li>
-              </ol>
-            </nav>
-
             {/* Audio Eyebrow Pill */}
             <Reveal>
               <div className="inline-flex items-center gap-2 rounded-full border border-border/80 bg-surface/70 px-3.5 py-1 text-xs font-medium text-foreground/80 shadow-soft backdrop-blur-md transition-colors hover:border-primary/40 hover:text-foreground">
@@ -212,15 +187,10 @@ export default function YouTubeToMp3Page() {
               </h1>
             </Reveal>
 
-            {/* Subtitles */}
+            {/* Tagline */}
             <Reveal delay={120}>
               <p className="mx-auto mt-4 max-w-2xl text-base font-medium text-foreground/90 sm:text-lg">
                 Paste a link, take the audio, skip the video entirely.
-              </p>
-              <p className="mx-auto mt-2 max-w-2xl text-sm text-muted-foreground sm:text-base">
-                MediaDocks pulls the soundtrack out of any public YouTube video: MP3 at 128, 192 or
-                320 kbps, or the original M4A track copied without a second encode. Because no video
-                stream is fetched, audio downloads finish in a fraction of the time.
               </p>
             </Reveal>
 
@@ -229,6 +199,15 @@ export default function YouTubeToMp3Page() {
               <div className="relative rounded-2xl border border-border/80 bg-surface/80 p-2 shadow-lift backdrop-blur-2xl transition-all duration-300 hover:border-border hover:shadow-glow sm:p-3">
                 <Downloader placeholder="Paste a YouTube, Shorts or youtu.be link..." />
               </div>
+            </Reveal>
+
+            {/* Intro Description */}
+            <Reveal delay={210}>
+              <p className="mx-auto mt-4 max-w-2xl text-sm text-muted-foreground sm:text-base">
+                MediaDocks pulls the soundtrack out of any public YouTube video: MP3 at 128, 192 or
+                320 kbps, or the original M4A track copied without a second encode. Because no video
+                stream is fetched, audio downloads finish in a fraction of the time.
+              </p>
             </Reveal>
 
             {/* Centered Where to find notice Card */}

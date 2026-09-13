@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowUpRight, Check, ChevronRight, Info, Minus } from "lucide-react";
+import { ArrowUpRight, Check, Info, Minus } from "lucide-react";
 import { Downloader } from "@/components/downloader/Downloader";
 import { FaqAccordion } from "@/components/FaqAccordion";
 import { InteractiveBackground } from "@/components/InteractiveBackground";
@@ -39,23 +39,6 @@ export function PlatformLanding({ page }: { page: PlatformPage }) {
 
         <div className="section-shell relative z-10">
           <div className="mx-auto max-w-4xl text-center">
-            {/* Centered Breadcrumb */}
-            <nav aria-label="Breadcrumb" className="mb-6 flex justify-center">
-              <ol className="inline-flex flex-wrap items-center gap-1.5 rounded-full border border-border/70 bg-surface/70 px-3.5 py-1 text-xs text-muted-foreground shadow-soft backdrop-blur-md">
-                <li>
-                  <Link href="/" className="transition-colors hover:text-foreground">
-                    Home
-                  </Link>
-                </li>
-                <li aria-hidden="true">
-                  <ChevronRight className="h-3 w-3 opacity-60" />
-                </li>
-                <li className="font-medium text-foreground" aria-current="page">
-                  {page.navLabel} Downloader
-                </li>
-              </ol>
-            </nav>
-
             {/* Platform Eyebrow Pill */}
             <Reveal>
               <div className="inline-flex items-center gap-2 rounded-full border border-border/80 bg-surface/70 px-3.5 py-1 text-xs font-medium text-foreground/80 shadow-soft backdrop-blur-md transition-colors hover:border-primary/40 hover:text-foreground">
@@ -78,13 +61,10 @@ export function PlatformLanding({ page }: { page: PlatformPage }) {
               </h1>
             </Reveal>
 
-            {/* Subtitles */}
+            {/* Tagline */}
             <Reveal delay={120}>
               <p className="mx-auto mt-4 max-w-2xl text-base font-medium text-foreground/90 sm:text-lg">
                 {page.tagline}
-              </p>
-              <p className="mx-auto mt-2 max-w-2xl text-sm text-muted-foreground sm:text-base">
-                {page.intro}
               </p>
             </Reveal>
 
@@ -93,6 +73,13 @@ export function PlatformLanding({ page }: { page: PlatformPage }) {
               <div className="relative rounded-2xl border border-border/80 bg-surface/80 p-2 shadow-lift backdrop-blur-2xl transition-all duration-300 hover:border-border hover:shadow-glow sm:p-3">
                 <Downloader placeholder={page.inputPlaceholder} />
               </div>
+            </Reveal>
+
+            {/* Intro Description */}
+            <Reveal delay={210}>
+              <p className="mx-auto mt-4 max-w-2xl text-sm text-muted-foreground sm:text-base">
+                {page.intro}
+              </p>
             </Reveal>
 
             {/* Centered Capability Notice Card */}

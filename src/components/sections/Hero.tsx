@@ -63,7 +63,7 @@ export function Hero() {
 
           {/* Subtitle */}
           <Reveal delay={120}>
-            <p className="mx-auto mt-5 max-w-2xl text-base font-normal text-muted-foreground sm:text-lg">
+            <p className="mx-auto mt-4 max-w-2xl text-sm font-normal text-muted-foreground sm:text-base">
               One unified tool for extracting video from 144p to 4K or separating high-fidelity audio.
               Zero registration, no client software, and zero watermark.
             </p>
