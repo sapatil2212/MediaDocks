@@ -12,7 +12,7 @@ export function Footer() {
     <footer className="border-t border-border bg-surface/50">
       <div className="section-shell grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-5">
         <div className="lg:col-span-2">
-          <Logo />
+          <Logo height={38} />
           <p className="mt-4 max-w-xs text-sm text-muted-foreground">
             Precision media downloader. Extract high-resolution video and audio from public links.
           </p>
@@ -153,31 +153,20 @@ export function Footer() {
 
       {/* Copyright & Credit Bar */}
       <div className="border-t border-border bg-surface/40">
-        <div className="section-shell flex flex-col gap-3 py-6 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-2">
-            <p>© {new Date().getFullYear()} MediaDocks. All rights reserved.</p>
-            <span className="hidden sm:inline text-border" aria-hidden="true">•</span>
-            <p>
-              Copyright and product of{" "}
-              <a
-                href="https://www.sapdigitechsolutions.in"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-medium text-foreground underline underline-offset-4 decoration-border transition-colors hover:text-primary hover:decoration-primary"
-              >
-                SAP DigiTech Solutions
-              </a>{" "}
-              <a
-                href="https://www.sapdigitechsolutions.in"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-foreground transition-colors"
-              >
-                (www.sapdigitechsolutions.in)
-              </a>
-            </p>
-          </div>
-          <p>Only process and download content you have legal authorization to use.</p>
+        <div className="section-shell flex flex-col items-center justify-center gap-1.5 py-6 text-center text-xs text-muted-foreground sm:flex-row sm:gap-2">
+          <p>© {new Date().getFullYear()} MediaDocks. All rights reserved.</p>
+          <span className="hidden sm:inline text-border" aria-hidden="true">•</span>
+          <p>
+            Copyright and product of{" "}
+            <a
+              href="https://www.sapdigitechsolutions.in"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-foreground underline underline-offset-4 decoration-border transition-colors hover:text-primary hover:decoration-primary"
+            >
+              SAP DigiTech Solutions
+            </a>
+          </p>
         </div>
       </div>
     </footer>

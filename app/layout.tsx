@@ -76,13 +76,11 @@ export const metadata: Metadata = {
       "max-video-preview": -1,
     },
   },
-  icons: {
-    icon: [
-      { url: "/favicon.svg", type: "image/svg+xml" },
-      { url: "/icon.svg", type: "image/svg+xml" },
-    ],
-    apple: "/apple-icon.svg",
-  },
+  // Icons are intentionally not declared here. app/icon.png and
+  // app/apple-icon.png are picked up by Next's file convention, which emits the
+  // correct <link> tags with cache-busting hashes. Declaring them again would
+  // override that with unhashed paths, and the previous entries pointed at SVGs
+  // of the old placeholder glyph rather than the real brand mark.
 };
 
 export default function RootLayout({

@@ -1,6 +1,28 @@
+import fs from "fs";
+import path from "path";
 import { ImageResponse } from "next/og";
 
 export const OG_SIZE = { width: 1200, height: 630 };
+
+/**
+ * The brand mark, inlined as a data URI.
+ *
+ * satori cannot fetch a relative URL — there is no origin during a build — so the
+ * bytes are embedded instead. These images are statically generated, so this read
+ * happens once at build time and the result is baked into the PNG; nothing needs
+ * the file at runtime.
+ *
+ * Falls back to an empty string rather than throwing: a missing logo should
+ * degrade the social card, not fail the build.
+ */
+const LOGO_MARK_DATA_URI = (() => {
+  try {
+    const file = path.join(process.cwd(), "public", "logo", "favicon.png");
+    return `data:image/png;base64,${fs.readFileSync(file).toString("base64")}`;
+  } catch {
+    return "";
+  }
+})();
 export const OG_CONTENT_TYPE = "image/png";
 
 interface OgImageOptions {
@@ -32,14 +54,14 @@ export function renderOgImage({ eyebrow, title, subtitle, badge }: OgImageOption
         }}
       >
         <div style={{ display: "flex", alignItems: "center" }}>
-          <div
-            style={{
-              width: 44,
-              height: 44,
-              borderRadius: 14,
-              background: "linear-gradient(135deg, #6366f1 0%, #22d3ee 100%)",
-              marginRight: 18,
-            }}
+          {/* eslint-disable-next-line @next/next/no-img-element -- satori renders
+              plain <img>; next/image is not available inside ImageResponse. */}
+          <img
+            src={LOGO_MARK_DATA_URI}
+            width={52}
+            height={52}
+            alt=""
+            style={{ marginRight: 18 }}
           />
           <div style={{ fontSize: 30, fontWeight: 700, letterSpacing: -0.5 }}>MediaDocks</div>
         </div>

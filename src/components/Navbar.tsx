@@ -117,7 +117,8 @@ export function Navbar() {
           aria-label="MediaDocks home"
           className="rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
-          <Logo />
+          {/* Above the fold on every page, so it is fetched eagerly. */}
+          <Logo height={34} priority />
         </Link>
 
         {/* Desktop Navigation */}
