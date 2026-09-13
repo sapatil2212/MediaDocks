@@ -1,0 +1,95 @@
+// MediaFlow — minimal schema.
+//
+// The product is anonymous and stateless: no users, no accounts, no download
+// history, no permanent media storage. The only thing worth persisting is a
+// short-lived record of a resolved link so that POST /api/download can verify
+// a media reference instead of proxying an arbitrary URL.
+//
+// Every row expires (MEDIA_TTL_MINUTES) and is deleted by the cleanup routine.
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model MediaRequest {
+  id String @id @default(cuid())
+
+  platform String @db.VarChar(32)
+
+  /// sha256 of the normalized source URL. The full source URL is never stored.
+  sourceUrlHash String @unique @db.VarChar(64)
+
+  mediaType String? @db.VarChar(16)
+  status    String  @default("resolved") @db.VarChar(16)
+
+  // Display metadata, kept only so a reference can be re-shown without
+  // hitting the platform again while the record is still alive.
+  title     String? @db.VarChar(255)
+  creator   String? @db.VarChar(190)
+  thumbnail String? @db.Text
+
+  /// Resolved formats, including the direct media URL each format points at.
+  /// This is what makes a {mediaId, formatId} reference verifiable. It is
+  /// temporary data and is never exposed to the client.
+  formats Json
+
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+
+  @@index([expiresAt])
+  @@index([platform])
+}
+
+/// Aggregate usage measurement for the /superadmin dashboard.
+///
+/// Anonymous by construction, so the product can keep its "no tracking" promise:
+///   * no IP address is stored, only `visitorHash`
+///   * `visitorHash` mixes a server-side secret salt with the calendar day, so
+///     it cannot be reversed to an IP and cannot be correlated across days
+///   * the URL a user pastes is never recorded, only the platform it belongs to
+///   * no cookies are set for measurement
+///
+/// Rows are pruned by the cleanup routine once older than ANALYTICS_RETENTION_DAYS.
+model AnalyticsEvent {
+  id String @id @default(cuid())
+
+  /// "page_view" | "resolve" | "download"
+  type String @db.VarChar(24)
+
+  /// Route for page views, e.g. "/yt-downloader". Validated against known routes.
+  path String? @db.VarChar(191)
+
+  platform  String? @db.VarChar(32)
+  /// "video" | "audio" | "image"
+  mediaKind String? @db.VarChar(16)
+  /// The option the user chose, e.g. "1080p" or "MP3 192kbps".
+  quality   String? @db.VarChar(32)
+  extension String? @db.VarChar(8)
+
+  /// "ok" | "error"
+  status     String  @default("ok") @db.VarChar(16)
+  errorCode  String? @db.VarChar(48)
+  durationMs Int?
+  /// Bytes served. Int is sufficient: a single download is capped at 500 MB.
+  bytes      Int?
+
+  /// Daily-rotating salted digest. Not reversible, not stable across days.
+  visitorHash String @db.VarChar(32)
+
+  /// Coarse bucket only: "mobile" | "tablet" | "desktop" | "bot".
+  device String? @db.VarChar(16)
+  /// Referring host only, never a full referring URL.
+  referrerHost String? @db.VarChar(191)
+
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([type, createdAt])
+  @@index([platform, createdAt])
+  @@index([visitorHash, createdAt])
+}

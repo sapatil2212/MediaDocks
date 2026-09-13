@@ -1,0 +1,57 @@
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: mediaflow-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: mediaflow
+    command: --default-authentication-plugin=caching_sha2_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -ppassword --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  nextjs:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mediaflow-app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=mysql://root:password@mysql:3306/mediaflow
+      - NEXT_PUBLIC_APP_URL=http://localhost:3000
+      - NEXT_PUBLIC_API_URL=
+      - MOCK_RESOLVER=false
+      - DEBUG_RESOLVER=false
+      - MEDIA_TTL_MINUTES=30
+      - STORAGE_PATH=/app/storage/tmp
+      - MAX_FILE_SIZE_MB=500
+      - MAX_URL_LENGTH=2048
+      - REQUEST_TIMEOUT_MS=15000
+      - RESOLVE_LIMIT=10
+      - RESOLVE_WINDOW_SECONDS=60
+      - DOWNLOAD_LIMIT=5
+      - DOWNLOAD_WINDOW_SECONDS=60
+      # Extraction engine (yt-dlp + FFmpeg are installed in the image).
+      - ENGINE_ENABLED=true
+      - PYTHON_PATH=python3
+      - ENGINE_TIMEOUT_MS=90000
+      - MAX_MEDIA_DURATION_SECONDS=3600
+    volumes:
+      - storage_data:/app/storage/tmp
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+volumes:
+  mysql_data:
+  storage_data:
