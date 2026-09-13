@@ -119,6 +119,17 @@ for asset in "logo/logo-light.png" "logo/logo-dark.png" "logo/favicon.png"; do
   fi
 done
 
+# Verify static JS chunks locally
+SAMPLE_CHUNK=$(find .next/standalone/.next/static/chunks -type f -name "*.js" 2>/dev/null | head -n 1 | sed 's|^.next/standalone/||' || true)
+if [ -n "$SAMPLE_CHUNK" ]; then
+  CHUNK_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:${PORT}/${SAMPLE_CHUNK}" 2>/dev/null || echo "000")
+  if [ "$CHUNK_STATUS" = "200" ]; then
+    echo "  ✓ /${SAMPLE_CHUNK} -> HTTP ${CHUNK_STATUS} (JS chunk serving OK)"
+  else
+    echo "  ✗ /${SAMPLE_CHUNK} -> HTTP ${CHUNK_STATUS} (Check standalone static sync)"
+  fi
+fi
+
 # Optional: check public domain if accessible
 if curl -sf --connect-timeout 3 "${PUBLIC_DOMAIN}/api/health" >/dev/null 2>&1; then
   echo ""
