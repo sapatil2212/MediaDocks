@@ -183,7 +183,7 @@ for (const [label, sql] of [
 
 console.log("\n── 4. Schema\n");
 
-const OURS = ["MediaRequest", "AnalyticsEvent"];
+const OURS = ["MediaRequest", "AnalyticsEvent", "SuperAdmin"];
 const tables = await prisma.$queryRawUnsafe(
   `SELECT TABLE_NAME AS name, TABLE_ROWS AS approx_rows
      FROM information_schema.TABLES
@@ -197,7 +197,7 @@ if (tables.length === 0) {
   for (const t of tables) {
     const mine = OURS.includes(t.name);
     console.log(
-      `   ${mine ? "•" : "·"} ${String(t.name).padEnd(30)} ~${String(t.approx_rows ?? 0).padStart(8)} rows${mine ? "  (MediaFlow)" : ""}`,
+      `   ${mine ? "•" : "·"} ${String(t.name).padEnd(30)} ~${String(t.approx_rows ?? 0).padStart(8)} rows${mine ? "  (MediaDocks)" : ""}`,
     );
   }
 }
@@ -208,7 +208,7 @@ const foreign = tables.filter((t) => !OURS.includes(t.name));
 
 console.log("");
 if (missing.length === 0) {
-  console.log("   ✓ both MediaFlow tables exist");
+  console.log("   ✓ all MediaDocks tables exist");
 } else {
   console.log(`   ✗ missing table(s): ${missing.join(", ")}`);
   console.log(

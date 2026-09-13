@@ -1,6 +1,14 @@
+import crypto from "crypto";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
+
+const SCRYPT_KEYLEN = 64;
+function hashPassword(password) {
+  const salt = crypto.randomBytes(16).toString("hex");
+  const derived = crypto.scryptSync(password, salt, SCRYPT_KEYLEN).toString("hex");
+  return `scrypt:${salt}:${derived}`;
+}
 
 async function main() {
   console.log("Creating MediaRequest table...");
@@ -50,7 +58,37 @@ async function main() {
     ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
   `);
 
-  console.log("Schema initialized successfully!");
+  console.log("Creating SuperAdmin table...");
+  await prisma.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS \`SuperAdmin\` (
+      \`id\`           VARCHAR(191) NOT NULL,
+      \`email\`        VARCHAR(191) NOT NULL,
+      \`passwordHash\` VARCHAR(255) NOT NULL,
+      \`createdAt\`    DATETIME(3)  NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+      \`updatedAt\`    DATETIME(3)  NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
+      UNIQUE INDEX \`SuperAdmin_email_key\`(\`email\`),
+      INDEX \`SuperAdmin_email_idx\`(\`email\`),
+      PRIMARY KEY (\`id\`)
+    ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+  `);
+
+  const adminEmail = "sapdigitechsolutions@gmail.com";
+  const adminPass = "Swapnil@2212";
+  const passHash = hashPassword(adminPass);
+
+  console.log(`Seeding SuperAdmin (${adminEmail})...`);
+  const adminId = "admin_" + crypto.randomBytes(8).toString("hex");
+  await prisma.$executeRawUnsafe(
+    `INSERT INTO \`SuperAdmin\` (\`id\`, \`email\`, \`passwordHash\`, \`createdAt\`, \`updatedAt\`)
+     VALUES (?, ?, ?, NOW(3), NOW(3))
+     ON DUPLICATE KEY UPDATE \`passwordHash\` = VALUES(\`passwordHash\`), \`updatedAt\` = NOW(3)`,
+    adminId,
+    adminEmail,
+    passHash,
+  );
+
+  console.log("SuperAdmin seeded successfully!");
+  console.log("Database initialized successfully!");
 }
 
 main()

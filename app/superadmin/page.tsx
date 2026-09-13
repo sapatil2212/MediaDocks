@@ -30,7 +30,7 @@ export default async function SuperAdminPage() {
   if (!(await isAuthenticated())) {
     // No metrics are fetched on this path, so nothing sensitive is computed or
     // shipped to an unauthenticated caller.
-    return <AdminLogin configured={isAdminConfigured()} />;
+    return <AdminLogin configured={await isAdminConfigured()} />;
   }
 
   const [analytics, system] = await Promise.all([

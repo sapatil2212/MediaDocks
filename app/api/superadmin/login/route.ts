@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const result = verifyCredentials(parsed.data.email, parsed.data.password);
+  const result = await verifyCredentials(parsed.data.email, parsed.data.password);
 
   if (!result.ok) {
     // A missing configuration is an operator problem, not a credential problem,
@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
         {
           success: false,
           error:
-            "Admin access is not configured. Set SUPER_ADMIN_EMAIL and SUPER_ADMIN_PASS_HASH.",
+            "Admin access is not configured. Set superadmin credentials in the database or environment.",
         },
         { status: 503 },
       );
@@ -78,7 +78,7 @@ export async function POST(req: NextRequest) {
   }
 
   clearLoginAttempts(ip);
-  await createSession();
+  await createSession(parsed.data.email);
 
   return NextResponse.json({ success: true });
 }

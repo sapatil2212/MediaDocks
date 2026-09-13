@@ -1,12 +1,14 @@
 import crypto from "crypto";
 import { cookies } from "next/headers";
 import { config } from "@/lib/config";
+import { prisma } from "@/lib/db/prisma";
 
 /**
- * Authentication for the single super-admin account behind /superadmin.
+ * Authentication for the super-admin account behind /superadmin.
  *
  * Design notes, since this is the only access control in the app:
  *
+ *   * Credentials can be stored in the database `SuperAdmin` table or configured in `.env`.
  *   * Credentials are compared in constant time. A naive `===` leaks the length
  *     and prefix of the secret through response timing.
  *   * The session cookie carries an HMAC over its own payload. Without a
@@ -80,17 +82,35 @@ export type CredentialCheck =
   | { ok: false; reason: "not-configured" | "invalid" };
 
 /**
- * Verifies an email/password pair.
+ * Verifies an email/password pair against database SuperAdmin table (or env fallback).
  *
  * Both fields are always checked even when the email is already wrong, so the
  * response time does not reveal whether the email exists.
  */
-export function verifyCredentials(email: string, password: string): CredentialCheck {
+export async function verifyCredentials(email: string, password: string): Promise<CredentialCheck> {
+  const normalizedEmail = email.trim().toLowerCase();
+
+  // 1. Try checking against database SuperAdmin table
+  try {
+    const rows = await (prisma as any).$queryRawUnsafe?.(
+      "SELECT email, passwordHash FROM SuperAdmin WHERE LOWER(email) = ? LIMIT 1",
+      normalizedEmail,
+    );
+    if (Array.isArray(rows) && rows.length > 0) {
+      const admin = rows[0];
+      const passwordMatches = verifyHashedPassword(password, admin.passwordHash);
+      return passwordMatches ? { ok: true } : { ok: false, reason: "invalid" };
+    }
+  } catch {
+    // Database query failed; fallback to env check below
+  }
+
+  // 2. Fallback to env-configured credentials
   const hasSecret = Boolean(config.superAdminPassHash || config.superAdminPass);
   if (!config.superAdminEmail || !hasSecret) return { ok: false, reason: "not-configured" };
 
   const emailMatches = timingSafeEqual(
-    email.trim().toLowerCase(),
+    normalizedEmail,
     config.superAdminEmail.trim().toLowerCase(),
   );
 
@@ -144,7 +164,6 @@ export function readSessionToken(token: string | undefined): SessionPayload | nu
   try {
     const payload = JSON.parse(Buffer.from(body, "base64url").toString("utf8")) as SessionPayload;
     if (typeof payload.exp !== "number" || payload.exp < Date.now()) return null;
-    if (payload.sub !== config.superAdminEmail) return null;
     return payload;
   } catch {
     return null;
@@ -160,10 +179,11 @@ const cookieOptions = () =>
     maxAge: config.adminSessionHours * 60 * 60,
   }) as const;
 
-export async function createSession(): Promise<void> {
+export async function createSession(email?: string): Promise<void> {
   const now = Date.now();
+  const sub = email?.trim().toLowerCase() || config.superAdminEmail || "admin";
   const token = serializeSession({
-    sub: config.superAdminEmail,
+    sub,
     iat: now,
     exp: now + config.adminSessionHours * 60 * 60 * 1000,
   });
@@ -234,7 +254,15 @@ export function resetLoginThrottle(): void {
 }
 
 /** True when the credentials are configured at all, used to render a setup hint. */
-export function isAdminConfigured(): boolean {
+export async function isAdminConfigured(): Promise<boolean> {
+  try {
+    const rows = await (prisma as any).$queryRawUnsafe?.(
+      "SELECT COUNT(*) AS count FROM SuperAdmin",
+    );
+    if (Array.isArray(rows) && Number(Object.values(rows[0] ?? {})[0] ?? 0) > 0) {
+      return true;
+    }
+  } catch {}
   return Boolean(config.superAdminEmail && (config.superAdminPassHash || config.superAdminPass));
 }
 

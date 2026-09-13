@@ -93,3 +93,14 @@ model AnalyticsEvent {
   @@index([platform, createdAt])
   @@index([visitorHash, createdAt])
 }
+
+/// Super admin credentials stored in database.
+model SuperAdmin {
+  id           String   @id @default(cuid())
+  email        String   @unique @db.VarChar(191)
+  passwordHash String   @db.VarChar(255)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([email])
+}
