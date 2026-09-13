@@ -94,6 +94,13 @@ export default function RootLayout({
       className={`${displayFont.variable} ${sansFont.variable} ${monoFont.variable}`}
       suppressHydrationWarning
     >
+      <head>
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9958631141158615"
+          crossOrigin="anonymous"
+        />
+      </head>
       <body className="flex min-h-screen flex-col bg-background font-sans antialiased">
         <JsonLd data={[organizationJsonLd(), webSiteJsonLd()]} />
         <Suspense fallback={null}>
