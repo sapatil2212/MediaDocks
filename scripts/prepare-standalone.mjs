@@ -33,18 +33,24 @@ if (!fs.existsSync(standaloneDir)) {
   process.exit(0);
 }
 
-// 1. Copy public -> .next/standalone/public
+// 1. Sync public -> .next/standalone/public (clean wipe to eliminate stale files)
 if (fs.existsSync(sourcePublicDir)) {
-  console.log("  → Copying public/ to .next/standalone/public/ ...");
+  console.log("  → Synchronizing public/ to .next/standalone/public/ ...");
+  if (fs.existsSync(standalonePublicDir)) {
+    fs.rmSync(standalonePublicDir, { recursive: true, force: true });
+  }
   fs.mkdirSync(standalonePublicDir, { recursive: true });
   fs.cpSync(sourcePublicDir, standalonePublicDir, { recursive: true, force: true });
 } else {
   console.warn("  ⚠ public/ directory not found in root.");
 }
 
-// 2. Copy .next/static -> .next/standalone/.next/static
+// 2. Sync .next/static -> .next/standalone/.next/static (clean wipe to eliminate stale files)
 if (fs.existsSync(sourceStaticDir)) {
-  console.log("  → Copying .next/static/ to .next/standalone/.next/static/ ...");
+  console.log("  → Synchronizing .next/static/ to .next/standalone/.next/static/ ...");
+  if (fs.existsSync(standaloneStaticDir)) {
+    fs.rmSync(standaloneStaticDir, { recursive: true, force: true });
+  }
   fs.mkdirSync(standaloneStaticDir, { recursive: true });
   fs.cpSync(sourceStaticDir, standaloneStaticDir, { recursive: true, force: true });
 } else {
