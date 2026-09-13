@@ -18,8 +18,44 @@ export interface Totals {
   pageViews: number;
   resolves: number;
   downloads: number;
+  /** Every failed event, whatever the cause. */
   failures: number;
+  /**
+   * Failures caused by what was submitted — a junk link, an unsupported host, a
+   * stale reference, or hitting the rate limit. These are the system working as
+   * intended and must not be counted against it.
+   */
+  inputErrors: number;
+  /**
+   * Failures where a valid request did not produce a file: the platform blocked
+   * us, the extraction broke, it timed out, the file was too big. This is the
+   * number that actually indicates health.
+   */
+  deliveryFailures: number;
   bytes: number;
+}
+
+/**
+ * Error codes that mean "the request was never going to work", as opposed to
+ * "we failed to deliver".
+ *
+ * Without this split the dashboard read 3% success on a healthy server, because
+ * 51 of 58 failures were scanners and typos hitting UNSUPPORTED_PLATFORM and
+ * INVALID_URL. That buries the failures worth acting on.
+ */
+const INPUT_ERROR_CODES = new Set([
+  "INVALID_URL",
+  "INVALID_PLATFORM_URL",
+  "UNSUPPORTED_PLATFORM",
+  "RATE_LIMITED",
+  "MEDIA_NOT_FOUND",
+  "MEDIA_REFERENCE_EXPIRED",
+  "FORMAT_NOT_AVAILABLE",
+  "UNSAFE_URL",
+]);
+
+export function isInputError(code: string | null | undefined): boolean {
+  return code ? INPUT_ERROR_CODES.has(code) : false;
 }
 
 export interface Breakdown {
@@ -38,6 +74,8 @@ export interface AnalyticsReport {
   available: boolean;
   enabled: boolean;
   reason?: string;
+  /** Distinct visitors in the last 5 minutes. */
+  activeNow: number;
   today: Totals;
   last7: Totals;
   last30: Totals;
@@ -87,6 +125,8 @@ const EMPTY: Totals = {
   resolves: 0,
   downloads: 0,
   failures: 0,
+  inputErrors: 0,
+  deliveryFailures: 0,
   bytes: 0,
 };
 
@@ -95,8 +135,9 @@ async function totalsSince(since: Date | null): Promise<Totals> {
   const where = since ? { createdAt: { gte: since } } : {};
 
   const [grouped, distinctVisitors, byteSum] = await Promise.all([
+    // errorCode is grouped too, so failures can be attributed rather than lumped.
     prisma.analyticsEvent.groupBy({
-      by: ["type", "status"],
+      by: ["type", "status", "errorCode"],
       where,
       _count: { _all: true },
     }),
@@ -117,10 +158,24 @@ async function totalsSince(since: Date | null): Promise<Totals> {
     if (row.type === "page_view") totals.pageViews += count;
     if (row.type === "resolve") totals.resolves += count;
     if (row.type === "download") totals.downloads += count;
-    if (row.status === "error") totals.failures += count;
+    if (row.status === "error") {
+      totals.failures += count;
+      if (isInputError(row.errorCode)) totals.inputErrors += count;
+      else totals.deliveryFailures += count;
+    }
   }
 
   return totals;
+}
+
+/** Distinct visitors seen in the last `minutes`, for a live "active now" figure. */
+async function activeVisitors(minutes: number): Promise<number> {
+  const rows = await prisma.analyticsEvent.findMany({
+    where: { createdAt: { gte: new Date(Date.now() - minutes * 60 * 1000) } },
+    distinct: ["visitorHash"],
+    select: { visitorHash: true },
+  });
+  return rows.length;
 }
 
 async function topBy(
@@ -192,6 +247,7 @@ export async function getAnalyticsReport(): Promise<AnalyticsReport> {
   const base: AnalyticsReport = {
     available: false,
     enabled: config.analyticsEnabled,
+    activeNow: 0,
     today: EMPTY,
     last7: EMPTY,
     last30: EMPTY,
@@ -215,6 +271,7 @@ export async function getAnalyticsReport(): Promise<AnalyticsReport> {
   try {
     const since30 = startOfUtcDay(30);
     const [
+      activeNow,
       today,
       last7,
       last30,
@@ -230,6 +287,7 @@ export async function getAnalyticsReport(): Promise<AnalyticsReport> {
       avgResolveMs,
       avgDownloadMs,
     ] = await Promise.all([
+      activeVisitors(5),
       totalsSince(startOfUtcDay(0)),
       totalsSince(startOfUtcDay(6)),
       totalsSince(since30),
@@ -260,6 +318,7 @@ export async function getAnalyticsReport(): Promise<AnalyticsReport> {
     return {
       ...base,
       available: true,
+      activeNow,
       today,
       last7,
       last30,

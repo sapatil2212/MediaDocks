@@ -51,7 +51,14 @@ export interface YtdlpInfo {
 export interface ProbeResult {
   ok: boolean;
   info?: YtdlpInfo;
-  errorKind?: "unavailable" | "unsupported" | "private" | "timeout" | "engine-missing";
+  errorKind?:
+    | "unavailable"
+    | "unsupported"
+    | "private"
+    /** The platform refused this server, e.g. a bot challenge or 429. */
+    | "blocked"
+    | "timeout"
+    | "engine-missing";
 }
 
 const PRIVATE_MARKERS = [
@@ -107,9 +114,34 @@ function runYtdlp(
   });
 }
 
+/**
+ * The platform refusing *us*, rather than the content being unavailable.
+ *
+ * These must be tested before PRIVATE_MARKERS, because the wording overlaps:
+ * YouTube's bot challenge is "Sign in to confirm you're not a bot", which the
+ * "sign in" private-marker would otherwise swallow and report as "this content
+ * is private". That sends the operator looking at the video instead of at the
+ * server's IP reputation, which is the actual cause — datacenter ranges get
+ * challenged far more often than residential ones.
+ */
+const BLOCKED_MARKERS = [
+  "confirm you're not a bot",
+  "confirm you are not a bot",
+  "sign in to confirm",
+  "captcha",
+  "too many requests",
+  "rate-limit",
+  "rate limit",
+  "http error 429",
+  "blocked it in your country",
+  "failed to extract any player response",
+  "unable to extract yt initial data",
+];
+
 function classifyError(stderr: string): ProbeResult["errorKind"] {
   const lower = stderr.toLowerCase();
   if (lower.includes("engine-missing")) return "engine-missing";
+  if (BLOCKED_MARKERS.some((marker) => lower.includes(marker))) return "blocked";
   if (PRIVATE_MARKERS.some((marker) => lower.includes(marker))) return "private";
   if (lower.includes("unsupported url") || lower.includes("no video formats")) return "unsupported";
   return "unavailable";

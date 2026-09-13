@@ -8,7 +8,9 @@ import {
   ShieldAlert,
   Terminal,
 } from "lucide-react";
+import { AdminAutoRefresh } from "@/components/admin/AdminAutoRefresh";
 import { AdminLogoutButton } from "@/components/admin/AdminLogoutButton";
+import { isInputError } from "@/lib/admin/metrics";
 import type { AnalyticsReport, Breakdown, SystemReport, Totals } from "@/lib/admin/metrics";
 import { cn } from "@/lib/utils";
 
@@ -29,26 +31,44 @@ function ms(value: number | null): string {
   return value >= 1000 ? `${(value / 1000).toFixed(1)}s` : `${value} ms`;
 }
 
-/** Downloads that produced a file, as a share of all attempts. */
-function successRate(totals: Totals): string {
-  const attempts = totals.resolves + totals.downloads;
-  if (attempts === 0) return "—";
-  return `${Math.round(((attempts - totals.failures) / attempts) * 100)}%`;
+/**
+ * Share of *serviceable* requests that succeeded.
+ *
+ * Requests that could never work — junk links, unsupported hosts, rate-limited
+ * retries — are excluded from the denominator. Counting them made a healthy
+ * server report 3%, because scanners and typos dominated the failure count.
+ */
+function deliveryRate(totals: Totals): string {
+  const serviceable = totals.resolves + totals.downloads - totals.inputErrors;
+  if (serviceable <= 0) return "—";
+  return `${Math.round(((serviceable - totals.deliveryFailures) / serviceable) * 100)}%`;
 }
 
 function StatCard({
   label,
   value,
   sub,
+  accent,
+  tone,
 }: {
   label: string;
   value: string;
   sub?: string;
+  /** Highlights the live figure so it reads as the "now" number. */
+  accent?: boolean;
+  tone?: "danger";
 }) {
   return (
-    <div className="panel p-5">
+    <div className={cn("panel p-5", accent && "border-primary/40 bg-accent/30")}>
       <p className="eyebrow">{label}</p>
-      <p className="figure-mono font-display mt-2 text-3xl font-semibold">{value}</p>
+      <p
+        className={cn(
+          "figure-mono font-display mt-2 text-3xl font-semibold",
+          tone === "danger" && "text-destructive",
+        )}
+      >
+        {value}
+      </p>
       {sub ? <p className="mt-1 text-xs text-muted-foreground">{sub}</p> : null}
     </div>
   );
@@ -59,10 +79,15 @@ function BarList({
   title,
   rows,
   empty,
+  note,
+  markInputErrors = false,
 }: {
   title: string;
   rows: Breakdown[];
   empty: string;
+  note?: string;
+  /** Dims rows caused by bad input so real failures stand out. */
+  markInputErrors?: boolean;
 }) {
   const max = Math.max(1, ...rows.map((row) => row.count));
   return (
@@ -72,24 +97,38 @@ function BarList({
         <p className="mt-3 text-xs text-muted-foreground">{empty}</p>
       ) : (
         <ul className="mt-4 space-y-2.5">
-          {rows.map((row) => (
-            <li key={row.label} className="flex items-center gap-3">
-              <span className="min-w-0 flex-1 truncate text-xs font-medium" title={row.label}>
-                {row.label}
-              </span>
-              <span className="h-1.5 w-24 shrink-0 overflow-hidden rounded-full bg-surface-strong sm:w-32">
+          {rows.map((row) => {
+            const benign = markInputErrors && isInputError(row.label);
+            return (
+              <li key={row.label} className="flex items-center gap-3">
                 <span
-                  className="block h-full rounded-full bg-primary/80"
-                  style={{ width: `${(row.count / max) * 100}%` }}
-                />
-              </span>
-              <span className="figure-mono w-12 shrink-0 text-right text-xs font-semibold">
-                {num(row.count)}
-              </span>
-            </li>
-          ))}
+                  className={cn(
+                    "min-w-0 flex-1 truncate text-xs font-medium",
+                    benign && "text-muted-foreground",
+                  )}
+                  title={benign ? `${row.label} — caused by the request, not a fault` : row.label}
+                >
+                  {row.label}
+                  {benign ? <span className="ml-1.5 opacity-60">· input</span> : null}
+                </span>
+                <span className="h-1.5 w-24 shrink-0 overflow-hidden rounded-full bg-surface-strong sm:w-32">
+                  <span
+                    className={cn(
+                      "block h-full rounded-full",
+                      markInputErrors && !benign ? "bg-destructive/70" : "bg-primary/80",
+                    )}
+                    style={{ width: `${(row.count / max) * 100}%` }}
+                  />
+                </span>
+                <span className="figure-mono w-12 shrink-0 text-right text-xs font-semibold">
+                  {num(row.count)}
+                </span>
+              </li>
+            );
+          })}
         </ul>
       )}
+      {note ? <p className="mt-3 text-[0.7rem] text-muted-foreground">{note}</p> : null}
     </div>
   );
 }
@@ -104,6 +143,8 @@ export function AdminDashboard({
   generatedAt: Date;
 }) {
   const maxDaily = Math.max(1, ...analytics.daily.map((d) => Math.max(d.visitors, d.pageViews)));
+  const blockedCount =
+    analytics.errors.find((row) => row.label === "PLATFORM_ACCESS_UNAVAILABLE")?.count ?? 0;
 
   return (
     <div className="section-shell py-10">
@@ -113,11 +154,13 @@ export function AdminDashboard({
           <p className="eyebrow">Super admin</p>
           <h1 className="section-title mt-2">App report</h1>
           <p className="mt-2 text-xs text-muted-foreground">
-            Generated {generatedAt.toISOString().replace("T", " ").slice(0, 19)} UTC · all figures
-            UTC
+            {generatedAt.toISOString().replace("T", " ").slice(0, 19)} UTC · all figures UTC
           </p>
         </div>
-        <AdminLogoutButton />
+        <div className="flex flex-wrap items-center gap-2">
+          <AdminAutoRefresh generatedAt={generatedAt.getTime()} />
+          <AdminLogoutButton />
+        </div>
       </div>
 
       {/* ── Operator warnings ────────────────────────────────────────────── */}
@@ -158,6 +201,18 @@ export function AdminDashboard({
         </div>
       )}
 
+      {/* Platform-side blocking is invisible in aggregate numbers but is the most
+          likely reason a healthy server still fails to deliver, so it is called
+          out explicitly whenever it appears. */}
+      {blockedCount > 0 ? (
+        <div className="mt-6">
+          <Warning
+            tone="danger"
+            text={`A platform refused this server ${blockedCount} time(s) in the last 30 days (PLATFORM_ACCESS_UNAVAILABLE). This is a bot challenge or rate limit aimed at the server's IP, not a problem with the links. Datacenter IP ranges are challenged far more often than residential ones. Keeping yt-dlp updated usually helps most.`}
+          />
+        </div>
+      ) : null}
+
       {/* ── Analytics unavailable notice ─────────────────────────────────── */}
       {!analytics.available ? (
         <div className="panel mt-6 flex gap-3 p-5 text-sm">
@@ -175,7 +230,13 @@ export function AdminDashboard({
       {/* ── Headline numbers ─────────────────────────────────────────────── */}
       <section className="mt-8">
         <h2 className="text-sm font-semibold">Visitors</h2>
-        <div className="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+          <StatCard
+            label="Active now"
+            value={num(analytics.activeNow)}
+            sub="last 5 minutes"
+            accent
+          />
           <StatCard
             label="Today"
             value={num(analytics.today.visitors)}
@@ -218,9 +279,14 @@ export function AdminDashboard({
             sub={`avg ${ms(analytics.avgDownloadMs)}`}
           />
           <StatCard
-            label="Success rate"
-            value={successRate(analytics.last30)}
-            sub={`${num(analytics.last30.failures)} failed`}
+            label="Delivery rate"
+            value={deliveryRate(analytics.last30)}
+            sub={`${num(analytics.last30.deliveryFailures)} real failure(s)`}
+            {...(analytics.last30.deliveryFailures > 0 &&
+            deliveryRate(analytics.last30) !== "—" &&
+            Number.parseInt(deliveryRate(analytics.last30), 10) < 80
+              ? { tone: "danger" as const }
+              : {})}
           />
           <StatCard
             label="Data served"
@@ -228,6 +294,13 @@ export function AdminDashboard({
             sub={`all time ${bytes(analytics.allTime.bytes)}`}
           />
         </div>
+        <p className="mt-2 text-xs text-muted-foreground">
+          Delivery rate excludes requests that could never work —{" "}
+          {num(analytics.last30.inputErrors)} of {num(analytics.last30.failures)} failures in this
+          window were unsupported links, malformed URLs, expired references or rate-limited retries.
+          Those are the system behaving correctly, so counting them would hide the failures that
+          matter.
+        </p>
       </section>
 
       {/* ── Daily trend ──────────────────────────────────────────────────── */}
@@ -288,7 +361,13 @@ export function AdminDashboard({
           rows={analytics.referrers}
           empty="No external referrers yet. Direct visits are not listed."
         />
-        <BarList title="Most common errors" rows={analytics.errors} empty="No errors recorded." />
+        <BarList
+          title="Most common errors"
+          rows={analytics.errors}
+          empty="No errors recorded."
+          markInputErrors
+          note="Rows marked “input” are unsupported links, typos, expired references or rate limiting — expected, and excluded from the delivery rate. Red rows are worth investigating."
+        />
       </section>
 
       {/* ── Recent failures ──────────────────────────────────────────────── */}

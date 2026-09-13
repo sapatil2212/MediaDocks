@@ -34,6 +34,14 @@ export async function resolveWithEngine(
           "MEDIA_NOT_AVAILABLE",
           "This content is private or unavailable, so it can't be downloaded.",
         );
+      case "blocked":
+        // Distinct from "private" on purpose: the content is fine, the platform
+        // is refusing this server. Saying so stops it looking like a broken link.
+        throw new MediaFlowError(
+          "PLATFORM_ACCESS_UNAVAILABLE",
+          "The platform is currently blocking automated requests from this server. " +
+            "This is not a problem with your link — please try again later.",
+        );
       default:
         return null;
     }
