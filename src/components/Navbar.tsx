@@ -2,7 +2,19 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { Menu, X, ChevronDown, Music2, Sparkles, ArrowRight } from "lucide-react";
+import {
+  Menu,
+  X,
+  ChevronDown,
+  Music2,
+  Sparkles,
+  ArrowRight,
+  AudioLines,
+  Captions,
+  FileVideo2,
+  ListChecks,
+  Wrench,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/Logo";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -19,6 +31,46 @@ interface DownloaderItem {
   platform?: "youtube" | "instagram" | "x" | "pinterest" | "facebook";
   isAudio?: boolean;
 }
+
+/**
+ * The AI media tools.
+ *
+ * These used to be one top-level link. They now live behind a "Tools" menu so
+ * transcription, summarizing and subtitling are presented as siblings, and they
+ * are deliberately not repeated in the Downloaders menu — the same destination
+ * in two menus makes it unclear which one is canonical.
+ */
+const TOOL_OPTIONS: Array<{
+  name: string;
+  slug: string;
+  tagline: string;
+  icon: typeof FileVideo2;
+}> = [
+  {
+    name: "Video to Text",
+    slug: "/video-to-text",
+    tagline: "MP4, MOV, WebM or a public video link",
+    icon: FileVideo2,
+  },
+  {
+    name: "Audio to Text",
+    slug: "/audio-to-text",
+    tagline: "MP3, WAV, M4A, FLAC podcasts & voice notes",
+    icon: AudioLines,
+  },
+  {
+    name: "AI Audio Summarizer",
+    slug: "/audio-summarizer",
+    tagline: "Recap, key points & action items from audio",
+    icon: ListChecks,
+  },
+  {
+    name: "Add Subtitles to Video",
+    slug: "/add-subtitles-to-video",
+    tagline: "Timed cues you can edit, export SRT & VTT",
+    icon: Captions,
+  },
+];
 
 const DOWNLOADER_OPTIONS: DownloaderItem[] = [
   {
@@ -70,9 +122,13 @@ export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [toolsOpen, setToolsOpen] = useState(false);
   const [mobileDropdownOpen, setMobileDropdownOpen] = useState(false);
+  const [mobileToolsOpen, setMobileToolsOpen] = useState(false);
   const [pathname, setPathname] = useState("");
   const dropdownTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const toolsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const toolsRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -101,6 +157,38 @@ export function Navbar() {
       setDropdownOpen(false);
     }, 150);
   };
+
+  const handleToolsEnter = () => {
+    if (toolsTimeoutRef.current) clearTimeout(toolsTimeoutRef.current);
+    setToolsOpen(true);
+  };
+
+  const handleToolsLeave = () => {
+    toolsTimeoutRef.current = setTimeout(() => setToolsOpen(false), 150);
+  };
+
+  // A menu opened by click must also close on Escape and on an outside click,
+  // otherwise it can be left hanging over the page with no obvious way to
+  // dismiss it — especially for keyboard users.
+  useEffect(() => {
+    if (!toolsOpen) return;
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setToolsOpen(false);
+    };
+    const onPointerDown = (event: MouseEvent) => {
+      if (!toolsRef.current?.contains(event.target as Node)) setToolsOpen(false);
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+    document.addEventListener("mousedown", onPointerDown);
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      document.removeEventListener("mousedown", onPointerDown);
+    };
+  }, [toolsOpen]);
+
+  const isToolPath = TOOL_OPTIONS.some((tool) => tool.slug === pathname);
 
   return (
     <header
@@ -226,6 +314,87 @@ export function Navbar() {
             )}
           </div>
 
+          {/* Tools Dropdown (AI transcription) */}
+          <div
+            className="relative"
+            ref={toolsRef}
+            onMouseEnter={handleToolsEnter}
+            onMouseLeave={handleToolsLeave}
+          >
+            <button
+              type="button"
+              onClick={() => setToolsOpen((v) => !v)}
+              aria-expanded={toolsOpen}
+              aria-haspopup="true"
+              className={cn(
+                "group inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-surface-strong hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
+                toolsOpen || isToolPath
+                  ? "bg-surface-strong/60 font-semibold text-foreground"
+                  : "text-muted-foreground",
+              )}
+            >
+              <span>Tools</span>
+              <span className="rounded-full bg-primary/15 px-1.5 py-0.5 text-[10px] font-bold tracking-wide text-primary">
+                AI
+              </span>
+              <ChevronDown
+                className={cn(
+                  "h-4 w-4 text-muted-foreground transition-transform duration-200 group-hover:text-foreground",
+                  toolsOpen ? "rotate-180 text-primary" : "",
+                )}
+                aria-hidden="true"
+              />
+            </button>
+
+            {toolsOpen && (
+              <div
+                className="absolute left-0 top-full z-50 mt-1.5 w-[320px] animate-in fade-in zoom-in-95 rounded-2xl border border-border/80 bg-surface/95 p-2.5 shadow-lift backdrop-blur-2xl duration-150"
+                role="menu"
+                aria-label="Tools menu"
+              >
+                <div className="mb-1 border-b border-border/60 px-3 py-2">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                    AI Media Tools
+                  </p>
+                </div>
+
+                <div className="space-y-1">
+                  {TOOL_OPTIONS.map((tool) => {
+                    const isSelected = pathname === tool.slug;
+                    return (
+                      <Link
+                        key={tool.slug}
+                        href={tool.slug}
+                        onClick={() => setToolsOpen(false)}
+                        role="menuitem"
+                        aria-current={isSelected ? "page" : undefined}
+                        className={cn(
+                          "group flex items-center gap-3 rounded-xl p-2.5 transition-all duration-150",
+                          isSelected
+                            ? "bg-primary/10 font-semibold text-primary"
+                            : "text-foreground/90 hover:bg-surface-strong hover:text-foreground",
+                        )}
+                      >
+                        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg border border-border bg-surface shadow-soft transition-transform duration-150 group-hover:scale-105">
+                          <tool.icon className="h-4 w-4 text-primary" />
+                        </span>
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-bold leading-none sm:text-sm">{tool.name}</span>
+                            <ArrowRight className="h-3 w-3 text-muted-foreground opacity-0 transition-all duration-150 group-hover:translate-x-0.5 group-hover:opacity-100" />
+                          </div>
+                          <p className="mt-1 truncate text-[0.7rem] font-normal text-muted-foreground">
+                            {tool.tagline}
+                          </p>
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+
           <Link
             href="/how-it-works"
             className={cn(
@@ -324,6 +493,52 @@ export function Navbar() {
                     <div className="min-w-0 flex-1">
                       <p className="font-semibold text-xs text-foreground">{item.name}</p>
                       <p className="text-[0.65rem] text-muted-foreground truncate">{item.tagline}</p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Mobile Accordion for Tools */}
+          <div className="my-1 rounded-xl border border-border/60 bg-surface/50 p-2">
+            <button
+              type="button"
+              onClick={() => setMobileToolsOpen((v) => !v)}
+              aria-expanded={mobileToolsOpen}
+              className="flex w-full items-center justify-between px-2 py-2 text-sm font-semibold text-foreground"
+            >
+              <span className="flex items-center gap-2">
+                <Wrench className="h-4 w-4 text-primary" />
+                <span>Tools</span>
+                <span className="rounded-full bg-primary/15 px-1.5 py-0.5 text-[10px] font-bold text-primary">
+                  AI
+                </span>
+              </span>
+              <ChevronDown
+                className={cn(
+                  "h-4 w-4 text-muted-foreground transition-transform duration-200",
+                  mobileToolsOpen ? "rotate-180 text-primary" : "",
+                )}
+              />
+            </button>
+
+            {mobileToolsOpen && (
+              <div className="mt-2 space-y-1 border-t border-border/60 pt-2 animate-in fade-in duration-150">
+                {TOOL_OPTIONS.map((tool) => (
+                  <Link
+                    key={tool.slug}
+                    href={tool.slug}
+                    onClick={() => setOpen(false)}
+                    aria-current={pathname === tool.slug ? "page" : undefined}
+                    className="flex items-center gap-3 rounded-lg p-2 text-sm transition-colors hover:bg-surface-strong"
+                  >
+                    <span className="grid h-7 w-7 shrink-0 place-items-center rounded-md border border-border bg-surface">
+                      <tool.icon className="h-3.5 w-3.5 text-primary" />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs font-semibold text-foreground">{tool.name}</p>
+                      <p className="truncate text-[0.65rem] text-muted-foreground">{tool.tagline}</p>
                     </div>
                   </Link>
                 ))}

@@ -59,6 +59,29 @@ export function Footer() {
               </button>
             </li>
             <li>
+              <Link href="/video-to-text" className="transition-colors hover:text-foreground font-medium text-primary">
+                Video to Text (AI)
+              </Link>
+            </li>
+            <li>
+              <Link href="/audio-to-text" className="transition-colors hover:text-foreground font-medium text-primary">
+                Audio to Text (AI)
+              </Link>
+            </li>
+            <li>
+              <Link href="/audio-summarizer" className="transition-colors hover:text-foreground font-medium text-primary">
+                Audio Summarizer (AI)
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/add-subtitles-to-video"
+                className="transition-colors hover:text-foreground font-medium text-primary"
+              >
+                Add Subtitles to Video (AI)
+              </Link>
+            </li>
+            <li>
               <Link href="/how-it-works" className="transition-colors hover:text-foreground">
                 How it works
               </Link>
@@ -87,8 +110,31 @@ export function Footer() {
         </div>
 
         <div>
-          <h2 className="font-display text-sm font-semibold text-foreground">Downloaders</h2>
+          <h2 className="font-display text-sm font-semibold text-foreground">Downloaders & AI</h2>
           <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
+            <li>
+              <Link href="/video-to-text" className="transition-colors hover:text-foreground font-medium text-primary">
+                Transcribe Video to Text
+              </Link>
+            </li>
+            <li>
+              <Link href="/audio-to-text" className="transition-colors hover:text-foreground font-medium text-primary">
+                Transcribe Audio to Text
+              </Link>
+            </li>
+            <li>
+              <Link href="/audio-summarizer" className="transition-colors hover:text-foreground font-medium text-primary">
+                Summarize Audio with AI
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/add-subtitles-to-video"
+                className="transition-colors hover:text-foreground font-medium text-primary"
+              >
+                Add Subtitles to Video
+              </Link>
+            </li>
             {PLATFORM_PAGES.map((page) => (
               <li key={page.slug}>
                 <Link href={page.slug} className="transition-colors hover:text-foreground">

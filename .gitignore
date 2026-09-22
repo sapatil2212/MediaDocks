@@ -42,5 +42,8 @@ yarn-debug.log*
 # Prisma
 prisma/*.db
 
+# Semantic review reports (local tooling artifacts)
+semantic-review
+
 # OS
 Thumbs.db

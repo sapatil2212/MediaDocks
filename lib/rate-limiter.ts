@@ -2,7 +2,7 @@ import crypto from "crypto";
 import { config } from "@/lib/config";
 import { MediaFlowError } from "@/lib/errors";
 
-type Action = "resolve" | "download";
+type Action = "resolve" | "download" | "transcribe";
 
 /**
  * In-memory sliding window, scoped to a single instance.
@@ -29,9 +29,18 @@ function sweep(now: number, windowMs: number): void {
 }
 
 export function checkRateLimit(ip: string, action: Action): void {
-  const limit = action === "resolve" ? config.resolveLimit : config.downloadLimit;
+  const limit =
+    action === "resolve"
+      ? config.resolveLimit
+      : action === "download"
+        ? config.downloadLimit
+        : config.transcribeLimit;
   const windowSeconds =
-    action === "resolve" ? config.resolveWindowSeconds : config.downloadWindowSeconds;
+    action === "resolve"
+      ? config.resolveWindowSeconds
+      : action === "download"
+        ? config.downloadWindowSeconds
+        : config.transcribeWindowSeconds;
   const windowMs = windowSeconds * 1000;
   const now = Date.now();
 

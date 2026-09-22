@@ -2,9 +2,8 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { Plus_Jakarta_Sans, Inter, JetBrains_Mono } from "next/font/google";
 import { ThemeProvider } from "@/hooks/use-theme";
-import { Navbar } from "@/components/Navbar";
+import { SiteChrome } from "@/components/SiteChrome";
 import { PageViewTracker } from "@/components/PageViewTracker";
-import { Footer } from "@/components/Footer";
 import { JsonLd } from "@/components/JsonLd";
 import { Toaster } from "@/components/ui/sonner";
 import {
@@ -107,9 +106,7 @@ export default function RootLayout({
           <PageViewTracker />
         </Suspense>
         <ThemeProvider>
-          <Navbar />
-          <main className="flex-1">{children}</main>
-          <Footer />
+          <SiteChrome>{children}</SiteChrome>
           <Toaster position="bottom-right" />
         </ThemeProvider>
       </body>

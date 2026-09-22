@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { AdminDashboard } from "@/components/admin/AdminDashboard";
 import { AdminLogin } from "@/components/admin/AdminLogin";
-import { isAdminConfigured, isAuthenticated, isUsingPlaintextPassword } from "@/lib/admin/auth";
+import { getActiveSession, isAdminConfigured, isUsingPlaintextPassword } from "@/lib/admin/auth";
 import { getAnalyticsReport, getSystemReport } from "@/lib/admin/metrics";
 
 /**
@@ -27,16 +27,26 @@ export const metadata: Metadata = {
 };
 
 export default async function SuperAdminPage() {
-  if (!(await isAuthenticated())) {
+  const session = await getActiveSession();
+  if (!session) {
     // No metrics are fetched on this path, so nothing sensitive is computed or
     // shipped to an unauthenticated caller.
     return <AdminLogin configured={await isAdminConfigured()} />;
   }
 
+  // Re-queried on every request: the page is force-dynamic and the client polls
+  // it, so each render reflects the database at that moment.
   const [analytics, system] = await Promise.all([
     getAnalyticsReport(),
     getSystemReport(isUsingPlaintextPassword()),
   ]);
 
-  return <AdminDashboard analytics={analytics} system={system} generatedAt={new Date()} />;
+  return (
+    <AdminDashboard
+      analytics={analytics}
+      system={system}
+      session={session}
+      generatedAt={new Date()}
+    />
+  );
 }

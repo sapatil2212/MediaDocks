@@ -81,38 +81,36 @@ export type CredentialCheck =
   | { ok: true }
   | { ok: false; reason: "not-configured" | "invalid" };
 
-/**
- * Verifies an email/password pair against database SuperAdmin table (or env fallback).
- *
- * Both fields are always checked even when the email is already wrong, so the
- * response time does not reveal whether the email exists.
- */
-export async function verifyCredentials(email: string, password: string): Promise<CredentialCheck> {
-  const normalizedEmail = email.trim().toLowerCase();
+/** Why a single credential source did not accept the attempt. */
+type SourceOutcome =
+  | "match"
+  | "password-mismatch"
+  | "email-mismatch"
+  | "absent" // source holds no credentials for this address
+  | "unavailable"; // source could not be consulted at all
 
-  // 1. Try checking against database SuperAdmin table
+async function checkDatabase(email: string, password: string): Promise<SourceOutcome> {
   try {
-    const rows = await (prisma as any).$queryRawUnsafe?.(
-      "SELECT email, passwordHash FROM SuperAdmin WHERE LOWER(email) = ? LIMIT 1",
-      normalizedEmail,
-    );
-    if (Array.isArray(rows) && rows.length > 0) {
-      const admin = rows[0];
-      const passwordMatches = verifyHashedPassword(password, admin.passwordHash);
-      return passwordMatches ? { ok: true } : { ok: false, reason: "invalid" };
+    const admin = await prisma.superAdmin.findUnique({ where: { email } });
+    if (admin) {
+      return verifyHashedPassword(password, admin.passwordHash) ? "match" : "password-mismatch";
     }
+    // Distinguish "no accounts exist yet" (a setup problem worth reporting as
+    // such) from "that address is not one of the accounts that do exist".
+    return (await prisma.superAdmin.count()) === 0 ? "absent" : "email-mismatch";
   } catch {
-    // Database query failed; fallback to env check below
+    return "unavailable";
   }
+}
 
-  // 2. Fallback to env-configured credentials
+function checkEnvironment(email: string, password: string): SourceOutcome {
+  const configuredEmail = config.superAdminEmail.trim().toLowerCase();
   const hasSecret = Boolean(config.superAdminPassHash || config.superAdminPass);
-  if (!config.superAdminEmail || !hasSecret) return { ok: false, reason: "not-configured" };
+  if (!configuredEmail || !hasSecret) return "absent";
 
-  const emailMatches = timingSafeEqual(
-    normalizedEmail,
-    config.superAdminEmail.trim().toLowerCase(),
-  );
+  // Both halves are always evaluated, even when the email is already wrong, so
+  // response timing does not reveal whether the address exists.
+  const emailMatches = timingSafeEqual(email, configuredEmail);
 
   let passwordMatches: boolean;
   if (config.superAdminPassHash) {
@@ -129,7 +127,71 @@ export async function verifyCredentials(email: string, password: string): Promis
     passwordMatches = timingSafeEqual(password, config.superAdminPass);
   }
 
-  return emailMatches && passwordMatches ? { ok: true } : { ok: false, reason: "invalid" };
+  if (!emailMatches) return "email-mismatch";
+  return passwordMatches ? "match" : "password-mismatch";
+}
+
+/**
+ * Explains a rejection on the server console.
+ *
+ * The HTTP response is deliberately vague — it must not tell an attacker which
+ * half was wrong — but that same vagueness makes a legitimate misconfiguration
+ * impossible to debug. The detail goes here, to the operator's terminal, and
+ * never includes the password or the address.
+ */
+function explainFailure(database: SourceOutcome, environment: SourceOutcome): void {
+  const describe = (source: string, outcome: SourceOutcome) => {
+    switch (outcome) {
+      case "password-mismatch":
+        return `${source}: account found, password did not match`;
+      case "email-mismatch":
+        return `${source}: no account for that email address`;
+      case "absent":
+        return `${source}: no credentials configured`;
+      case "unavailable":
+        return `${source}: could not be reached`;
+      default:
+        return `${source}: accepted`;
+    }
+  };
+
+  console.warn(
+    "[admin] Sign-in rejected.\n" +
+      `        ${describe("database", database)}\n` +
+      `        ${describe(".env", environment)}\n` +
+      "        Run `npm run admin:test-password` to test a password against both.",
+  );
+}
+
+/**
+ * Verifies an email/password pair against the database `SuperAdmin` table and
+ * the env-configured credentials.
+ *
+ * Either source may grant access. Neither is allowed to veto the other: a
+ * database row that does not match must not mask valid `.env` credentials (and
+ * vice versa), because that silently locks the operator out of the only admin
+ * surface in the app with no way back in.
+ *
+ * Both sources are always evaluated before returning, so the response time does
+ * not reveal which one holds an account.
+ */
+export async function verifyCredentials(email: string, password: string): Promise<CredentialCheck> {
+  const normalizedEmail = email.trim().toLowerCase();
+
+  const database = await checkDatabase(normalizedEmail, password);
+  const environment = checkEnvironment(normalizedEmail, password);
+
+  if (database === "match" || environment === "match") return { ok: true };
+
+  // Nothing anywhere to compare against is an operator problem, not a failed
+  // login, and the route reports it differently.
+  const databaseHasNothing = database === "absent" || database === "unavailable";
+  if (databaseHasNothing && environment === "absent") {
+    return { ok: false, reason: "not-configured" };
+  }
+
+  explainFailure(database, environment);
+  return { ok: false, reason: "invalid" };
 }
 
 /* ────────────────────────────── session cookie ───────────────────────────── */
@@ -202,6 +264,25 @@ export async function isAuthenticated(): Promise<boolean> {
   return readSessionToken(store.get(COOKIE_NAME)?.value) !== null;
 }
 
+export interface ActiveSession {
+  /** The signed-in address, taken from the verified session payload. */
+  email: string;
+  issuedAt: number;
+  expiresAt: number;
+}
+
+/**
+ * The verified current session, for displaying who is signed in and how long
+ * the session has left. Returns null rather than throwing when absent, so a
+ * caller can treat it as optional detail rather than an auth check.
+ */
+export async function getActiveSession(): Promise<ActiveSession | null> {
+  const store = await cookies();
+  const payload = readSessionToken(store.get(COOKIE_NAME)?.value);
+  if (!payload) return null;
+  return { email: payload.sub, issuedAt: payload.iat, expiresAt: payload.exp };
+}
+
 /* ────────────────────────── login attempt throttling ─────────────────────── */
 
 const MAX_ATTEMPTS = 5;
@@ -256,13 +337,10 @@ export function resetLoginThrottle(): void {
 /** True when the credentials are configured at all, used to render a setup hint. */
 export async function isAdminConfigured(): Promise<boolean> {
   try {
-    const rows = await (prisma as any).$queryRawUnsafe?.(
-      "SELECT COUNT(*) AS count FROM SuperAdmin",
-    );
-    if (Array.isArray(rows) && Number(Object.values(rows[0] ?? {})[0] ?? 0) > 0) {
-      return true;
-    }
-  } catch {}
+    if ((await prisma.superAdmin.count()) > 0) return true;
+  } catch {
+    // Fall through to the env check when the database cannot be reached.
+  }
   return Boolean(config.superAdminEmail && (config.superAdminPassHash || config.superAdminPass));
 }
 

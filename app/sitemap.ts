@@ -19,6 +19,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     changeFrequency: "weekly" | "monthly" | "yearly";
   }> = [
     { path: "/", priority: 1, changeFrequency: "weekly" },
+    { path: "/video-to-text", priority: 0.9, changeFrequency: "weekly" },
+    { path: "/audio-to-text", priority: 0.9, changeFrequency: "weekly" },
+    { path: "/audio-summarizer", priority: 0.9, changeFrequency: "weekly" },
+    { path: "/add-subtitles-to-video", priority: 0.9, changeFrequency: "weekly" },
     // Ranks for its own high-volume intent, so it sits with the platform pages.
     { path: "/youtube-to-mp3", priority: 0.9, changeFrequency: "weekly" },
     { path: "/how-it-works", priority: 0.7, changeFrequency: "monthly" },

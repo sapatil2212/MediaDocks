@@ -4,6 +4,9 @@ import { config } from "@/lib/config";
 import { prisma } from "@/lib/db/prisma";
 import { describeEngineTools } from "@/lib/engine/binaries";
 import { getStorageDirectory } from "@/lib/download/storage";
+import { isInputError } from "@/lib/admin/error-classification";
+
+export { isInputError } from "@/lib/admin/error-classification";
 
 /**
  * Read-only aggregation for the admin dashboard.
@@ -33,29 +36,6 @@ export interface Totals {
    */
   deliveryFailures: number;
   bytes: number;
-}
-
-/**
- * Error codes that mean "the request was never going to work", as opposed to
- * "we failed to deliver".
- *
- * Without this split the dashboard read 3% success on a healthy server, because
- * 51 of 58 failures were scanners and typos hitting UNSUPPORTED_PLATFORM and
- * INVALID_URL. That buries the failures worth acting on.
- */
-const INPUT_ERROR_CODES = new Set([
-  "INVALID_URL",
-  "INVALID_PLATFORM_URL",
-  "UNSUPPORTED_PLATFORM",
-  "RATE_LIMITED",
-  "MEDIA_NOT_FOUND",
-  "MEDIA_REFERENCE_EXPIRED",
-  "FORMAT_NOT_AVAILABLE",
-  "UNSAFE_URL",
-]);
-
-export function isInputError(code: string | null | undefined): boolean {
-  return code ? INPUT_ERROR_CODES.has(code) : false;
 }
 
 export interface Breakdown {
@@ -236,7 +216,7 @@ async function dailySeries(days: number): Promise<DayPoint[]> {
 
 async function averageDuration(type: "resolve" | "download"): Promise<number | null> {
   const result = await prisma.analyticsEvent.aggregate({
-    where: { type, status: "ok", durationMs: { not: null }, createdAt: { gte: startOfUtcDay(30) } },
+    where: { type, status: "ok", durationMs: { not: null }, createdAt: { gte: startOfUtcDay(29) } },
     _avg: { durationMs: true },
   });
   const avg = result._avg.durationMs;
@@ -269,7 +249,7 @@ export async function getAnalyticsReport(): Promise<AnalyticsReport> {
   }
 
   try {
-    const since30 = startOfUtcDay(30);
+    const since30 = startOfUtcDay(29);
     const [
       activeNow,
       today,
