@@ -69,6 +69,8 @@ const nextConfig: NextConfig = {
       ["/twitter-image-downloader", "/x-downloader"],
       ["/twitter-gif-downloader", "/x-downloader"],
       ["/x-video-downloader", "/x-downloader"],
+      // Legal redirects
+      ["/dmca", "/copyright"],
     ];
 
     return aliases.map(([source, destination]) => ({

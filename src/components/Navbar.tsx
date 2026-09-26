@@ -396,6 +396,16 @@ export function Navbar() {
           </div>
 
           <Link
+            href="/guides"
+            className={cn(
+              "rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-surface-strong hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
+              pathname.startsWith("/guides") ? "text-foreground font-semibold" : "text-muted-foreground",
+            )}
+          >
+            Guides
+          </Link>
+
+          <Link
             href="/how-it-works"
             className={cn(
               "rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-surface-strong hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
@@ -413,6 +423,26 @@ export function Navbar() {
             )}
           >
             FAQ
+          </Link>
+
+          <Link
+            href="/about"
+            className={cn(
+              "rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-surface-strong hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
+              pathname === "/about" ? "text-foreground font-semibold" : "text-muted-foreground",
+            )}
+          >
+            About
+          </Link>
+
+          <Link
+            href="/contact"
+            className={cn(
+              "rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-surface-strong hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
+              pathname === "/contact" ? "text-foreground font-semibold" : "text-muted-foreground",
+            )}
+          >
+            Contact
           </Link>
         </nav>
 
@@ -547,6 +577,14 @@ export function Navbar() {
           </div>
 
           <Link
+            href="/guides"
+            onClick={() => setOpen(false)}
+            className="rounded-xl px-3 py-2.5 text-base font-medium text-muted-foreground transition-colors hover:bg-surface-strong hover:text-foreground"
+          >
+            Guides & Resources
+          </Link>
+
+          <Link
             href="/how-it-works"
             onClick={() => setOpen(false)}
             className="rounded-xl px-3 py-2.5 text-base font-medium text-muted-foreground transition-colors hover:bg-surface-strong hover:text-foreground"
@@ -560,6 +598,22 @@ export function Navbar() {
             className="rounded-xl px-3 py-2.5 text-base font-medium text-muted-foreground transition-colors hover:bg-surface-strong hover:text-foreground"
           >
             FAQ
+          </Link>
+
+          <Link
+            href="/about"
+            onClick={() => setOpen(false)}
+            className="rounded-xl px-3 py-2.5 text-base font-medium text-muted-foreground transition-colors hover:bg-surface-strong hover:text-foreground"
+          >
+            About
+          </Link>
+
+          <Link
+            href="/contact"
+            onClick={() => setOpen(false)}
+            className="rounded-xl px-3 py-2.5 text-base font-medium text-muted-foreground transition-colors hover:bg-surface-strong hover:text-foreground"
+          >
+            Contact
           </Link>
 
           <Button

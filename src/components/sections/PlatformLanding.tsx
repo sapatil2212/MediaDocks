@@ -297,6 +297,65 @@ export function PlatformLanding({ page }: { page: PlatformPage }) {
         </div>
       </section>
 
+      {/* ── Related Educational Guides ───────────────────────────────────── */}
+      <section className="border-t border-border py-16">
+        <div className="section-shell">
+          <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
+            <div>
+              <p className="eyebrow">Knowledge Base</p>
+              <h2 className="section-title mt-2">Related format & media guides</h2>
+            </div>
+            <Link
+              href="/guides"
+              className="text-xs font-semibold text-primary hover:underline underline-offset-4"
+            >
+              Browse all 10 guides →
+            </Link>
+          </div>
+
+          <div className="mt-8 grid gap-4 sm:grid-cols-3">
+            <Link
+              href="/guides/video-resolution-guide-720p-1080p-4k"
+              className="panel group p-4 transition-all hover:border-primary/40 hover:shadow-soft"
+            >
+              <span className="font-mono text-[0.7rem] uppercase text-primary font-semibold">Resolution Guide</span>
+              <h3 className="mt-2 text-xs font-bold text-foreground transition-colors group-hover:text-primary">
+                720p, 1080p, and 4K Explained
+              </h3>
+              <p className="mt-1 text-[0.75rem] text-muted-foreground line-clamp-2">
+                Learn how pixel dimensions and bitrates impact stream quality and storage size.
+              </p>
+            </Link>
+
+            <Link
+              href="/guides/mp4-vs-webm-video-format-comparison"
+              className="panel group p-4 transition-all hover:border-primary/40 hover:shadow-soft"
+            >
+              <span className="font-mono text-[0.7rem] uppercase text-primary font-semibold">Container Formats</span>
+              <h3 className="mt-2 text-xs font-bold text-foreground transition-colors group-hover:text-primary">
+                MP4 vs WebM Comparison
+              </h3>
+              <p className="mt-1 text-[0.75rem] text-muted-foreground line-clamp-2">
+                Why standard MP4 offers the broadest hardware acceleration and player compatibility.
+              </p>
+            </Link>
+
+            <Link
+              href="/guides/audio-bitrates-explained-128-192-320-kbps"
+              className="panel group p-4 transition-all hover:border-primary/40 hover:shadow-soft"
+            >
+              <span className="font-mono text-[0.7rem] uppercase text-primary font-semibold">Audio Quality</span>
+              <h3 className="mt-2 text-xs font-bold text-foreground transition-colors group-hover:text-primary">
+                Audio Bitrates: 128 vs 320 kbps
+              </h3>
+              <p className="mt-1 text-[0.75rem] text-muted-foreground line-clamp-2">
+                Understanding psychoacoustic masking, MP3 vs AAC, and why upscaling doesn&apos;t add fidelity.
+              </p>
+            </Link>
+          </div>
+        </div>
+      </section>
+
       <CTASection />
     </>
   );

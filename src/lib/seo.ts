@@ -1,12 +1,17 @@
 import type { Metadata } from "next";
 
-const rawSiteUrl = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/+$/, "") || "http://localhost:3000";
+const defaultProductionUrl = "https://mediadocks.online";
+const envAppUrl = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/+$/, "");
+const rawSiteUrl =
+  envAppUrl && !/localhost|127\.0\.0\.1/.test(envAppUrl)
+    ? envAppUrl
+    : process.env.NODE_ENV === "production"
+    ? defaultProductionUrl
+    : envAppUrl || "http://localhost:3000";
 
 /**
  * Every canonical link, OpenGraph URL, sitemap entry and JSON-LD @id is built
- * from this value. If it is still localhost in a production build, the whole site
- * would tell Google that its canonical home is a machine nobody can reach, which
- * is severe enough to warrant shouting about at build time.
+ * from this value.
  */
 if (process.env.NODE_ENV === "production" && /localhost|127\.0\.0\.1/.test(rawSiteUrl)) {
   console.warn(
@@ -14,7 +19,7 @@ if (process.env.NODE_ENV === "production" && /localhost|127\.0\.0\.1/.test(rawSi
       `(currently "${rawSiteUrl}").\n` +
       "       Canonical URLs, OpenGraph tags, the sitemap and structured data will\n" +
       "       all point at localhost, which stops the site being indexed correctly.\n" +
-      "       Set NEXT_PUBLIC_APP_URL=https://your-domain.com before deploying.\n",
+      "       Set NEXT_PUBLIC_APP_URL=https://mediadocks.online before deploying.\n",
   );
 }
 
@@ -23,7 +28,7 @@ export const SITE = {
   url: rawSiteUrl,
   tagline: "Paste a link. Choose the quality.",
   description:
-    "Free video downloader for public links. Paste a YouTube, Instagram, X, Pinterest or Facebook URL and save it as MP4 from 144p to 4K, or as MP3 audio.",
+    "Free universal media utility for public links. Extract high-resolution MP4 video from 144p to 4K, convert to MP3 audio, transcribe speech with AI, generate subtitles, and summarize recordings.",
   locale: "en_US",
   twitter: "@mediadocks",
 } as const;
@@ -222,3 +227,76 @@ export function breadcrumbJsonLd(trail: ReadonlyArray<{ name: string; path: stri
     })),
   };
 }
+
+export function articleJsonLd({
+  title,
+  description,
+  path,
+  datePublished,
+  dateModified,
+  author = SITE.name,
+}: {
+  title: string;
+  description: string;
+  path: string;
+  datePublished: string;
+  dateModified?: string;
+  author?: string;
+}): JsonLdObject {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: title,
+    description,
+    url: absoluteUrl(path),
+    datePublished,
+    dateModified: dateModified || datePublished,
+    author: {
+      "@type": "Organization",
+      name: author,
+      url: absoluteUrl("/about"),
+    },
+    publisher: {
+      "@type": "Organization",
+      name: SITE.name,
+      url: absoluteUrl("/"),
+    },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": absoluteUrl(path),
+    },
+  };
+}
+
+export function aboutPageJsonLd(): JsonLdObject {
+  return {
+    "@context": "https://schema.org",
+    "@type": "AboutPage",
+    name: "About MediaDocks",
+    description:
+      "MediaDocks is a privacy-first universal media utility engineered for high-resolution video extraction, audio conversion, and AI speech-to-text processing.",
+    url: absoluteUrl("/about"),
+    publisher: {
+      "@type": "Organization",
+      name: SITE.name,
+      url: absoluteUrl("/"),
+    },
+  };
+}
+
+export function contactPageJsonLd(): JsonLdObject {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ContactPage",
+    name: "Contact MediaDocks Support",
+    description:
+      "Get in touch with the MediaDocks team for technical support, feedback, bug reports, and DMCA inquiries.",
+    url: absoluteUrl("/contact"),
+    publisher: {
+      "@type": "Organization",
+      name: SITE.name,
+      url: absoluteUrl("/"),
+    },
+  };
+}
+

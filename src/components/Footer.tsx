@@ -1,9 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { Github, Linkedin, ShieldAlert } from "lucide-react";
+import { ShieldAlert, BookOpen, Globe } from "lucide-react";
 import { Logo } from "@/components/Logo";
-import { PlatformIcon } from "@/components/PlatformIcon";
 import { PLATFORM_PAGES } from "@/lib/platform-pages";
 import { scrollToDownloader } from "@/lib/scroll";
 
@@ -11,65 +10,68 @@ export function Footer() {
   return (
     <footer className="border-t border-border bg-surface/50">
       <div className="section-shell grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-5">
-        <div className="lg:col-span-2">
+        {/* Column 1: Branding & Philosophy */}
+        <div className="lg:col-span-1">
           <Logo height={38} />
-          <p className="mt-4 max-w-xs text-sm text-muted-foreground">
-            Precision media downloader. Extract high-resolution video and audio from public links.
+          <p className="mt-4 max-w-xs text-xs sm:text-sm text-muted-foreground leading-relaxed">
+            Privacy-first universal media utility. Extract high-resolution video and audio from
+            public links, transcribe speech with AI, and generate subtitles.
           </p>
-          <div className="mt-5 flex items-center gap-2">
+          <div className="mt-5 space-y-1 text-xs text-muted-foreground">
+            <p className="font-semibold text-foreground">Developed & Operated by:</p>
             <a
-              href="https://x.com"
+              href="https://www.sapdigitechsolutions.in"
               target="_blank"
-              rel="noreferrer"
-              aria-label="MediaDocks on X"
-              className="grid h-10 w-10 place-items-center rounded-xl border border-border text-muted-foreground transition-colors hover:bg-surface-strong hover:text-foreground"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-primary hover:underline underline-offset-4"
             >
-              <PlatformIcon platform="x" />
-            </a>
-            <a
-              href="https://github.com"
-              target="_blank"
-              rel="noreferrer"
-              aria-label="MediaDocks on GitHub"
-              className="grid h-10 w-10 place-items-center rounded-xl border border-border text-muted-foreground transition-colors hover:bg-surface-strong hover:text-foreground"
-            >
-              <Github className="h-4 w-4" />
-            </a>
-            <a
-              href="https://linkedin.com"
-              target="_blank"
-              rel="noreferrer"
-              aria-label="MediaDocks on LinkedIn"
-              className="grid h-10 w-10 place-items-center rounded-xl border border-border text-muted-foreground transition-colors hover:bg-surface-strong hover:text-foreground"
-            >
-              <Linkedin className="h-4 w-4" />
+              <Globe className="h-3.5 w-3.5" />
+              <span>SAP DigiTech Solutions</span>
             </a>
           </div>
         </div>
 
+        {/* Column 2: Tools & AI Suite */}
         <div>
-          <h2 className="font-display text-sm font-semibold text-foreground">Product</h2>
-          <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
+          <h2 className="font-display text-sm font-semibold text-foreground">Tools & AI</h2>
+          <ul className="mt-4 space-y-2.5 text-xs sm:text-sm text-muted-foreground">
             <li>
               <button
                 onClick={scrollToDownloader}
-                className="transition-colors hover:text-foreground"
+                className="transition-colors hover:text-foreground text-left"
               >
-                Downloader
+                Universal Downloader
               </button>
             </li>
             <li>
-              <Link href="/video-to-text" className="transition-colors hover:text-foreground font-medium text-primary">
+              <Link
+                href="/youtube-to-mp3"
+                className="transition-colors hover:text-foreground font-medium text-foreground"
+              >
+                YouTube to MP3
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/video-to-text"
+                className="transition-colors hover:text-foreground font-medium text-primary"
+              >
                 Video to Text (AI)
               </Link>
             </li>
             <li>
-              <Link href="/audio-to-text" className="transition-colors hover:text-foreground font-medium text-primary">
+              <Link
+                href="/audio-to-text"
+                className="transition-colors hover:text-foreground font-medium text-primary"
+              >
                 Audio to Text (AI)
               </Link>
             </li>
             <li>
-              <Link href="/audio-summarizer" className="transition-colors hover:text-foreground font-medium text-primary">
+              <Link
+                href="/audio-summarizer"
+                className="transition-colors hover:text-foreground font-medium text-primary"
+              >
                 Audio Summarizer (AI)
               </Link>
             </li>
@@ -78,81 +80,108 @@ export function Footer() {
                 href="/add-subtitles-to-video"
                 className="transition-colors hover:text-foreground font-medium text-primary"
               >
-                Add Subtitles to Video (AI)
+                Subtitle Studio (AI)
               </Link>
             </li>
+          </ul>
+        </div>
+
+        {/* Column 3: Platform Portals */}
+        <div>
+          <h2 className="font-display text-sm font-semibold text-foreground">Platforms</h2>
+          <ul className="mt-4 space-y-2.5 text-xs sm:text-sm text-muted-foreground">
+            {PLATFORM_PAGES.map((page) => (
+              <li key={page.slug}>
+                <Link href={page.slug} className="transition-colors hover:text-foreground">
+                  {page.navLabel} Downloader
+                </Link>
+              </li>
+            ))}
             <li>
               <Link href="/how-it-works" className="transition-colors hover:text-foreground">
                 How it works
               </Link>
             </li>
             <li>
-              <Link href="/#capabilities" className="transition-colors hover:text-foreground">
-                Supported platforms
-              </Link>
-            </li>
-            <li>
-              <Link href="/#how-to-copy-links" className="transition-colors hover:text-foreground">
-                Where to copy a link
-              </Link>
-            </li>
-            <li>
-              <Link href="/#troubleshooting" className="transition-colors hover:text-foreground">
-                Troubleshooting
-              </Link>
-            </li>
-            <li>
               <Link href="/faq" className="transition-colors hover:text-foreground">
-                FAQ
+                FAQ & Troubleshooting
               </Link>
             </li>
           </ul>
         </div>
 
+        {/* Column 4: Guides & Knowledge Center */}
         <div>
-          <h2 className="font-display text-sm font-semibold text-foreground">Downloaders & AI</h2>
-          <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
+          <h2 className="font-display text-sm font-semibold text-foreground flex items-center gap-1.5">
+            <BookOpen className="h-4 w-4 text-primary" />
+            <span>Resources</span>
+          </h2>
+          <ul className="mt-4 space-y-2.5 text-xs sm:text-sm text-muted-foreground">
             <li>
-              <Link href="/video-to-text" className="transition-colors hover:text-foreground font-medium text-primary">
-                Transcribe Video to Text
-              </Link>
-            </li>
-            <li>
-              <Link href="/audio-to-text" className="transition-colors hover:text-foreground font-medium text-primary">
-                Transcribe Audio to Text
-              </Link>
-            </li>
-            <li>
-              <Link href="/audio-summarizer" className="transition-colors hover:text-foreground font-medium text-primary">
-                Summarize Audio with AI
+              <Link
+                href="/guides"
+                className="font-medium text-primary hover:underline underline-offset-4"
+              >
+                Browse All Guides →
               </Link>
             </li>
             <li>
               <Link
-                href="/add-subtitles-to-video"
-                className="transition-colors hover:text-foreground font-medium text-primary"
+                href="/guides/mp4-vs-webm-video-format-comparison"
+                className="transition-colors hover:text-foreground"
               >
-                Add Subtitles to Video
+                MP4 vs WebM Comparison
               </Link>
             </li>
-            {PLATFORM_PAGES.map((page) => (
-              <li key={page.slug}>
-                <Link href={page.slug} className="transition-colors hover:text-foreground">
-                  {page.navLabel} downloader
-                </Link>
-              </li>
-            ))}
             <li>
-              <Link href="/youtube-to-mp3" className="transition-colors hover:text-foreground">
-                YouTube to MP3
+              <Link
+                href="/guides/video-resolution-guide-720p-1080p-4k"
+                className="transition-colors hover:text-foreground"
+              >
+                720p vs 1080p vs 4K
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/guides/understanding-video-codecs-h264-hevc-vp9-av1"
+                className="transition-colors hover:text-foreground"
+              >
+                Video Codecs (H.264/VP9/AV1)
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/guides/audio-bitrates-explained-128-192-320-kbps"
+                className="transition-colors hover:text-foreground"
+              >
+                Audio Bitrate (128 vs 320 kbps)
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/guides/complete-guide-to-srt-vtt-subtitles"
+                className="transition-colors hover:text-foreground"
+              >
+                SRT vs WebVTT Subtitles
               </Link>
             </li>
           </ul>
         </div>
 
+        {/* Column 5: Company & Legal */}
         <div>
-          <h2 className="font-display text-sm font-semibold text-foreground">Legal & Safety</h2>
-          <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
+          <h2 className="font-display text-sm font-semibold text-foreground">Company & Legal</h2>
+          <ul className="mt-4 space-y-2.5 text-xs sm:text-sm text-muted-foreground">
+            <li>
+              <Link href="/about" className="transition-colors hover:text-foreground font-medium text-foreground">
+                About MediaDocks
+              </Link>
+            </li>
+            <li>
+              <Link href="/contact" className="transition-colors hover:text-foreground font-medium text-foreground">
+                Contact Support
+              </Link>
+            </li>
             <li>
               <Link href="/privacy" className="transition-colors hover:text-foreground">
                 Privacy Policy
@@ -164,8 +193,8 @@ export function Footer() {
               </Link>
             </li>
             <li>
-              <Link href="/terms#dmca-disclaimer" className="transition-colors hover:text-foreground">
-                DMCA & Disclaimer
+              <Link href="/copyright" className="transition-colors hover:text-foreground">
+                DMCA & Copyright Policy
               </Link>
             </li>
           </ul>
@@ -189,7 +218,7 @@ export function Footer() {
                   <strong>We do not host, store, or archive media files on our servers.</strong> All content belongs exclusively to its original owners and content creators. MediaDocks serves strictly as an ephemeral client-side streaming utility for publicly accessible media.
                 </p>
                 <p>
-                  Please do not use this service to download copyrighted, proprietary, or restricted material without explicit authorization from the copyright holder. We strictly comply with <strong>DMCA policies</strong> and international copyright standards, and respond promptly to all valid infringement notices.
+                  Please do not use this service to download copyrighted, proprietary, or restricted material without explicit authorization from the copyright holder. We strictly comply with <strong>DMCA policies</strong> and international copyright standards, and respond promptly to all valid infringement notices submitted to <a href="mailto:sapdigitechsolutions@gmail.com" className="text-primary hover:underline">sapdigitechsolutions@gmail.com</a>.
                 </p>
               </div>
             </div>
@@ -199,20 +228,33 @@ export function Footer() {
 
       {/* Copyright & Credit Bar */}
       <div className="border-t border-border bg-surface/40">
-        <div className="section-shell flex flex-col items-center justify-center gap-1.5 py-6 text-center text-xs text-muted-foreground sm:flex-row sm:gap-2">
+        <div className="section-shell flex flex-col items-center justify-between gap-3 py-6 text-center text-xs text-muted-foreground sm:flex-row sm:text-left">
           <p>© {new Date().getFullYear()} MediaDocks. All rights reserved.</p>
-          <span className="hidden sm:inline text-border" aria-hidden="true">•</span>
-          <p>
-            Copyright and product of{" "}
-            <a
-              href="https://www.sapdigitechsolutions.in"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-medium text-foreground underline underline-offset-4 decoration-border transition-colors hover:text-primary hover:decoration-primary"
-            >
-              SAP DigiTech Solutions
-            </a>
-          </p>
+          <div className="flex items-center gap-4">
+            <Link href="/about" className="hover:text-foreground transition-colors">
+              About
+            </Link>
+            <span className="text-border">•</span>
+            <Link href="/contact" className="hover:text-foreground transition-colors">
+              Contact
+            </Link>
+            <span className="text-border">•</span>
+            <Link href="/guides" className="hover:text-foreground transition-colors">
+              Guides
+            </Link>
+            <span className="text-border">•</span>
+            <Link href="/privacy" className="hover:text-foreground transition-colors">
+              Privacy
+            </Link>
+            <span className="text-border">•</span>
+            <Link href="/terms" className="hover:text-foreground transition-colors">
+              Terms
+            </Link>
+            <span className="text-border">•</span>
+            <Link href="/copyright" className="hover:text-foreground transition-colors">
+              DMCA
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

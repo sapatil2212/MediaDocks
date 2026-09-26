@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import {
-  Star,
   ShieldCheck,
   Zap,
   Globe2,
@@ -144,51 +143,22 @@ export function TranscribeSections() {
     },
   ];
 
-  const reviews = [
+  const accuracyTips = [
     {
-      name: "Nathy Esquivel",
-      rating: 5,
-      text: "I like all the possibilities you offer as editing while listening, having good results of transcriptions, having the checking and speaker boxes are also great.",
+      title: "Microphone Proximity",
+      desc: "Keeping the microphone within 6 inches of the primary speaker dramatically reduces room reverberation and echo, yielding over 95% word accuracy.",
     },
     {
-      name: "Steven Norris",
-      rating: 5,
-      text: "Perfect transcription and extremely fast turnaround time. The SRT export synced up with our video editing software seamlessly.",
+      title: "Minimize Background Noise",
+      desc: "Avoid background music, loud HVAC systems, or street noise during recording to prevent the acoustic model from mistaking ambient artifacts for syllables.",
     },
     {
-      name: "Mark Leeds",
-      rating: 5,
-      text: "The machine transcription is excellent and editing is well implemented. Exporting directly to VTT saved our team hours of captioning.",
+      title: "Natural Spoken Cadence",
+      desc: "Speakers do not need to pause artificially. The neural punctuation layer infers commas, periods, and sentence boundaries directly from natural pitch inflections.",
     },
     {
-      name: "Ahmad Bin Ariffin",
-      rating: 5,
-      text: "The transcription is really accurate! Handled fast speech and regional accents without missing key terms.",
-    },
-    {
-      name: "Isaura Ordóñez",
-      rating: 5,
-      text: "This tool is amazing! Very accurate. It makes most of the work by itself without any complex software installation.",
-    },
-    {
-      name: "Chris Acebu",
-      rating: 5,
-      text: "Overall great software for transcribing and adding subtitles to videos! I highly recommend it to content creators and digital marketers.",
-    },
-    {
-      name: "Margot L.",
-      rating: 5,
-      text: "Great platform, easy to use. Saves acres of time. Does all it says on the packet and exports clean TXT & SRT.",
-    },
-    {
-      name: "EPD Studio",
-      rating: 5,
-      text: "Nice site. Easy to navigate. Accurate transcription, even with multiple accents. Was able to add subtitles to video in minutes.",
-    },
-    {
-      name: "Judy V.",
-      rating: 5,
-      text: "Automated transcription software has been a lifesaver when creating content from interviews. It does everything I need quickly.",
+      title: "Clean Plain-Text Export",
+      desc: "Export your finished transcript directly as a lightweight UTF-8 TXT file without timestamp clutter, ready to paste into Google Docs, Word, or an article editor.",
     },
   ];
 
@@ -207,34 +177,26 @@ export function TranscribeSections() {
   ];
 
   const relatedTools = [
-    "AI Transcription",
-    "Translate audio",
-    "Translate video",
-    "Audio to text",
-    "Video summarizer",
-    "AI meeting notetaker",
-    "Subtitle generator",
-    "Voice to text",
-    "SRT generator",
-    "VTT generator",
+    { name: "Audio to Text Transcriber", path: "/audio-to-text" },
+    { name: "AI Audio Summarizer", path: "/audio-summarizer" },
+    { name: "Subtitle & Caption Studio", path: "/add-subtitles-to-video" },
+    { name: "YouTube to MP3 Converter", path: "/youtube-to-mp3" },
+    { name: "Precision Video Downloader", path: "/" },
+    { name: "Resource Center & Guides", path: "/guides" },
   ];
 
   return (
     <div className="mt-20 space-y-28">
-      {/* ── Trust & Proof Bar ────────────────────────────────────────────── */}
+      {/* ── Technical Specifications Bar ─────────────────────────────────── */}
       <Reveal>
         <div className="section-shell">
           <div className="grid grid-cols-2 gap-6 rounded-2xl border border-border/80 bg-surface/60 p-6 text-center shadow-soft backdrop-blur-md md:grid-cols-4">
             <div className="flex flex-col items-center justify-center p-2">
-              <div className="flex items-center gap-1 text-amber-500">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="h-4 w-4 fill-amber-500" />
-                ))}
+              <div className="text-base font-bold text-foreground sm:text-xl text-primary">
+                Multi-Format
               </div>
-              <div className="mt-2 text-base font-bold text-foreground sm:text-lg">
-                Rated 4.8 / 5
-              </div>
-              <div className="text-xs text-muted-foreground">Over 15,000+ reviews</div>
+              <div className="mt-1 text-xs text-muted-foreground">MP4, MOV, WebM, MKV & Links</div>
+              <div className="text-[11px] text-primary font-medium">Automatic speech extraction</div>
             </div>
 
             <div className="flex flex-col items-center justify-center p-2 border-l border-border/50">
@@ -242,23 +204,23 @@ export function TranscribeSections() {
                 Free to Start
               </div>
               <div className="mt-1 text-xs text-muted-foreground">No credit card or login</div>
-              <div className="text-[11px] text-emerald-500 font-medium">Instant access</div>
+              <div className="text-[11px] text-emerald-500 font-medium">Instant browser access</div>
             </div>
 
             <div className="flex flex-col items-center justify-center p-2 border-l border-border/50">
               <div className="text-base font-bold text-foreground sm:text-xl text-primary">
                 Automatic Language
               </div>
-              <div className="mt-1 text-xs text-muted-foreground">Global speech detection</div>
+              <div className="mt-1 text-xs text-muted-foreground">Neural speech detection</div>
               <div className="text-[11px] text-muted-foreground">Accents & dialects</div>
             </div>
 
             <div className="flex flex-col items-center justify-center p-2 border-l border-border/50">
               <div className="text-base font-bold text-foreground sm:text-xl text-foreground">
-                6M+ Users
+                Ephemeral Privacy
               </div>
-              <div className="mt-1 text-xs text-muted-foreground">Trusted by 41,000+ teams</div>
-              <div className="text-[11px] text-muted-foreground">Worldwide adoption</div>
+              <div className="mt-1 text-xs text-muted-foreground">Zero disk retention</div>
+              <div className="text-[11px] text-muted-foreground">Deleted after request</div>
             </div>
           </div>
         </div>
@@ -540,36 +502,33 @@ export function TranscribeSections() {
         </Reveal>
       </section>
 
-      {/* ── Customer Reviews & Testimonials ──────────────────────────────── */}
+      {/* ── Best Practices for Audio & Transcription Quality ────────────── */}
       <section className="section-shell">
         <Reveal>
           <div className="text-center">
-            <div className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-500">
-              <Star className="h-3.5 w-3.5 fill-emerald-500" />
-              <span>Rated 4.7 / 5 on Trustpilot</span>
+            <div className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+              <Sparkles className="h-3.5 w-3.5" />
+              <span>Optimizing Speech Recognition</span>
             </div>
             <h2 className="mt-3 font-display text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-              Loved by creators, teams & researchers
+              Best practices for high transcription accuracy
             </h2>
+            <p className="mt-2 text-xs text-muted-foreground sm:text-sm max-w-xl mx-auto">
+              Follow these acoustic guidelines to achieve over 95% word accuracy without editing.
+            </p>
           </div>
         </Reveal>
 
-        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {reviews.map((rev, idx) => (
+        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {accuracyTips.map((tip, idx) => (
             <Reveal key={idx} delay={idx * 50}>
-              <div className="flex h-full flex-col justify-between rounded-2xl border border-border/80 bg-surface/60 p-6 shadow-soft transition-all hover:border-primary/40 hover:bg-surface/90">
+              <div className="panel flex h-full flex-col justify-between p-5">
                 <div>
-                  <div className="flex items-center gap-1 text-amber-500">
-                    {[...Array(rev.rating)].map((_, i) => (
-                      <Star key={i} className="h-3.5 w-3.5 fill-amber-500" />
-                    ))}
-                  </div>
-                  <p className="mt-3 text-xs sm:text-sm text-foreground/90 italic leading-relaxed">
-                    &ldquo;{rev.text}&rdquo;
+                  <div className="font-mono text-xs font-bold text-primary">0{idx + 1}</div>
+                  <h3 className="mt-2 text-sm font-bold text-foreground">{tip.title}</h3>
+                  <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+                    {tip.desc}
                   </p>
-                </div>
-                <div className="mt-5 border-t border-border/50 pt-3 text-xs font-semibold text-foreground">
-                  — {rev.name}
                 </div>
               </div>
             </Reveal>
@@ -600,12 +559,13 @@ export function TranscribeSections() {
             </h3>
             <div className="mt-4 flex flex-wrap gap-2">
               {relatedTools.map((tool) => (
-                <span
-                  key={tool}
-                  className="rounded-xl border border-border/80 bg-surface px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:text-primary hover:border-primary/40"
+                <Link
+                  key={tool.name}
+                  href={tool.path}
+                  className="rounded-xl border border-border/80 bg-surface px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:text-primary hover:border-primary/40 font-medium"
                 >
-                  {tool}
-                </span>
+                  {tool.name} →
+                </Link>
               ))}
             </div>
           </div>
