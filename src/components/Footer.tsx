@@ -84,7 +84,12 @@ export function Footer() {
               </Link>
             </li>
             <li className="pt-2 border-t border-border/40 font-semibold text-foreground text-xs uppercase tracking-wider">
-              Converters
+              Converters & Tools
+            </li>
+            <li>
+              <Link href="/url-shortener" className="transition-colors hover:text-foreground font-medium text-foreground/90">
+                URL Shortener
+              </Link>
             </li>
             <li>
               <Link href="/image-converter" className="transition-colors hover:text-foreground">

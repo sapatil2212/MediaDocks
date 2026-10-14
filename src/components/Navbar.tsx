@@ -22,6 +22,7 @@ import {
   QrCode,
   FileCode2,
   Binary,
+  Link2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/Logo";
@@ -81,6 +82,13 @@ const TOOL_OPTIONS: Array<{
 ];
 
 const CONVERTER_OPTIONS = [
+  {
+    name: "URL Shortener",
+    slug: "/url-shortener",
+    tagline: "Custom alias, QR code, analytics & UTM builder",
+    icon: Link2,
+    badge: "New",
+  },
   {
     name: "Image Converter",
     slug: "/image-converter",
