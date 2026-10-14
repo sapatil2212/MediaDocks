@@ -25,6 +25,7 @@ import { CTASection } from "@/components/sections/CTASection";
 import {
   getAllGuideSlugs,
   getGuideArticle,
+  getGuideReadTime,
   GUIDE_ARTICLES,
   type GuideArticle,
 } from "@/lib/guides-data";
@@ -143,7 +144,7 @@ export default async function GuideArticlePage({ params }: GuidePageProps) {
             </span>
             <span className="flex items-center gap-1">
               <Clock className="h-3.5 w-3.5 text-muted-foreground" />
-              {article.readTime}
+              {getGuideReadTime(article)}
             </span>
             <span className="text-border">•</span>
             <span className="flex items-center gap-1">

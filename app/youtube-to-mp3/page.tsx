@@ -195,7 +195,7 @@ export default function YouTubeToMp3Page() {
             </Reveal>
 
             {/* Centered Command Downloader Box */}
-            <Reveal delay={180} className="mx-auto mt-8 max-w-2xl text-left">
+            <Reveal delay={180} className="mx-auto mt-8 max-w-4xl text-left">
               <div className="relative rounded-2xl border border-border/80 bg-surface/80 p-2 shadow-lift backdrop-blur-2xl transition-all duration-300 hover:border-border hover:shadow-glow sm:p-3">
                 <Downloader placeholder="Paste a YouTube, Shorts or youtu.be link..." />
               </div>
@@ -203,7 +203,7 @@ export default function YouTubeToMp3Page() {
 
             {/* Intro Description */}
             <Reveal delay={210}>
-              <p className="mx-auto mt-4 max-w-2xl text-sm text-muted-foreground sm:text-base">
+              <p className="mx-auto mt-4 max-w-3xl text-sm text-muted-foreground sm:text-base">
                 MediaDocks pulls the soundtrack out of any public YouTube video: MP3 at 128, 192 or
                 320 kbps, or the original M4A track copied without a second encode. Because no video
                 stream is fetched, audio downloads finish in a fraction of the time.
@@ -211,7 +211,7 @@ export default function YouTubeToMp3Page() {
             </Reveal>
 
             {/* Centered Where to find notice Card */}
-            <Reveal delay={240} className="mx-auto mt-5 max-w-2xl text-left">
+            <Reveal delay={240} className="mx-auto mt-5 max-w-4xl text-left">
               <div className="flex items-start gap-3 rounded-2xl border border-primary/30 bg-primary/5 p-3.5 text-xs text-foreground shadow-soft backdrop-blur-md sm:text-sm">
                 <Info className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
                 <p className="min-w-0">

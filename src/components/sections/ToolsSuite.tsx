@@ -11,29 +11,15 @@ import {
 } from "lucide-react";
 import { Reveal } from "@/components/Reveal";
 
+/**
+ * Ordered by what the product is actually for.
+ *
+ * The AI tools come first: they work on recordings you already own, they
+ * produce something that did not exist before, and they are what distinguishes
+ * this from the dozens of interchangeable link scrapers. The link-based
+ * converters follow, still fully supported, just not the lead.
+ */
 const TOOLS = [
-  {
-    name: "Precision Video Downloader",
-    path: "/",
-    icon: FileVideo2,
-    badge: "Core Utility",
-    description:
-      "Extract public video streams from YouTube, Instagram, X (Twitter), Pinterest, and Facebook at any published rung from 144p to 4K UHD.",
-    useCase: "Video editors and creators archiving high-resolution public footage for offline backup and creative reference.",
-    cta: "Use Downloader",
-    highlight: false,
-  },
-  {
-    name: "YouTube to MP3 & M4A Audio",
-    path: "/youtube-to-mp3",
-    icon: Music2,
-    badge: "Audio Extraction",
-    description:
-      "Extract pristine soundtracks from YouTube without downloading video. Choose original M4A or high-bitrate MP3 capped at the source.",
-    useCase: "Music producers, students, and podcast listeners wanting offline audio files for headphones or car stereos.",
-    cta: "Extract MP3",
-    highlight: false,
-  },
   {
     name: "AI Video to Text Transcriber",
     path: "/video-to-text",
@@ -78,6 +64,28 @@ const TOOLS = [
     cta: "Create Subtitles",
     highlight: false,
   },
+  {
+    name: "YouTube to MP3 & M4A Audio",
+    path: "/youtube-to-mp3",
+    icon: Music2,
+    badge: "Audio Extraction",
+    description:
+      "Extract pristine soundtracks from YouTube without downloading video. Choose original M4A or high-bitrate MP3 capped at the source.",
+    useCase: "Music producers, students, and podcast listeners wanting offline audio files for headphones or car stereos.",
+    cta: "Extract MP3",
+    highlight: false,
+  },
+  {
+    name: "Public Media Downloader",
+    path: "/how-it-works",
+    icon: FileVideo2,
+    badge: "Format Conversion",
+    description:
+      "Resolve a public link from YouTube, Instagram, X, Pinterest or Facebook to the MP4 rungs the source actually publishes, from 144p to 4K UHD.",
+    useCase: "Creators and archivists saving their own uploads, or public-domain and openly licensed footage, for offline work.",
+    cta: "See how it works",
+    highlight: false,
+  },
 ];
 
 export function ToolsSuite() {
@@ -86,11 +94,12 @@ export function ToolsSuite() {
       <div className="section-shell">
         <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
           <Reveal className="max-w-2xl">
-            <p className="eyebrow">Complete Media Suite</p>
-            <h2 className="section-title mt-2">Available MediaDocks utilities</h2>
+            <p className="eyebrow">What you can do here</p>
+            <h2 className="section-title mt-2">Six tools for working with recordings</h2>
             <p className="mt-3 text-muted-foreground">
-              Every tool runs directly in your browser with zero account registration, no client
-              software, and strictly ephemeral data handling.
+              Speech to text, timed captions and summaries for files you already have, plus format
+              conversion for public links. Everything runs in the browser with no account, no
+              installed software, and nothing retained once your result reaches you.
             </p>
           </Reveal>
         </div>

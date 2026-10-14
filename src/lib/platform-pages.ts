@@ -51,6 +51,15 @@ export interface PlatformPage {
   steps: Array<{ title: string; body: string }>;
   faqs: Array<{ q: string; a: string }>;
   related: Platform[];
+  /**
+   * Guides worth reading alongside this platform, chosen for relevance.
+   *
+   * These used to be three cards hardcoded into PlatformLanding, which meant
+   * all five platform pages carried a byte-identical block recommending the
+   * same articles regardless of context. Picking per platform makes the
+   * internal links useful and removes a chunk of duplicated markup.
+   */
+  relatedGuideSlugs: [string, string, string];
 }
 
 const PAGES: Record<Platform, PlatformPage> = {
@@ -169,6 +178,11 @@ const PAGES: Record<Platform, PlatformPage> = {
       },
     ],
     related: ["pinterest", "x", "facebook"],
+    relatedGuideSlugs: [
+      "optimizing-media-for-web-and-social",
+      "how-video-compression-affects-quality",
+      "how-to-extract-audio-from-video-cleanly",
+    ],
   },
 
   pinterest: {
@@ -269,6 +283,11 @@ const PAGES: Record<Platform, PlatformPage> = {
       },
     ],
     related: ["instagram", "x", "facebook"],
+    relatedGuideSlugs: [
+      "optimizing-media-for-web-and-social",
+      "video-resolution-guide-720p-1080p-4k",
+      "how-video-compression-affects-quality",
+    ],
   },
 
   x: {
@@ -370,6 +389,11 @@ const PAGES: Record<Platform, PlatformPage> = {
       },
     ],
     related: ["instagram", "pinterest", "facebook"],
+    relatedGuideSlugs: [
+      "mp4-vs-webm-video-format-comparison",
+      "troubleshooting-common-media-playback-errors",
+      "video-resolution-guide-720p-1080p-4k",
+    ],
   },
 
   facebook: {
@@ -470,6 +494,11 @@ const PAGES: Record<Platform, PlatformPage> = {
       },
     ],
     related: ["instagram", "x", "pinterest"],
+    relatedGuideSlugs: [
+      "how-video-compression-affects-quality",
+      "mp4-vs-webm-video-format-comparison",
+      "troubleshooting-common-media-playback-errors",
+    ],
   },
 
   youtube: {
@@ -576,6 +605,11 @@ const PAGES: Record<Platform, PlatformPage> = {
       },
     ],
     related: ["instagram", "pinterest", "x"],
+    relatedGuideSlugs: [
+      "video-resolution-guide-720p-1080p-4k",
+      "understanding-video-codecs-h264-hevc-vp9-av1",
+      "audio-bitrates-explained-128-192-320-kbps",
+    ],
   },
 };
 

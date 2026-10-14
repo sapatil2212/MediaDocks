@@ -61,7 +61,7 @@ export function ErrorState({ code, onRetry }: { code: ResolveErrorCode; onRetry:
       <Button
         variant="outline"
         onClick={onRetry}
-        className="h-11 shrink-0 rounded-xl px-4 text-sm font-semibold"
+        className="h-11 shrink-0 rounded-[5px] px-4 text-sm font-semibold"
       >
         <RefreshCw className="h-4 w-4" />
         Try again

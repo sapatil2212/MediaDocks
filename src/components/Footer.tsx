@@ -83,6 +83,44 @@ export function Footer() {
                 Subtitle Studio (AI)
               </Link>
             </li>
+            <li className="pt-2 border-t border-border/40 font-semibold text-foreground text-xs uppercase tracking-wider">
+              Converters
+            </li>
+            <li>
+              <Link href="/image-converter" className="transition-colors hover:text-foreground">
+                Image Converter
+              </Link>
+            </li>
+            <li>
+              <Link href="/image-resizer" className="transition-colors hover:text-foreground">
+                Image Resizer
+              </Link>
+            </li>
+            <li>
+              <Link href="/pdf-to-image" className="transition-colors hover:text-foreground">
+                PDF to Image
+              </Link>
+            </li>
+            <li>
+              <Link href="/image-to-pdf" className="transition-colors hover:text-foreground">
+                Image to PDF
+              </Link>
+            </li>
+            <li>
+              <Link href="/qr-code-generator" className="transition-colors hover:text-foreground">
+                QR Code Generator
+              </Link>
+            </li>
+            <li>
+              <Link href="/svg-to-png" className="transition-colors hover:text-foreground">
+                SVG to PNG
+              </Link>
+            </li>
+            <li>
+              <Link href="/base64-image" className="transition-colors hover:text-foreground">
+                Base64 Image Tool
+              </Link>
+            </li>
           </ul>
         </div>
 
@@ -180,6 +218,11 @@ export function Footer() {
             <li>
               <Link href="/contact" className="transition-colors hover:text-foreground font-medium text-foreground">
                 Contact Support
+              </Link>
+            </li>
+            <li>
+              <Link href="/editorial-standards" className="transition-colors hover:text-foreground">
+                Editorial Standards
               </Link>
             </li>
             <li>

@@ -33,7 +33,7 @@ export function RecentDownloads({
             onClear();
             toast.success("Recent list cleared");
           }}
-          className="h-8 rounded-lg px-2 text-xs font-semibold text-muted-foreground hover:text-foreground"
+          className="h-8 rounded-[4px] px-2 text-xs font-semibold text-muted-foreground hover:text-foreground"
         >
           Clear all
         </Button>
@@ -64,7 +64,7 @@ export function RecentDownloads({
                 onRemove(item.id);
                 toast.success("Removed from recent");
               }}
-              className="h-8 w-8 shrink-0 rounded-lg text-muted-foreground hover:text-foreground"
+              className="h-8 w-8 shrink-0 rounded-[4px] text-muted-foreground hover:text-foreground"
             >
               <X className="h-3.5 w-3.5" />
             </Button>

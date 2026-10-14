@@ -132,7 +132,7 @@ export function UrlInput({
                 size="icon"
                 aria-label="Clear the link"
                 onClick={onClear}
-                className="h-9 w-9 shrink-0 rounded-lg text-muted-foreground hover:text-foreground"
+                className="h-9 w-9 shrink-0 rounded-[4px] text-muted-foreground hover:text-foreground"
               >
                 <X className="h-4 w-4" />
               </Button>
@@ -141,7 +141,7 @@ export function UrlInput({
                 type="button"
                 variant="ghost"
                 onClick={onPaste}
-                className="hidden h-9 shrink-0 rounded-lg px-3 text-sm font-semibold text-muted-foreground hover:text-foreground sm:inline-flex"
+                className="hidden h-9 shrink-0 rounded-[4px] px-3 text-sm font-semibold text-muted-foreground hover:text-foreground sm:inline-flex"
               >
                 <ClipboardPaste className="h-4 w-4" />
                 Paste
@@ -154,7 +154,7 @@ export function UrlInput({
               type="button"
               variant="outline"
               onClick={onPaste}
-              className="h-12 flex-1 rounded-xl text-sm font-semibold sm:hidden"
+              className="h-12 flex-1 rounded-[6px] text-sm font-semibold sm:hidden"
             >
               <ClipboardPaste className="h-4 w-4" />
               Paste
@@ -163,7 +163,7 @@ export function UrlInput({
               type="button"
               onClick={onSubmit}
               disabled={loading}
-              className="group h-12 flex-1 rounded-xl px-6 text-sm font-semibold shadow-glow transition-transform hover:-translate-y-0.5 disabled:translate-y-0 sm:flex-none"
+              className="group h-12 flex-1 rounded-[6px] px-6 text-sm font-semibold shadow-none transition-transform hover:-translate-y-0.5 disabled:translate-y-0 sm:flex-none"
             >
               {loading ? (
                 <>

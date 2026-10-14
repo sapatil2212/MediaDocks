@@ -8,6 +8,9 @@ import {
   AlertTriangle,
   CheckCircle,
   HelpCircle,
+  XCircle,
+  Scale,
+  FileWarning,
 } from "lucide-react";
 import { InteractiveBackground } from "@/components/InteractiveBackground";
 import { JsonLd } from "@/components/JsonLd";
@@ -104,6 +107,151 @@ export default function CopyrightPage() {
                     Despite storing zero permanent media files, MediaDocks takes all copyright
                     concerns seriously and maintains a proactive system to block access to specific
                     URLs, channels, or accounts upon receipt of a valid notice.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </Reveal>
+
+          {/* Permitted vs prohibited use — stated plainly rather than implied */}
+          <Reveal delay={30}>
+            <div className="panel space-y-5 p-6 sm:p-8">
+              <div className="flex items-start gap-4">
+                <Scale className="mt-1 h-6 w-6 shrink-0 text-primary" />
+                <div>
+                  <h2 className="text-xl font-bold text-foreground">
+                    What this service may and may not be used for
+                  </h2>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                    The AI transcription, subtitle and summarisation tools operate on files you
+                    supply, and we assume you have the right to process them. The link-based
+                    converters read publicly accessible media, and a file arriving on your device
+                    grants you no rights you did not already hold. The distinction below is the one
+                    that matters.
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid gap-8 md:grid-cols-2">
+                <div>
+                  <h3 className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                    <CheckCircle className="h-4 w-4 text-primary" aria-hidden="true" />
+                    <span>Generally legitimate</span>
+                  </h3>
+                  <ul className="mt-4 space-y-3 text-xs text-muted-foreground sm:text-sm">
+                    {[
+                      "Transcribing or captioning recordings you made or commissioned yourself.",
+                      "Saving your own uploads back from a platform you published them to.",
+                      "Material released under a permissive licence such as Creative Commons, within that licence's terms.",
+                      "Works in the public domain, where copyright has expired or was never asserted.",
+                      "Content whose rightsholder has given you explicit permission.",
+                      "Producing accessibility accommodations — captions, transcripts — where you hold the rights or have authorisation.",
+                    ].map((item) => (
+                      <li key={item} className="flex items-start gap-3">
+                        <span
+                          className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary"
+                          aria-hidden="true"
+                        />
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div>
+                  <h3 className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                    <XCircle className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                    <span>Not permitted</span>
+                  </h3>
+                  <ul className="mt-4 space-y-3 text-xs text-muted-foreground sm:text-sm">
+                    {[
+                      "Republishing, redistributing or monetising someone else's work without authorisation.",
+                      "Re-uploading third-party content to your own channel or feed.",
+                      "Building a derivative library, archive or dataset from material you do not hold rights to.",
+                      "Removing or obscuring attribution, watermarks or credit from a creator's work.",
+                      "Commercial use of third-party media without a licence that permits it.",
+                      "Bulk or automated extraction at scale, which we rate-limit and do not support.",
+                    ].map((item) => (
+                      <li key={item} className="flex items-start gap-3">
+                        <span
+                          className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-muted-foreground/50"
+                          aria-hidden="true"
+                        />
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+
+              <div className="rounded-xl border border-border bg-surface-strong/50 p-4 text-xs leading-relaxed text-muted-foreground sm:text-sm">
+                <span className="font-semibold text-foreground">Where responsibility sits:</span>{" "}
+                MediaDocks is a general-purpose utility and has no way to determine whether you hold
+                rights to a particular file. Deciding whether you may lawfully process, save or
+                reuse something is your judgement and your liability. If you are unsure about a
+                specific item, treat it as restricted and obtain permission.
+              </div>
+            </div>
+          </Reveal>
+
+          {/* Platform terms are a separate obligation from copyright */}
+          <Reveal delay={60}>
+            <div className="panel space-y-4 p-6 sm:p-8">
+              <div className="flex items-start gap-4">
+                <FileWarning className="mt-1 h-6 w-6 shrink-0 text-primary" />
+                <div>
+                  <h2 className="text-xl font-bold text-foreground">
+                    Platform terms of service are a separate obligation
+                  </h2>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                    Copyright is not the only thing governing what you may do with media from a
+                    hosting platform. Most large platforms, YouTube among them, prohibit downloading
+                    their content in their own terms of service, independently of who owns the
+                    copyright in any particular video.
+                  </p>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                    That restriction is a contractual matter between you and the platform, and it
+                    can apply even to material that is public domain or openly licensed, and in some
+                    cases even to your own uploads. Agreeing to a platform&apos;s terms and then
+                    downloading from it is a question of that agreement rather than of copyright
+                    law. You are responsible for knowing which terms you have accepted, and we
+                    encourage you to use a platform&apos;s own official download or export feature
+                    where one is offered.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </Reveal>
+
+          {/* Fair use, honestly framed */}
+          <Reveal delay={90}>
+            <div className="panel space-y-4 p-6 sm:p-8">
+              <div className="flex items-start gap-4">
+                <AlertTriangle className="mt-1 h-6 w-6 shrink-0 text-primary" />
+                <div>
+                  <h2 className="text-xl font-bold text-foreground">
+                    Fair use is narrower than it is usually assumed to be
+                  </h2>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                    Fair use in the United States, and fair dealing in the United Kingdom, Canada,
+                    Australia and elsewhere, can permit limited unlicensed use for purposes such as
+                    criticism, commentary, news reporting, teaching and research. These doctrines are
+                    real and genuinely important.
+                  </p>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                    They are also narrower, more fact-specific and less predictable than internet
+                    convention suggests. Fair use is assessed case by case against statutory factors
+                    including the purpose and character of the use, the nature of the work, how much
+                    was taken, and the effect on the market for the original. Crediting the creator
+                    does not establish it. Neither does adding a disclaimer, keeping a clip under
+                    some supposed duration threshold, or not making money — these are widely
+                    repeated and none of them is a rule. Fair dealing regimes outside the US are
+                    typically more restrictive still, limited to enumerated purposes.
+                  </p>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                    Nothing on this page is legal advice. If your intended use depends on fair use
+                    or fair dealing to be lawful, that is precisely the situation in which
+                    qualified advice for your jurisdiction is worth obtaining.
                   </p>
                 </div>
               </div>
@@ -226,6 +374,21 @@ export default function CopyrightPage() {
                 without authorization. In accordance with applicable law, MediaDocks maintains a
                 strict policy of terminating or blocking access to users, automated systems, or IP
                 ranges that repeatedly attempt to misuse the service for copyright infringement.
+              </p>
+              <p className="text-sm leading-relaxed text-muted-foreground">
+                Several measures support this in the design of the service rather than only in
+                policy. The tool never authenticates, so private, follower-only and paywalled
+                material stays out of reach; it does not bypass age gates, CAPTCHA or DRM; bulk
+                playlist and channel extraction is deliberately unimplemented, since that is the
+                pattern most associated with wholesale republishing; and per-visitor rate limits cap
+                sustained automated use. Where a valid notice identifies specific sources, we block
+                extraction from them.
+              </p>
+              <p className="text-sm leading-relaxed text-muted-foreground">
+                We would rather the scope of this tool be clear than maximise what it appears able
+                to do. Each platform page states which links work and which do not, measured against
+                live public URLs, and the service reports an honest unavailable result instead of
+                attempting to work around a restriction.
               </p>
             </div>
           </Reveal>

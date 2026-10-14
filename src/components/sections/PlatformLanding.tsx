@@ -5,10 +5,10 @@ import { FaqAccordion } from "@/components/FaqAccordion";
 import { InteractiveBackground } from "@/components/InteractiveBackground";
 import { PlatformIcon } from "@/components/PlatformIcon";
 import { Reveal } from "@/components/Reveal";
-import { Troubleshooting } from "@/components/sections/Troubleshooting";
 import { CTASection } from "@/components/sections/CTASection";
 import { getPlatform } from "@/lib/platforms";
 import { getPlatformPage, type PlatformPage } from "@/lib/platform-pages";
+import { getGuideArticle, getGuideReadTime } from "@/lib/guides-data";
 import { cn } from "@/lib/utils";
 
 /**
@@ -69,7 +69,7 @@ export function PlatformLanding({ page }: { page: PlatformPage }) {
             </Reveal>
 
             {/* Centered Command Downloader Box */}
-            <Reveal delay={180} className="mx-auto mt-8 max-w-2xl text-left">
+            <Reveal delay={180} className="mx-auto mt-8 max-w-4xl text-left">
               <div className="relative rounded-2xl border border-border/80 bg-surface/80 p-2 shadow-lift backdrop-blur-2xl transition-all duration-300 hover:border-border hover:shadow-glow sm:p-3">
                 <Downloader placeholder={page.inputPlaceholder} />
               </div>
@@ -77,13 +77,13 @@ export function PlatformLanding({ page }: { page: PlatformPage }) {
 
             {/* Intro Description */}
             <Reveal delay={210}>
-              <p className="mx-auto mt-4 max-w-2xl text-sm text-muted-foreground sm:text-base">
+              <p className="mx-auto mt-4 max-w-3xl text-sm text-muted-foreground sm:text-base">
                 {page.intro}
               </p>
             </Reveal>
 
             {/* Centered Capability Notice Card */}
-            <Reveal delay={240} className="mx-auto mt-5 max-w-2xl text-left">
+            <Reveal delay={240} className="mx-auto mt-5 max-w-4xl text-left">
               <div
                 className={cn(
                   "flex items-start gap-3 rounded-2xl border p-3.5 text-xs sm:text-sm shadow-soft backdrop-blur-md",
@@ -96,6 +96,23 @@ export function PlatformLanding({ page }: { page: PlatformPage }) {
                   <span className="text-muted-foreground">{page.capabilityBody}</span>
                 </p>
               </div>
+            </Reveal>
+
+            {/* Rights posture, stated on the page rather than only in the footer */}
+            <Reveal delay={270} className="mx-auto mt-5 max-w-4xl">
+              <p className="text-[0.7rem] leading-relaxed text-muted-foreground">
+                Public posts only. MediaDocks does not sign in or bypass private accounts, age
+                gates, paywalls or DRM, and bulk channel extraction is not supported. Saving a file
+                grants you no rights you did not already hold — make sure you own the content, hold
+                a licence, or have permission. See our{" "}
+                <Link
+                  href="/copyright"
+                  className="font-medium text-foreground underline-offset-4 hover:underline"
+                >
+                  copyright policy
+                </Link>{" "}
+                for what is and is not permitted.
+              </p>
             </Reveal>
           </div>
         </div>
@@ -251,7 +268,35 @@ export function PlatformLanding({ page }: { page: PlatformPage }) {
         </div>
       </section>
 
-      <Troubleshooting />
+      {/* ── Pointer to the shared diagnostics, rather than a copy of it ─────
+          The full interactive Troubleshooting section used to render here on
+          all five platform pages, plus the home page and /faq — the same 468
+          words on eight URLs. It now lives only on /how-it-works. */}
+      <section className="border-t border-border py-14">
+        <div className="section-shell">
+          <Reveal>
+            <div className="panel flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between">
+              <div className="max-w-xl">
+                <h2 className="text-base font-semibold sm:text-lg">
+                  A {page.navLabel} link not working?
+                </h2>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  The diagnostic lookup covers every error message — expired links, missing
+                  resolutions, login walls, size caps and slow muxing — with the cause and the fix
+                  for each.
+                </p>
+              </div>
+              <Link
+                href="/how-it-works#troubleshooting"
+                className="focus-ring inline-flex shrink-0 items-center gap-2 rounded-xl border border-border bg-surface px-4 py-2.5 text-xs font-semibold transition-all hover:border-primary/40 hover:text-primary"
+              >
+                <span>Open troubleshooting</span>
+                <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />
+              </Link>
+            </div>
+          </Reveal>
+        </div>
+      </section>
 
       {/* ── Related downloaders: internal linking, as rows not cards ─────── */}
       <section className="border-t border-border bg-surface-strong/30 py-20">
@@ -309,49 +354,36 @@ export function PlatformLanding({ page }: { page: PlatformPage }) {
               href="/guides"
               className="text-xs font-semibold text-primary hover:underline underline-offset-4"
             >
-              Browse all 10 guides →
+              Browse all guides →
             </Link>
           </div>
 
           <div className="mt-8 grid gap-4 sm:grid-cols-3">
-            <Link
-              href="/guides/video-resolution-guide-720p-1080p-4k"
-              className="panel group p-4 transition-all hover:border-primary/40 hover:shadow-soft"
-            >
-              <span className="font-mono text-[0.7rem] uppercase text-primary font-semibold">Resolution Guide</span>
-              <h3 className="mt-2 text-xs font-bold text-foreground transition-colors group-hover:text-primary">
-                720p, 1080p, and 4K Explained
-              </h3>
-              <p className="mt-1 text-[0.75rem] text-muted-foreground line-clamp-2">
-                Learn how pixel dimensions and bitrates impact stream quality and storage size.
-              </p>
-            </Link>
+            {page.relatedGuideSlugs.map((slug) => {
+              const guide = getGuideArticle(slug);
+              if (!guide) return null;
 
-            <Link
-              href="/guides/mp4-vs-webm-video-format-comparison"
-              className="panel group p-4 transition-all hover:border-primary/40 hover:shadow-soft"
-            >
-              <span className="font-mono text-[0.7rem] uppercase text-primary font-semibold">Container Formats</span>
-              <h3 className="mt-2 text-xs font-bold text-foreground transition-colors group-hover:text-primary">
-                MP4 vs WebM Comparison
-              </h3>
-              <p className="mt-1 text-[0.75rem] text-muted-foreground line-clamp-2">
-                Why standard MP4 offers the broadest hardware acceleration and player compatibility.
-              </p>
-            </Link>
-
-            <Link
-              href="/guides/audio-bitrates-explained-128-192-320-kbps"
-              className="panel group p-4 transition-all hover:border-primary/40 hover:shadow-soft"
-            >
-              <span className="font-mono text-[0.7rem] uppercase text-primary font-semibold">Audio Quality</span>
-              <h3 className="mt-2 text-xs font-bold text-foreground transition-colors group-hover:text-primary">
-                Audio Bitrates: 128 vs 320 kbps
-              </h3>
-              <p className="mt-1 text-[0.75rem] text-muted-foreground line-clamp-2">
-                Understanding psychoacoustic masking, MP3 vs AAC, and why upscaling doesn&apos;t add fidelity.
-              </p>
-            </Link>
+              return (
+                <Link
+                  key={slug}
+                  href={`/guides/${guide.slug}`}
+                  className="panel group flex flex-col p-4 transition-all hover:border-primary/40 hover:shadow-soft"
+                >
+                  <span className="font-mono text-[0.7rem] font-semibold uppercase text-primary">
+                    {guide.category}
+                  </span>
+                  <h3 className="mt-2 text-xs font-bold text-foreground transition-colors group-hover:text-primary">
+                    {guide.title}
+                  </h3>
+                  <p className="mt-1 line-clamp-2 text-[0.75rem] text-muted-foreground">
+                    {guide.summary}
+                  </p>
+                  <span className="mt-3 font-mono text-[0.7rem] text-muted-foreground">
+                    {getGuideReadTime(guide)}
+                  </span>
+                </Link>
+              );
+            })}
           </div>
         </div>
       </section>

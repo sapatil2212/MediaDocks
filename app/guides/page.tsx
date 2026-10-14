@@ -5,7 +5,7 @@ import { InteractiveBackground } from "@/components/InteractiveBackground";
 import { JsonLd } from "@/components/JsonLd";
 import { Reveal } from "@/components/Reveal";
 import { CTASection } from "@/components/sections/CTASection";
-import { GUIDE_ARTICLES } from "@/lib/guides-data";
+import { GUIDE_ARTICLES, getGuideReadTime } from "@/lib/guides-data";
 import { breadcrumbJsonLd, buildMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = buildMetadata({
@@ -30,6 +30,7 @@ const CATEGORIES = [
   "Audio Processing",
   "Subtitles & Text",
   "Media Optimization",
+  "Workflow & Accessibility",
 ] as const;
 
 export default function GuidesIndexPage() {
@@ -91,7 +92,7 @@ export default function GuidesIndexPage() {
             </div>
             <div className="flex flex-wrap gap-2 text-xs">
               <span className="rounded-lg border border-primary/40 bg-primary/10 px-3 py-1.5 font-semibold text-primary">
-                10 Comprehensive Guides
+                {GUIDE_ARTICLES.length} Comprehensive Guides
               </span>
             </div>
           </div>
@@ -109,7 +110,7 @@ export default function GuidesIndexPage() {
                       </span>
                       <span className="flex items-center gap-1 font-mono text-[0.7rem]">
                         <Clock className="h-3 w-3" />
-                        {article.readTime}
+                        {getGuideReadTime(article)}
                       </span>
                     </div>
 

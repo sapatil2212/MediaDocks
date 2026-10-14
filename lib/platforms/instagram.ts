@@ -4,6 +4,7 @@ import {
   describeImageQuality,
   fetchPublicPage,
   isDownloadableMediaUrl,
+  decodeEmbeddedUrl,
   type PlatformResolver,
 } from "./base";
 import { resolveMediaCandidates } from "./candidates";
@@ -13,21 +14,34 @@ import { extractVideo, videoResolvers } from "./video";
 
 const INSTAGRAM_PATH_RE = /^\/(reel|reels|p|tv)\/([A-Za-z0-9_-]{5,})/;
 
+const INSTAGRAM_BOT_UA =
+  "facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)";
+const INSTAGRAM_FALLBACK_UA = "Twitterbot/1.0";
+
+export interface ExtractedSlideItem {
+  kind: "image" | "video";
+  url: string;
+  width?: number;
+  height?: number;
+  label: string;
+}
+
+export interface ExtractedInstagramPayload {
+  postKind: PostKind;
+  items: ExtractedSlideItem[];
+}
+
 /**
  * Instagram resolver.
  *
- * Video posts go through InstagramVideoResolver, which checks og:video,
- * twitter:player:stream, JSON-LD contentUrl and the embedded JSON state
- * (video_url, video_versions[].url / url_list, playback_url, clips_metadata,
- * carousel_media) plus a raw .mp4 scan before giving up.
- *
- * Measured reality (September 2026): logged-out responses expose none of those.
- * `?__a=1&__d=dis` returns 404 and `api/v1/media/<id>/info/` returns a login
- * wall, so those require credentials and are deliberately not used. A reel
- * therefore resolves with the cover image as a *poster* and
- * `unavailable: VIDEO_MEDIA_UNAVAILABLE` — the cover is never offered as the
- * download. If Instagram publishes a video URL again the extractor picks it up
- * with no code change.
+ * Supports:
+ *   1. Full multi-image & multi-video carousels: extracts each slide at its
+ *      exact, uncropped, original resolution from Instagram's embedded
+ *      `xig_polaris_media` / `ScheduledServerJS` state.
+ *   2. Single photo posts: extracts uncropped full-resolution image instead of
+ *      relying solely on square-cropped OpenGraph thumbnails.
+ *   3. Video / Reels: checks og:video, twitter:player:stream, JSON-LD, and
+ *      video_versions in embedded JSON.
  */
 export class InstagramResolver implements PlatformResolver {
   readonly platform: Platform = "instagram";
@@ -70,7 +84,7 @@ export class InstagramResolver implements PlatformResolver {
     const { title, creator } = readAuthorship(metadata);
     const posterUrl = isDownloadableMediaUrl(metadata.image) ? metadata.image : undefined;
 
-    // ── Try every legitimate public video source ─────────────────────────────
+    // ── Try standard video extraction ────────────────────────────────────────
     const video = await extractVideo(videoResolvers.instagram, {
       url,
       html: page.html,
@@ -84,21 +98,64 @@ export class InstagramResolver implements PlatformResolver {
     if (video.items.length > 0) {
       postKind = "video";
       media = video.items;
-    } else if (postKind === "image" && posterUrl) {
-      // On an image post the published image *is* the requested media.
-      const validated = await resolveMediaCandidates([
-        {
-          id: "ig-image",
-          url: posterUrl,
-          kindHint: "image",
-          source: "og:image",
-          quality: describeImageQuality(posterUrl),
-          ...(metadata.imageWidth ? { width: metadata.imageWidth } : {}),
-          ...(metadata.imageHeight ? { height: metadata.imageHeight } : {}),
-        },
-      ]);
-      media = validated.items.filter((item) => item.kind === "image");
-      report = [...report, ...validated.report];
+    } else {
+      // ── Extract embedded carousel / uncropped media from HTML payload ─────
+      const extracted = extractInstagramMediaFromHtml(page.html);
+
+      if (extracted && extracted.items.length > 1) {
+        // Multi-item carousel: all slides preserved individually in exact format
+        postKind = "carousel";
+        const candidates = extracted.items.map((item, idx) => ({
+          id: `ig-carousel-${idx + 1}`,
+          url: item.url,
+          kindHint: item.kind,
+          source: "carousel_media",
+          quality: item.label,
+          ...(item.width ? { width: item.width } : {}),
+          ...(item.height ? { height: item.height } : {}),
+        }));
+
+        const validated = await resolveMediaCandidates(candidates);
+        media = validated.items;
+        report = [...report, ...validated.report];
+        debugLog("MEDIA", { carousel: true, platform: "instagram", slides: media.length });
+      } else if (extracted && extracted.items.length === 1 && !isReelUrl) {
+        // Single image / video post with uncropped original asset
+        const single = extracted.items[0];
+        const validated = await resolveMediaCandidates([
+          {
+            id: "ig-single",
+            url: single.url,
+            kindHint: single.kind,
+            source: "embedded_state",
+            quality: single.kind === "image" ? describeImageQuality(single.url) : "Original",
+            ...(single.width ? { width: single.width } : {}),
+            ...(single.height ? { height: single.height } : {}),
+          },
+        ]);
+        if (validated.items.length > 0) {
+          media = validated.items;
+          report = [...report, ...validated.report];
+          postKind = single.kind === "video" ? "video" : "image";
+        }
+      }
+
+      // Fall back to single og:image if embedded extraction yielded nothing
+      if (media.length === 0 && posterUrl && postKind === "image") {
+        const validated = await resolveMediaCandidates([
+          {
+            id: "ig-image",
+            url: posterUrl,
+            kindHint: "image",
+            source: "og:image",
+            quality: describeImageQuality(posterUrl),
+            ...(metadata.imageWidth ? { width: metadata.imageWidth } : {}),
+            ...(metadata.imageHeight ? { height: metadata.imageHeight } : {}),
+          },
+        ]);
+        media = validated.items.filter((item) => item.kind === "image");
+        report = [...report, ...validated.report];
+      }
     }
 
     if (media.length === 0 && !posterUrl) {
@@ -157,14 +214,22 @@ export class InstagramResolver implements PlatformResolver {
   }
 
   /**
-   * Reads the canonical post page, falling back to the public embed surface when
-   * that page is unusable.
+   * Reads the canonical post page with social bot headers so Instagram returns
+   * the full SSR payload rather than the blank login wall shell.
    */
   private async readPublicPage(
     url: URL,
     shortcode: string,
   ): Promise<{ html: string; metadata: PublicMetadata } | null> {
-    const page = await fetchPublicPage(url, { label: "instagram:post" });
+    // 1. Fetch with Facebook bot user agent (official Meta preview crawler)
+    let page = await fetchPublicPage(url, {
+      label: "instagram:post",
+      headers: {
+        "User-Agent": INSTAGRAM_BOT_UA,
+        Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.9",
+      },
+    });
 
     if (page.status === 404 || page.status === 410) {
       throw new MediaFlowError(
@@ -173,15 +238,35 @@ export class InstagramResolver implements PlatformResolver {
       );
     }
 
+    // 2. If blocked or empty, try with Twitterbot
+    if (!page.html || page.status === 429 || page.status === 403) {
+      page = await fetchPublicPage(url, {
+        label: "instagram:post:fallback",
+        headers: {
+          "User-Agent": INSTAGRAM_FALLBACK_UA,
+          Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        },
+      });
+    }
+
     if (page.html) {
       const metadata = parsePublicMetadata(page.html);
       debugLog("PARSE", { label: "instagram:post", sources: metadata.sources });
-      return { html: page.html, metadata };
+      // If we found usable metadata or scripts, return it
+      if (!metadata.isEmptyShell || page.html.includes("xig_polaris_media")) {
+        return { html: page.html, metadata };
+      }
     }
 
+    // 3. Fallback to public embed endpoint
     const embed = await fetchPublicPage(
       `https://www.instagram.com/p/${encodeURIComponent(shortcode)}/embed/captioned/`,
-      { label: "instagram:embed" },
+      {
+        label: "instagram:embed",
+        headers: {
+          "User-Agent": INSTAGRAM_BOT_UA,
+        },
+      },
     );
     if (!embed.html) return null;
 
@@ -192,11 +277,170 @@ export class InstagramResolver implements PlatformResolver {
 }
 
 /**
- * Instagram's own parsing strategy. The published tags carry the account and the
- * caption in a fixed shape:
- *   og:title       "<Display Name> on Instagram: \"<caption>\""
- *   og:description "<n> likes, <m> comments - <handle> on <date>: \"<caption>\""
- *   twitter:title  "<Display Name> (@<handle>) • Instagram reel"
+ * Extracts all media items (images and videos) from Instagram's embedded state.
+ *
+ * Prioritizes:
+ *   1. Modern `xig_polaris_media` inside `ScheduledServerJS` scripts
+ *   2. Legacy `edge_sidecar_to_children` GraphQL shapes
+ *   3. Legacy `carousel_media` JSON arrays
+ *   4. Clean uncropped candidate URLs over square cropped (`stp=c...`) versions
+ */
+export function extractInstagramMediaFromHtml(html: string): ExtractedInstagramPayload | null {
+  if (!html) return null;
+
+  const items: ExtractedSlideItem[] = [];
+
+  // Helper to recursively find xig_polaris_media in complex script payloads
+  function findPolarisMedia(obj: unknown): Record<string, any> | null {
+    if (!obj || typeof obj !== "object") return null;
+    const record = obj as Record<string, any>;
+    if (record.xig_polaris_media) return record.xig_polaris_media;
+    if (Array.isArray(obj)) {
+      for (const item of obj) {
+        const found = findPolarisMedia(item);
+        if (found) return found;
+      }
+    } else {
+      for (const val of Object.values(record)) {
+        const found = findPolarisMedia(val);
+        if (found) return found;
+      }
+    }
+    return null;
+  }
+
+  // 1. Scan ScheduledServerJS script blocks for xig_polaris_media
+  const scriptRegex = /<script\b[^>]*>([\s\S]*?)<\/script>/gi;
+  let m: RegExpExecArray | null;
+
+  while ((m = scriptRegex.exec(html)) !== null) {
+    const scriptContent = m[1];
+    if (
+      !scriptContent.includes("xig_polaris_media") &&
+      !scriptContent.includes("PolarisLoggedOutDesktopWWWCarouselMedia") &&
+      !scriptContent.includes("carousel_media")
+    ) {
+      continue;
+    }
+
+    try {
+      const parsed = JSON.parse(scriptContent);
+      const polaris = findPolarisMedia(parsed);
+      const media = polaris?.if_not_gated_logged_out;
+      if (!media) continue;
+
+      if (Array.isArray(media.carousel_media) && media.carousel_media.length > 0) {
+        media.carousel_media.forEach((slide: any, idx: number) => {
+          if (slide.is_video && Array.isArray(slide.video_versions) && slide.video_versions.length > 0) {
+            const bestVideo = slide.video_versions[0];
+            if (bestVideo?.url) {
+              items.push({
+                kind: "video",
+                url: decodeEmbeddedUrl(bestVideo.url),
+                width: bestVideo.width,
+                height: bestVideo.height,
+                label: `Video ${idx + 1}`,
+              });
+            }
+          } else {
+            const bestUrl = pickBestImageCandidate(slide.image_versions2?.candidates);
+            if (bestUrl) {
+              const bestCand = slide.image_versions2?.candidates?.[0];
+              items.push({
+                kind: "image",
+                url: decodeEmbeddedUrl(bestUrl),
+                width: bestCand?.width,
+                height: bestCand?.height,
+                label: `Image ${idx + 1}`,
+              });
+            }
+          }
+        });
+
+        if (items.length > 0) {
+          return { postKind: "carousel", items };
+        }
+      } else if (media.image_versions2?.candidates) {
+        // Single post with uncropped asset
+        const bestUrl = pickBestImageCandidate(media.image_versions2.candidates);
+        if (bestUrl) {
+          const bestCand = media.image_versions2.candidates[0];
+          items.push({
+            kind: "image",
+            url: decodeEmbeddedUrl(bestUrl),
+            width: bestCand?.width,
+            height: bestCand?.height,
+            label: "Image",
+          });
+          return { postKind: "image", items };
+        }
+      }
+    } catch {
+      // not JSON, continue
+    }
+  }
+
+  // 2. Legacy GraphQL edge_sidecar_to_children fallback
+  const sidecarMatch = html.match(/"edge_sidecar_to_children"\s*:\s*\{.*?"edges"\s*:\s*(\[.*?\])\s*\}/s);
+  if (sidecarMatch?.[1]) {
+    let slideIdx = 1;
+    for (const match of sidecarMatch[1].matchAll(/"display_url"\s*:\s*"([^"]+)"/g)) {
+      if (match[1]) {
+        items.push({
+          kind: "image",
+          url: decodeEmbeddedUrl(match[1]),
+          label: `Image ${slideIdx++}`,
+        });
+      }
+    }
+    if (items.length > 0) {
+      return { postKind: "carousel", items };
+    }
+  }
+
+  // 3. Legacy carousel_media regex fallback
+  const carouselMatch = html.match(/"carousel_media"\s*:\s*(\[.*?\])\s*(?:,|\})/s);
+  if (carouselMatch?.[1]) {
+    let slideIdx = 1;
+    for (const match of carouselMatch[1].matchAll(/"url"\s*:\s*"([^"]+)"/g)) {
+      const url = decodeEmbeddedUrl(match[1]);
+      if (isDownloadableMediaUrl(url) && !items.some((it) => it.url === url)) {
+        items.push({
+          kind: "image",
+          url,
+          label: `Image ${slideIdx++}`,
+        });
+      }
+    }
+    if (items.length > 1) {
+      return { postKind: "carousel", items };
+    }
+  }
+
+  return items.length > 0 ? { postKind: items.length > 1 ? "carousel" : "image", items } : null;
+}
+
+/**
+ * Selects the best uncropped image candidate from Instagram's image_versions2 list.
+ * Instagram supplies multiple resolutions. Candidates without `stp=c...` or with
+ * the highest native resolution are prioritized over square-cropped thumbnails.
+ */
+function pickBestImageCandidate(candidates: Array<{ url?: string; width?: number; height?: number }> | undefined): string | null {
+  if (!Array.isArray(candidates) || candidates.length === 0) return null;
+
+  // 1. Look for uncropped candidate (does not have ?stp=c... crop transform)
+  const uncropped = candidates.find((c) => {
+    if (!c?.url) return false;
+    return !/[?&]stp=c\d+/i.test(c.url) && !c.url.includes(".1080a_");
+  });
+  if (uncropped?.url) return uncropped.url;
+
+  // 2. Candidate 0 is usually highest resolution
+  return candidates[0]?.url || null;
+}
+
+/**
+ * Extracts Instagram author and title from OpenGraph & Twitter tags.
  */
 function readAuthorship(metadata: PublicMetadata): { title?: string; creator?: string } {
   const ogTitle = metadata.title;

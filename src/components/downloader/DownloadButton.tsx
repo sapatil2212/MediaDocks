@@ -1,4 +1,4 @@
-import { Check, Download } from "lucide-react";
+import { Check, Download, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
@@ -29,12 +29,12 @@ export function DownloadButton({
       disabled={phase !== "idle"}
       aria-live="polite"
       className={cn(
-        "relative h-11 overflow-hidden rounded-xl px-5 text-sm font-semibold transition-all duration-200",
-        variant === "default" &&
-          "shadow-glow hover:-translate-y-0.5 hover:shadow-lift disabled:translate-y-0",
+        "relative h-[34px] overflow-hidden rounded-[4px] px-3 text-xs font-medium shadow-none transition-colors duration-150",
+        phase === "done" && "bg-primary/90",
         className,
       )}
     >
+      {/* Progress fill overlay */}
       {phase === "downloading" ? (
         <Progress
           value={progress}
@@ -42,18 +42,22 @@ export function DownloadButton({
           className="absolute inset-0 h-full rounded-none bg-primary-foreground/15"
         />
       ) : null}
-      <span className="relative inline-flex items-center gap-2">
+
+      <span className="relative inline-flex items-center gap-1.5">
         {phase === "idle" ? (
           <>
-            <Download className="h-4 w-4" />
+            <Download className="h-3.5 w-3.5" />
             {label}
           </>
         ) : phase === "downloading" ? (
-          <>Downloading… {Math.floor(progress)}%</>
+          <>
+            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            Downloading… {Math.floor(progress)}%
+          </>
         ) : (
           <>
-            <Check className="h-4 w-4" />
-            Downloaded
+            <Check className="h-3.5 w-3.5" />
+            Downloaded ✓
           </>
         )}
       </span>

@@ -26,9 +26,9 @@ if (process.env.NODE_ENV === "production" && /localhost|127\.0\.0\.1/.test(rawSi
 export const SITE = {
   name: "MediaDocks",
   url: rawSiteUrl,
-  tagline: "Paste a link. Choose the quality.",
+  tagline: "Transcribe it. Caption it. Keep it.",
   description:
-    "Free universal media utility for public links. Extract high-resolution MP4 video from 144p to 4K, convert to MP3 audio, transcribe speech with AI, generate subtitles, and summarize recordings.",
+    "Free AI media toolkit: transcribe video and audio to editable text, generate timed SRT and VTT subtitles, summarize long recordings into key points, and convert public media links to MP4 or MP3. No account, and nothing is stored after it reaches you.",
   locale: "en_US",
   twitter: "@mediadocks",
 } as const;
@@ -146,6 +146,23 @@ export function organizationJsonLd(): JsonLdObject {
     name: SITE.name,
     url: absoluteUrl("/"),
     description: SITE.description,
+    // Google's publisher guidance asks for a resolvable logo and at least one
+    // sameAs profile to tie the brand to an entity it already knows about.
+    // Without these the Organization node is an orphan with nothing to verify.
+    logo: {
+      "@type": "ImageObject",
+      url: absoluteUrl("/logo/logo-light.png"),
+      contentUrl: absoluteUrl("/logo/logo-light.png"),
+      caption: `${SITE.name} logo`,
+    },
+    sameAs: [`https://x.com/${SITE.twitter.replace(/^@/, "")}`],
+    contactPoint: {
+      "@type": "ContactPoint",
+      contactType: "customer support",
+      url: absoluteUrl("/contact"),
+      availableLanguage: ["English"],
+    },
+    publishingPrinciples: absoluteUrl("/editorial-standards"),
   };
 }
 
@@ -251,16 +268,20 @@ export function articleJsonLd({
     url: absoluteUrl(path),
     datePublished,
     dateModified: dateModified || datePublished,
+    // Authorship stays an Organization rather than a Person on purpose. These
+    // guides are written and reviewed by the team, and inventing a named author
+    // with a fabricated bio to satisfy an E-E-A-T checklist would be a worse
+    // signal than an honest collective byline. /editorial-standards documents
+    // who writes them and how they are reviewed.
     author: {
       "@type": "Organization",
+      "@id": `${absoluteUrl("/")}#organization`,
       name: author,
-      url: absoluteUrl("/about"),
+      url: absoluteUrl("/editorial-standards"),
     },
-    publisher: {
-      "@type": "Organization",
-      name: SITE.name,
-      url: absoluteUrl("/"),
-    },
+    publisher: { "@id": `${absoluteUrl("/")}#organization` },
+    publishingPrinciples: absoluteUrl("/editorial-standards"),
+    isAccessibleForFree: true,
     mainEntityOfPage: {
       "@type": "WebPage",
       "@id": absoluteUrl(path),

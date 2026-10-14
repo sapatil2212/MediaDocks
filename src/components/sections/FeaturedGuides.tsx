@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, BookOpen, Clock, Tag } from "lucide-react";
 import { Reveal } from "@/components/Reveal";
-import { GUIDE_ARTICLES } from "@/lib/guides-data";
+import { GUIDE_ARTICLES, getGuideReadTime } from "@/lib/guides-data";
 
 export function FeaturedGuides() {
   const featured = GUIDE_ARTICLES.slice(0, 3);
@@ -23,7 +23,7 @@ export function FeaturedGuides() {
               href="/guides"
               className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline underline-offset-4"
             >
-              <span>View all 10 guides</span>
+              <span>View all {GUIDE_ARTICLES.length} guides</span>
               <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           </Reveal>
@@ -41,7 +41,7 @@ export function FeaturedGuides() {
                     </span>
                     <span className="flex items-center gap-1 font-mono text-[0.7rem]">
                       <Clock className="h-3 w-3" />
-                      {article.readTime}
+                      {getGuideReadTime(article)}
                     </span>
                   </div>
 

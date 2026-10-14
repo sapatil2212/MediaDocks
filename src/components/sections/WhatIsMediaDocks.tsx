@@ -3,11 +3,12 @@ import { ArrowRight, CheckCircle2, Cpu, HardDrive, Shield, Sparkles, Zap } from 
 import { Reveal } from "@/components/Reveal";
 
 const KEY_BENEFITS = [
-  "Zero permanent media storage on disk — strictly ephemeral memory streaming",
-  "True multi-rung resolution selection from 144p up to 4K UHD without fake upscaling",
-  "No registration, user accounts, paywalls, or invasive client software installs",
-  "Preserves original AAC audio without double-compression generation loss",
-  "Built-in AI speech recognition with automatic spoken-language detection",
+  "AI speech recognition with automatic spoken-language detection",
+  "Transcripts open in an editor, so you can fix names before exporting",
+  "Timed SRT and WebVTT cues for editors, platforms and HTML5 players",
+  "Summaries that surface key points and action items from long recordings",
+  "No registration, user accounts, paywalls, or client software installs",
+  "Zero permanent media storage — strictly ephemeral request-scoped processing",
 ];
 
 export function WhatIsMediaDocks() {
@@ -23,20 +24,25 @@ export function WhatIsMediaDocks() {
             </h2>
             <div className="mt-6 space-y-4 text-sm leading-relaxed text-muted-foreground sm:text-base">
               <p>
-                <strong>MediaDocks</strong> is an independent, universal web utility designed to simplify
-                how creators, researchers, and digital professionals access and process public digital
-                media.
+                <strong>MediaDocks</strong> turns recordings into things you can read, search and
+                publish. Upload a lecture, an interview or a meeting and you get back an editable
+                transcript, a set of timed subtitle cues, or a summary with its key points and
+                action items.
               </p>
               <p>
-                The digital web has long suffered from broken media converters: desktop applications
-                bundled with unwanted adware, suspicious websites loaded with intrusive pop-up
-                redirects, and cloud tools that secretly hoard personal video files on third-party servers.
+                The problem it solves is that audio and video are terrible formats for finding
+                anything. A two-hour recording holds maybe fifteen minutes you actually need, and
+                the only way to locate them is to sit through it. Transcription converts that into
+                text you can skim in a minute, quote accurately, and search months later.
               </p>
               <p>
-                We engineered MediaDocks to resolve this: a clean, responsive web application that
-                multiplexes public audio and video streams transiently in memory, pipes finished MP4,
-                MP3, or SRT files directly to your device, and leaves{" "}
-                <strong className="text-foreground">zero permanent footprint</strong> on our servers.
+                The surrounding tooling exists because the alternatives are unpleasant: desktop
+                converters bundled with adware, sites buried under pop-up redirects, and cloud
+                services that quietly retain your files. MediaDocks processes everything in a
+                request-scoped temporary location, streams the result to your browser, and leaves{" "}
+                <strong className="text-foreground">zero permanent footprint</strong> on our
+                servers. It also converts public media links to MP4 or MP3 when that is what you
+                need.
               </p>
             </div>
 
@@ -87,8 +93,10 @@ export function WhatIsMediaDocks() {
                   <span>100% Lawful & Ethical Scope</span>
                 </div>
                 <p className="mt-1.5 leading-relaxed">
-                  MediaDocks processes only publicly accessible media. We do not circumvent DRM,
-                  passwords, paywalls, or private friend-only barriers.
+                  The AI tools work on files you provide. Link-based conversion reads only publicly
+                  accessible media — we do not sign in or circumvent DRM, passwords, paywalls, age
+                  gates or friends-only barriers, and you remain responsible for holding the rights
+                  to anything you save.
                 </p>
               </div>
             </div>

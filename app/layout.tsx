@@ -39,7 +39,7 @@ const monoFont = JetBrains_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
   title: {
-    default: "MediaDocks — Free Video Downloader: Any Resolution or MP3",
+    default: "MediaDocks — AI Transcription, Subtitles & Media Tools",
     // Page titles stay unique while keeping the brand in the SERP.
     template: "%s | MediaDocks",
   },
@@ -52,7 +52,7 @@ export const metadata: Metadata = {
   category: "technology",
   alternates: { canonical: absoluteUrl("/") },
   openGraph: {
-    title: "MediaDocks — Free Video Downloader: Any Resolution or MP3",
+    title: "MediaDocks — AI Transcription, Subtitles & Media Tools",
     description: SITE.description,
     type: "website",
     siteName: SITE.name,
@@ -61,7 +61,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "MediaDocks — Free Video Downloader: Any Resolution or MP3",
+    title: "MediaDocks — AI Transcription, Subtitles & Media Tools",
     description: SITE.description,
   },
   robots: {

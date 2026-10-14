@@ -46,9 +46,9 @@ export const config = {
   requestTimeoutMs: readInt(process.env.REQUEST_TIMEOUT_MS, 15000),
 
   // Rate limiting (in-memory, per instance).
-  resolveLimit: readInt(process.env.RESOLVE_LIMIT, 10),
+  resolveLimit: readInt(process.env.RESOLVE_LIMIT, 30),
   resolveWindowSeconds: readInt(process.env.RESOLVE_WINDOW_SECONDS, 60),
-  downloadLimit: readInt(process.env.DOWNLOAD_LIMIT, 5),
+  downloadLimit: readInt(process.env.DOWNLOAD_LIMIT, 60),
   downloadWindowSeconds: readInt(process.env.DOWNLOAD_WINDOW_SECONDS, 60),
   transcribeLimit: readInt(process.env.TRANSCRIBE_LIMIT, 3),
   transcribeWindowSeconds: readInt(process.env.TRANSCRIBE_WINDOW_SECONDS, 60),

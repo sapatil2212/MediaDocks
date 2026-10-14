@@ -157,6 +157,78 @@ describe("InstagramResolver", () => {
     });
     expect(result.unavailable).toBeUndefined();
   });
+
+  it("extracts all slides in an Instagram carousel uncropped", async () => {
+    const carouselHtml = `
+      <meta property="og:title" content="Photographer on Instagram: &quot;album&quot;" />
+      <meta property="og:image" content="https://scontent.cdninstagram.com/v/cropped-cover.jpg?stp=c216" />
+      <script type="application/json">
+        {
+          "require": [["ScheduledServerJS", "handle", null, [{
+            "__bbox": {
+              "result": {
+                "data": {
+                  "xig_polaris_media": {
+                    "if_not_gated_logged_out": {
+                      "id": "123",
+                      "carousel_media": [
+                        {
+                          "id": "slide_1",
+                          "image_versions2": {
+                            "candidates": [
+                              { "url": "https://scontent.cdninstagram.com/v/slide1-full.webp" },
+                              { "url": "https://scontent.cdninstagram.com/v/slide1-crop.webp?stp=c0.135.1080.1080a" }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "slide_2",
+                          "image_versions2": {
+                            "candidates": [
+                              { "url": "https://scontent.cdninstagram.com/v/slide2-full.webp" },
+                              { "url": "https://scontent.cdninstagram.com/v/slide2-crop.webp?stp=c0.135.1080.1080a" }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "slide_3",
+                          "image_versions2": {
+                            "candidates": [
+                              { "url": "https://scontent.cdninstagram.com/v/slide3-full.webp" }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }]]]
+        }
+      </script>
+    `;
+
+    vi.spyOn(globalThis, "fetch").mockImplementation(async (input) => {
+      const url = String(input);
+      if (url.includes("instagram.com/p/")) return htmlResponse(carouselHtml);
+      return probeResponse("image/webp");
+    });
+
+    const result = await new InstagramResolver().resolve(
+      new URL("https://www.instagram.com/p/C_ntulJK_V2"),
+    );
+
+    expect(result.postKind).toBe("carousel");
+    expect(result.media).toHaveLength(3);
+    expect(result.media[0].quality).toBe("Image 1");
+    expect(result.media[0].mediaUrl).toBe("https://scontent.cdninstagram.com/v/slide1-full.webp");
+    expect(result.media[1].quality).toBe("Image 2");
+    expect(result.media[1].mediaUrl).toBe("https://scontent.cdninstagram.com/v/slide2-full.webp");
+    expect(result.media[2].quality).toBe("Image 3");
+    expect(result.media[2].mediaUrl).toBe("https://scontent.cdninstagram.com/v/slide3-full.webp");
+    expect(result.unavailable).toBeUndefined();
+  });
 });
 
 describe("PinterestResolver", () => {

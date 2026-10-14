@@ -14,6 +14,14 @@ import {
   FileVideo2,
   ListChecks,
   Wrench,
+  Repeat,
+  Image as ImageIcon,
+  Scaling,
+  FileText,
+  FilePlus2,
+  QrCode,
+  FileCode2,
+  Binary,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/Logo";
@@ -72,6 +80,53 @@ const TOOL_OPTIONS: Array<{
   },
 ];
 
+const CONVERTER_OPTIONS = [
+  {
+    name: "Image Converter",
+    slug: "/image-converter",
+    tagline: "Batch JPG, PNG, WebP, AVIF, GIF, SVG (Up to 10)",
+    icon: ImageIcon,
+    badge: "Batch",
+  },
+  {
+    name: "Image Resizer",
+    slug: "/image-resizer",
+    tagline: "Resize by px or %, auto-detect aspect ratio",
+    icon: Scaling,
+  },
+  {
+    name: "PDF to Image",
+    slug: "/pdf-to-image",
+    tagline: "Extract pages to high-res PNG, JPG or WebP",
+    icon: FileText,
+  },
+  {
+    name: "Image to PDF",
+    slug: "/image-to-pdf",
+    tagline: "Merge multiple photos into a single PDF document",
+    icon: FilePlus2,
+  },
+  {
+    name: "QR Code Generator",
+    slug: "/qr-code-generator",
+    tagline: "Custom logo overlay, URL, WiFi & high-res export",
+    icon: QrCode,
+    badge: "Logo",
+  },
+  {
+    name: "SVG to PNG Converter",
+    slug: "/svg-to-png",
+    tagline: "Vector rasterization up to 8x resolution",
+    icon: FileCode2,
+  },
+  {
+    name: "Base64 Image Converter",
+    slug: "/base64-image",
+    tagline: "Encode images to Data URI & decode Base64",
+    icon: Binary,
+  },
+];
+
 const DOWNLOADER_OPTIONS: DownloaderItem[] = [
   {
     name: "YouTube Downloader",
@@ -122,12 +177,16 @@ export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [convertersOpen, setConvertersOpen] = useState(false);
   const [toolsOpen, setToolsOpen] = useState(false);
   const [mobileDropdownOpen, setMobileDropdownOpen] = useState(false);
+  const [mobileConvertersOpen, setMobileConvertersOpen] = useState(false);
   const [mobileToolsOpen, setMobileToolsOpen] = useState(false);
   const [pathname, setPathname] = useState("");
   const dropdownTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const convertersTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const toolsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const convertersRef = useRef<HTMLDivElement | null>(null);
   const toolsRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -158,6 +217,15 @@ export function Navbar() {
     }, 150);
   };
 
+  const handleConvertersEnter = () => {
+    if (convertersTimeoutRef.current) clearTimeout(convertersTimeoutRef.current);
+    setConvertersOpen(true);
+  };
+
+  const handleConvertersLeave = () => {
+    convertersTimeoutRef.current = setTimeout(() => setConvertersOpen(false), 150);
+  };
+
   const handleToolsEnter = () => {
     if (toolsTimeoutRef.current) clearTimeout(toolsTimeoutRef.current);
     setToolsOpen(true);
@@ -166,6 +234,24 @@ export function Navbar() {
   const handleToolsLeave = () => {
     toolsTimeoutRef.current = setTimeout(() => setToolsOpen(false), 150);
   };
+
+  useEffect(() => {
+    if (!convertersOpen) return;
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setConvertersOpen(false);
+    };
+    const onPointerDown = (event: MouseEvent) => {
+      if (!convertersRef.current?.contains(event.target as Node)) setConvertersOpen(false);
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+    document.addEventListener("mousedown", onPointerDown);
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      document.removeEventListener("mousedown", onPointerDown);
+    };
+  }, [convertersOpen]);
 
   // A menu opened by click must also close on Escape and on an outside click,
   // otherwise it can be left hanging over the page with no obvious way to
@@ -188,6 +274,7 @@ export function Navbar() {
     };
   }, [toolsOpen]);
 
+  const isConverterPath = CONVERTER_OPTIONS.some((c) => c.slug === pathname);
   const isToolPath = TOOL_OPTIONS.some((tool) => tool.slug === pathname);
 
   return (
@@ -195,8 +282,8 @@ export function Navbar() {
       className={cn(
         "sticky top-0 z-50 w-full transition-[background-color,border-color,box-shadow] duration-300",
         scrolled
-          ? "border-b border-border/70 bg-background/80 backdrop-blur-xl"
-          : "border-b border-transparent bg-background/40 backdrop-blur-sm",
+          ? "border-b border-border bg-background shadow-sm"
+          : "border-b border-transparent bg-background/70 backdrop-blur-md",
       )}
     >
       <div className="section-shell flex h-16 items-center justify-between gap-4">
@@ -210,11 +297,11 @@ export function Navbar() {
         </Link>
 
         {/* Desktop Navigation */}
-        <nav aria-label="Main" className="hidden items-center gap-1 md:flex">
+        <nav aria-label="Main" className="hidden items-center gap-0.5 md:flex">
           <Link
             href="/"
             className={cn(
-              "rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-surface-strong hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
+              "rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors hover:bg-surface-strong hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
               pathname === "/" ? "text-foreground font-semibold" : "text-muted-foreground",
             )}
           >
@@ -233,7 +320,7 @@ export function Navbar() {
               aria-expanded={dropdownOpen}
               aria-haspopup="true"
               className={cn(
-                "group inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-surface-strong hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
+                "group inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors hover:bg-surface-strong hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
                 dropdownOpen || pathname.includes("-downloader") || pathname === "/youtube-to-mp3"
                   ? "text-foreground font-semibold bg-surface-strong/60"
                   : "text-muted-foreground",
@@ -242,7 +329,7 @@ export function Navbar() {
               <span>Downloaders</span>
               <ChevronDown
                 className={cn(
-                  "h-4 w-4 transition-transform duration-200 text-muted-foreground group-hover:text-foreground",
+                  "h-3.5 w-3.5 transition-transform duration-200 text-muted-foreground group-hover:text-foreground",
                   dropdownOpen ? "rotate-180 text-primary" : "",
                 )}
                 aria-hidden="true"
@@ -252,12 +339,12 @@ export function Navbar() {
             {/* Dropdown Menu Panel */}
             {dropdownOpen && (
               <div
-                className="absolute left-0 top-full z-50 mt-1.5 w-[360px] animate-in fade-in zoom-in-95 duration-150 rounded-2xl border border-border/80 bg-surface/95 p-2.5 shadow-lift backdrop-blur-2xl"
+                className="absolute left-0 top-full z-50 mt-1.5 w-[360px] animate-in fade-in zoom-in-95 duration-150 rounded-2xl border border-border bg-surface p-2.5 shadow-lift"
                 role="menu"
                 aria-label="Downloaders menu"
               >
                 <div className="px-3 py-2 border-b border-border/60 mb-1">
-                  <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
                     Available Downloaders
                   </p>
                 </div>
@@ -278,7 +365,7 @@ export function Navbar() {
                         )}
                         role="menuitem"
                       >
-                        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg border border-border bg-surface shadow-soft transition-transform duration-150 group-hover:scale-105">
+                        <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-border bg-surface shadow-soft transition-transform duration-150 group-hover:scale-105">
                           {item.isAudio ? (
                             <Music2 className="h-4 w-4 text-indigo-500" />
                           ) : (
@@ -288,10 +375,10 @@ export function Navbar() {
 
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center justify-between">
-                            <span className="text-xs font-bold leading-none sm:text-sm">{item.name}</span>
+                            <span className="text-xs font-semibold leading-none">{item.name}</span>
                             <ArrowRight className="h-3 w-3 text-muted-foreground opacity-0 transition-all duration-150 group-hover:opacity-100 group-hover:translate-x-0.5" />
                           </div>
-                          <p className="mt-1 text-[0.7rem] text-muted-foreground font-normal truncate">
+                          <p className="mt-1 text-[11px] text-muted-foreground font-normal truncate">
                             {item.tagline}
                           </p>
                         </div>
@@ -302,13 +389,98 @@ export function Navbar() {
 
                 <div className="mt-2 border-t border-border/60 pt-2 px-2">
                   <Link
-                    href="/#capabilities"
+                    href="/how-it-works#capabilities"
                     onClick={() => setDropdownOpen(false)}
-                    className="flex items-center justify-between rounded-lg px-2 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-surface-strong hover:text-primary"
+                    className="flex items-center justify-between rounded-lg px-2 py-1.5 text-[11px] text-muted-foreground transition-colors hover:bg-surface-strong hover:text-primary"
                   >
                     <span>View comparison & format matrix</span>
                     <ArrowRight className="h-3 w-3" />
                   </Link>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Converters Dropdown */}
+          <div
+            className="relative"
+            ref={convertersRef}
+            onMouseEnter={handleConvertersEnter}
+            onMouseLeave={handleConvertersLeave}
+          >
+            <button
+              type="button"
+              onClick={() => setConvertersOpen((v) => !v)}
+              aria-expanded={convertersOpen}
+              aria-haspopup="true"
+              className={cn(
+                "group inline-flex items-center gap-1.5 rounded-[4px] px-2.5 py-1.5 text-xs font-medium transition-colors hover:bg-surface-strong hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
+                convertersOpen || isConverterPath
+                  ? "bg-surface-strong/60 font-semibold text-foreground"
+                  : "text-muted-foreground",
+              )}
+            >
+              <span>Converters</span>
+              <ChevronDown
+                className={cn(
+                  "h-3.5 w-3.5 text-muted-foreground transition-transform duration-200 group-hover:text-foreground",
+                  convertersOpen ? "rotate-180 text-primary" : "",
+                )}
+                aria-hidden="true"
+              />
+            </button>
+
+            {convertersOpen && (
+              <div
+                className="absolute left-0 top-full z-50 mt-1.5 w-[360px] animate-in fade-in zoom-in-95 rounded-2xl border border-border bg-surface p-2.5 shadow-lift duration-150"
+                role="menu"
+                aria-label="Converters menu"
+              >
+                <div className="mb-1 border-b border-border/60 px-3 py-2 flex items-center justify-between">
+                  <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                    Media Converters & Tools
+                  </p>
+                  <span className="text-[10px] font-mono text-emerald-600 dark:text-emerald-400 font-semibold">
+                    100% In-Browser
+                  </span>
+                </div>
+
+                <div className="space-y-1">
+                  {CONVERTER_OPTIONS.map((conv) => {
+                    const isSelected = pathname === conv.slug;
+                    return (
+                      <Link
+                        key={conv.slug}
+                        href={conv.slug}
+                        onClick={() => setConvertersOpen(false)}
+                        role="menuitem"
+                        aria-current={isSelected ? "page" : undefined}
+                        className={cn(
+                          "group flex items-center gap-3 rounded-xl p-2.5 transition-all duration-150",
+                          isSelected
+                            ? "bg-primary/10 font-semibold text-primary"
+                            : "text-foreground/90 hover:bg-surface-strong hover:text-foreground",
+                        )}
+                      >
+                        <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-border bg-surface shadow-soft transition-transform duration-150 group-hover:scale-105">
+                          <conv.icon className="h-4 w-4 text-primary" />
+                        </span>
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-semibold leading-none">{conv.name}</span>
+                            {conv.badge && (
+                              <span className="rounded-[3px] bg-primary/10 px-1.5 py-0.5 text-[9px] font-mono font-bold text-primary uppercase">
+                                {conv.badge}
+                              </span>
+                            )}
+                          </div>
+                          <p className="mt-1 truncate text-[11px] font-normal text-muted-foreground">
+                            {conv.tagline}
+                          </p>
+                        </div>
+                      </Link>
+                    );
+                  })}
                 </div>
               </div>
             )}
@@ -327,19 +499,16 @@ export function Navbar() {
               aria-expanded={toolsOpen}
               aria-haspopup="true"
               className={cn(
-                "group inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-surface-strong hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
+                "group inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors hover:bg-surface-strong hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
                 toolsOpen || isToolPath
                   ? "bg-surface-strong/60 font-semibold text-foreground"
                   : "text-muted-foreground",
               )}
             >
               <span>Tools</span>
-              <span className="rounded-full bg-primary/15 px-1.5 py-0.5 text-[10px] font-bold tracking-wide text-primary">
-                AI
-              </span>
               <ChevronDown
                 className={cn(
-                  "h-4 w-4 text-muted-foreground transition-transform duration-200 group-hover:text-foreground",
+                  "h-3.5 w-3.5 text-muted-foreground transition-transform duration-200 group-hover:text-foreground",
                   toolsOpen ? "rotate-180 text-primary" : "",
                 )}
                 aria-hidden="true"
@@ -348,12 +517,12 @@ export function Navbar() {
 
             {toolsOpen && (
               <div
-                className="absolute left-0 top-full z-50 mt-1.5 w-[320px] animate-in fade-in zoom-in-95 rounded-2xl border border-border/80 bg-surface/95 p-2.5 shadow-lift backdrop-blur-2xl duration-150"
+                className="absolute left-0 top-full z-50 mt-1.5 w-[320px] animate-in fade-in zoom-in-95 rounded-2xl border border-border bg-surface p-2.5 shadow-lift duration-150"
                 role="menu"
                 aria-label="Tools menu"
               >
                 <div className="mb-1 border-b border-border/60 px-3 py-2">
-                  <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
                     AI Media Tools
                   </p>
                 </div>
@@ -375,15 +544,15 @@ export function Navbar() {
                             : "text-foreground/90 hover:bg-surface-strong hover:text-foreground",
                         )}
                       >
-                        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg border border-border bg-surface shadow-soft transition-transform duration-150 group-hover:scale-105">
+                        <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-border bg-surface shadow-soft transition-transform duration-150 group-hover:scale-105">
                           <tool.icon className="h-4 w-4 text-primary" />
                         </span>
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center justify-between">
-                            <span className="text-xs font-bold leading-none sm:text-sm">{tool.name}</span>
+                            <span className="text-xs font-semibold leading-none">{tool.name}</span>
                             <ArrowRight className="h-3 w-3 text-muted-foreground opacity-0 transition-all duration-150 group-hover:translate-x-0.5 group-hover:opacity-100" />
                           </div>
-                          <p className="mt-1 truncate text-[0.7rem] font-normal text-muted-foreground">
+                          <p className="mt-1 truncate text-[11px] font-normal text-muted-foreground">
                             {tool.tagline}
                           </p>
                         </div>
@@ -398,7 +567,7 @@ export function Navbar() {
           <Link
             href="/guides"
             className={cn(
-              "rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-surface-strong hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
+              "rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors hover:bg-surface-strong hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
               pathname.startsWith("/guides") ? "text-foreground font-semibold" : "text-muted-foreground",
             )}
           >
@@ -408,7 +577,7 @@ export function Navbar() {
           <Link
             href="/how-it-works"
             className={cn(
-              "rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-surface-strong hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
+              "rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors hover:bg-surface-strong hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
               pathname === "/how-it-works" ? "text-foreground font-semibold" : "text-muted-foreground",
             )}
           >
@@ -418,7 +587,7 @@ export function Navbar() {
           <Link
             href="/faq"
             className={cn(
-              "rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-surface-strong hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
+              "rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors hover:bg-surface-strong hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
               pathname === "/faq" ? "text-foreground font-semibold" : "text-muted-foreground",
             )}
           >
@@ -428,7 +597,7 @@ export function Navbar() {
           <Link
             href="/about"
             className={cn(
-              "rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-surface-strong hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
+              "rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors hover:bg-surface-strong hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
               pathname === "/about" ? "text-foreground font-semibold" : "text-muted-foreground",
             )}
           >
@@ -438,7 +607,7 @@ export function Navbar() {
           <Link
             href="/contact"
             className={cn(
-              "rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-surface-strong hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
+              "rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors hover:bg-surface-strong hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
               pathname === "/contact" ? "text-foreground font-semibold" : "text-muted-foreground",
             )}
           >
@@ -451,7 +620,7 @@ export function Navbar() {
           <ThemeToggle />
           <Button
             onClick={scrollToDownloader}
-            className="hidden h-10 rounded-xl px-4 text-sm font-semibold shadow-glow transition-transform hover:-translate-y-0.5 sm:inline-flex"
+            className="hidden h-9 rounded-[5px] px-3.5 text-xs font-semibold shadow-none transition-transform hover:-translate-y-0.5 sm:inline-flex"
           >
             Start Downloading
           </Button>
@@ -461,7 +630,7 @@ export function Navbar() {
             aria-label={open ? "Close menu" : "Open menu"}
             aria-expanded={open}
             onClick={() => setOpen((v) => !v)}
-            className="min-h-10 min-w-10 rounded-xl border border-border/60 md:hidden"
+            className="min-h-10 min-w-10 rounded-[5px] border border-border/60 md:hidden"
           >
             {open ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
           </Button>
@@ -476,42 +645,42 @@ export function Navbar() {
           open ? "max-h-[85vh] overflow-y-auto border-t opacity-100" : "max-h-0 opacity-0",
         )}
       >
-        <nav aria-label="Mobile" className="section-shell flex flex-col gap-1 py-4">
+        <nav aria-label="Mobile" className="section-shell flex flex-col gap-0.5 py-3">
           <Link
             href="/"
             onClick={() => setOpen(false)}
-            className="rounded-xl px-3 py-2.5 text-base font-medium text-muted-foreground transition-colors hover:bg-surface-strong hover:text-foreground"
+            className="rounded-lg px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-surface-strong hover:text-foreground"
           >
             Home
           </Link>
 
           {/* Mobile Accordion for Downloaders */}
-          <div className="rounded-xl border border-border/60 bg-surface/50 p-2 my-1">
+          <div className="rounded-xl border border-border/60 bg-surface/50 p-2 my-0.5">
             <button
               type="button"
               onClick={() => setMobileDropdownOpen((v) => !v)}
-              className="flex w-full items-center justify-between px-2 py-2 text-sm font-semibold text-foreground"
+              className="flex w-full items-center justify-between px-2 py-1.5 text-xs font-semibold text-foreground"
             >
               <span className="flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-primary" />
+                <Sparkles className="h-3.5 w-3.5 text-primary" />
                 <span>All Downloaders</span>
               </span>
               <ChevronDown
                 className={cn(
-                  "h-4 w-4 text-muted-foreground transition-transform duration-200",
+                  "h-3.5 w-3.5 text-muted-foreground transition-transform duration-200",
                   mobileDropdownOpen ? "rotate-180 text-primary" : "",
                 )}
               />
             </button>
 
             {mobileDropdownOpen && (
-              <div className="mt-2 space-y-1 border-t border-border/60 pt-2 animate-in fade-in duration-150">
+              <div className="mt-1.5 space-y-1 border-t border-border/60 pt-1.5 animate-in fade-in duration-150">
                 {DOWNLOADER_OPTIONS.map((item) => (
                   <Link
                     key={item.slug}
                     href={item.slug}
                     onClick={() => setOpen(false)}
-                    className="flex items-center gap-3 rounded-lg p-2 text-sm transition-colors hover:bg-surface-strong"
+                    className="flex items-center gap-2.5 rounded-lg p-2 text-xs transition-colors hover:bg-surface-strong"
                   >
                     <span className="grid h-7 w-7 shrink-0 place-items-center rounded-md border border-border bg-surface">
                       {item.isAudio ? (
@@ -522,7 +691,50 @@ export function Navbar() {
                     </span>
                     <div className="min-w-0 flex-1">
                       <p className="font-semibold text-xs text-foreground">{item.name}</p>
-                      <p className="text-[0.65rem] text-muted-foreground truncate">{item.tagline}</p>
+                      <p className="text-[10px] text-muted-foreground truncate">{item.tagline}</p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Mobile Accordion for Converters */}
+          <div className="my-0.5 rounded-xl border border-border/60 bg-surface/50 p-2">
+            <button
+              type="button"
+              onClick={() => setMobileConvertersOpen((v) => !v)}
+              aria-expanded={mobileConvertersOpen}
+              className="flex w-full items-center justify-between px-2 py-1.5 text-xs font-semibold text-foreground"
+            >
+              <span className="flex items-center gap-2">
+                <Repeat className="h-3.5 w-3.5 text-emerald-500" />
+                <span>Converters</span>
+              </span>
+              <ChevronDown
+                className={cn(
+                  "h-3.5 w-3.5 text-muted-foreground transition-transform duration-200",
+                  mobileConvertersOpen ? "rotate-180 text-primary" : "",
+                )}
+              />
+            </button>
+
+            {mobileConvertersOpen && (
+              <div className="mt-1.5 space-y-1 border-t border-border/60 pt-1.5 animate-in fade-in duration-150">
+                {CONVERTER_OPTIONS.map((conv) => (
+                  <Link
+                    key={conv.slug}
+                    href={conv.slug}
+                    onClick={() => setOpen(false)}
+                    aria-current={pathname === conv.slug ? "page" : undefined}
+                    className="flex items-center gap-2.5 rounded-lg p-2 text-xs transition-colors hover:bg-surface-strong"
+                  >
+                    <span className="grid h-7 w-7 shrink-0 place-items-center rounded-md border border-border bg-surface">
+                      <conv.icon className="h-3.5 w-3.5 text-primary" />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs font-semibold text-foreground">{conv.name}</p>
+                      <p className="truncate text-[10px] text-muted-foreground">{conv.tagline}</p>
                     </div>
                   </Link>
                 ))}
@@ -531,44 +743,41 @@ export function Navbar() {
           </div>
 
           {/* Mobile Accordion for Tools */}
-          <div className="my-1 rounded-xl border border-border/60 bg-surface/50 p-2">
+          <div className="my-0.5 rounded-xl border border-border/60 bg-surface/50 p-2">
             <button
               type="button"
               onClick={() => setMobileToolsOpen((v) => !v)}
               aria-expanded={mobileToolsOpen}
-              className="flex w-full items-center justify-between px-2 py-2 text-sm font-semibold text-foreground"
+              className="flex w-full items-center justify-between px-2 py-1.5 text-xs font-semibold text-foreground"
             >
               <span className="flex items-center gap-2">
-                <Wrench className="h-4 w-4 text-primary" />
+                <Wrench className="h-3.5 w-3.5 text-primary" />
                 <span>Tools</span>
-                <span className="rounded-full bg-primary/15 px-1.5 py-0.5 text-[10px] font-bold text-primary">
-                  AI
-                </span>
               </span>
               <ChevronDown
                 className={cn(
-                  "h-4 w-4 text-muted-foreground transition-transform duration-200",
+                  "h-3.5 w-3.5 text-muted-foreground transition-transform duration-200",
                   mobileToolsOpen ? "rotate-180 text-primary" : "",
                 )}
               />
             </button>
 
             {mobileToolsOpen && (
-              <div className="mt-2 space-y-1 border-t border-border/60 pt-2 animate-in fade-in duration-150">
+              <div className="mt-1.5 space-y-1 border-t border-border/60 pt-1.5 animate-in fade-in duration-150">
                 {TOOL_OPTIONS.map((tool) => (
                   <Link
                     key={tool.slug}
                     href={tool.slug}
                     onClick={() => setOpen(false)}
                     aria-current={pathname === tool.slug ? "page" : undefined}
-                    className="flex items-center gap-3 rounded-lg p-2 text-sm transition-colors hover:bg-surface-strong"
+                    className="flex items-center gap-2.5 rounded-lg p-2 text-xs transition-colors hover:bg-surface-strong"
                   >
                     <span className="grid h-7 w-7 shrink-0 place-items-center rounded-md border border-border bg-surface">
                       <tool.icon className="h-3.5 w-3.5 text-primary" />
                     </span>
                     <div className="min-w-0 flex-1">
                       <p className="text-xs font-semibold text-foreground">{tool.name}</p>
-                      <p className="truncate text-[0.65rem] text-muted-foreground">{tool.tagline}</p>
+                      <p className="truncate text-[10px] text-muted-foreground">{tool.tagline}</p>
                     </div>
                   </Link>
                 ))}
@@ -579,7 +788,7 @@ export function Navbar() {
           <Link
             href="/guides"
             onClick={() => setOpen(false)}
-            className="rounded-xl px-3 py-2.5 text-base font-medium text-muted-foreground transition-colors hover:bg-surface-strong hover:text-foreground"
+            className="rounded-lg px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-surface-strong hover:text-foreground"
           >
             Guides & Resources
           </Link>
@@ -587,7 +796,7 @@ export function Navbar() {
           <Link
             href="/how-it-works"
             onClick={() => setOpen(false)}
-            className="rounded-xl px-3 py-2.5 text-base font-medium text-muted-foreground transition-colors hover:bg-surface-strong hover:text-foreground"
+            className="rounded-lg px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-surface-strong hover:text-foreground"
           >
             How it works
           </Link>
@@ -595,7 +804,7 @@ export function Navbar() {
           <Link
             href="/faq"
             onClick={() => setOpen(false)}
-            className="rounded-xl px-3 py-2.5 text-base font-medium text-muted-foreground transition-colors hover:bg-surface-strong hover:text-foreground"
+            className="rounded-lg px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-surface-strong hover:text-foreground"
           >
             FAQ
           </Link>
@@ -603,7 +812,7 @@ export function Navbar() {
           <Link
             href="/about"
             onClick={() => setOpen(false)}
-            className="rounded-xl px-3 py-2.5 text-base font-medium text-muted-foreground transition-colors hover:bg-surface-strong hover:text-foreground"
+            className="rounded-lg px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-surface-strong hover:text-foreground"
           >
             About
           </Link>
@@ -611,7 +820,7 @@ export function Navbar() {
           <Link
             href="/contact"
             onClick={() => setOpen(false)}
-            className="rounded-xl px-3 py-2.5 text-base font-medium text-muted-foreground transition-colors hover:bg-surface-strong hover:text-foreground"
+            className="rounded-lg px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-surface-strong hover:text-foreground"
           >
             Contact
           </Link>
@@ -621,7 +830,7 @@ export function Navbar() {
               setOpen(false);
               scrollToDownloader();
             }}
-            className="mt-3 h-12 rounded-xl text-base font-semibold shadow-glow"
+            className="mt-2 h-9 rounded-[5px] text-xs font-semibold shadow-none"
           >
             Start Downloading
           </Button>
