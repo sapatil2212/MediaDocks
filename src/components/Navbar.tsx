@@ -87,14 +87,12 @@ const CONVERTER_OPTIONS = [
     slug: "/url-shortener",
     tagline: "Custom alias, QR code, analytics & UTM builder",
     icon: Link2,
-    badge: "New",
   },
   {
     name: "Image Converter",
     slug: "/image-converter",
     tagline: "Batch JPG, PNG, WebP, AVIF, GIF, SVG (Up to 10)",
     icon: ImageIcon,
-    badge: "Batch",
   },
   {
     name: "Image Resizer",
@@ -119,7 +117,6 @@ const CONVERTER_OPTIONS = [
     slug: "/qr-code-generator",
     tagline: "Custom logo overlay, URL, WiFi & high-res export",
     icon: QrCode,
-    badge: "Logo",
   },
   {
     name: "SVG to PNG Converter",
@@ -476,11 +473,6 @@ export function Navbar() {
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center justify-between">
                             <span className="text-xs font-semibold leading-none">{conv.name}</span>
-                            {conv.badge && (
-                              <span className="rounded-[3px] bg-primary/10 px-1.5 py-0.5 text-[9px] font-mono font-bold text-primary uppercase">
-                                {conv.badge}
-                              </span>
-                            )}
                           </div>
                           <p className="mt-1 truncate text-[11px] font-normal text-muted-foreground">
                             {conv.tagline}
