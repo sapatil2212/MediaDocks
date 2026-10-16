@@ -79,7 +79,7 @@ export function Hero() {
       />
 
       <div className="section-shell relative z-10">
-        <div className="mx-auto max-w-4xl text-center">
+        <div className="mx-auto max-w-5xl text-center">
           {/* Top Badge */}
           <Reveal>
             <div className="inline-flex items-center gap-2 rounded-full border border-border/80 bg-surface/70 px-3.5 py-1 text-xs font-medium text-foreground/80 shadow-soft backdrop-blur-md transition-colors hover:border-primary/40 hover:text-foreground">
@@ -98,12 +98,11 @@ export function Hero() {
             </div>
           </Reveal>
 
-          {/* Master Headline */}
+          {/* Master Headline (strictly two lines) */}
           <Reveal delay={60}>
-            <h1 className="hero-title font-bold mt-6 text-balance font-display tracking-tight text-foreground">
-              Turn any recording into
-              <br />
-              <span className="font-bold bg-gradient-to-r from-foreground via-foreground to-muted-foreground bg-clip-text text-transparent">
+            <h1 className="mt-6 text-[clamp(1.4rem,4.1vw,3.35rem)] font-bold font-display leading-[1.08] tracking-tight text-foreground">
+              <span className="block whitespace-nowrap">Turn any recording into</span>
+              <span className="block whitespace-nowrap bg-gradient-to-r from-foreground via-foreground to-muted-foreground bg-clip-text text-transparent">
                 text, captions, or a clean file.
               </span>
             </h1>
