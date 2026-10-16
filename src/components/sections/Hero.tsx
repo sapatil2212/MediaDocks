@@ -100,10 +100,10 @@ export function Hero() {
 
           {/* Master Headline */}
           <Reveal delay={60}>
-            <h1 className="hero-title mt-6 text-balance font-display tracking-tight text-foreground">
+            <h1 className="hero-title font-bold mt-6 text-balance font-display tracking-tight text-foreground">
               Turn any recording into
               <br />
-              <span className="bg-gradient-to-r from-foreground via-foreground to-muted-foreground bg-clip-text text-transparent">
+              <span className="font-bold bg-gradient-to-r from-foreground via-foreground to-muted-foreground bg-clip-text text-transparent">
                 text, captions, or a clean file.
               </span>
             </h1>
