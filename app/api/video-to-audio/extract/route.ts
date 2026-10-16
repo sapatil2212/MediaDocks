@@ -143,6 +143,13 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    if (uploadId && !isValidUploadId(uploadId)) {
+      return NextResponse.json(
+        { error: "Valid upload session ID is required." },
+        { status: 400, headers: NO_STORE_HEADERS },
+      );
+    }
+
     // Locate FFmpeg
     const tools = await getEngineTools();
     if (!tools.ffmpeg) {

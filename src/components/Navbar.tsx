@@ -146,13 +146,6 @@ const DOWNLOADER_OPTIONS: DownloaderItem[] = [
     platform: "youtube",
   },
   {
-    name: "YouTube to MP3",
-    slug: "/youtube-to-mp3",
-    tagline: "320kbps & 192kbps High-Res Audio",
-    platform: "youtube",
-    isAudio: true,
-  },
-  {
     name: "Instagram Downloader",
     slug: "/insta-downloader",
     tagline: "Reels, Video Posts & Photos",
