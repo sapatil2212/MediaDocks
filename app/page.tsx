@@ -69,6 +69,7 @@ export default function HomePage() {
               "Generate and edit timed SRT and WebVTT subtitle cues",
               "AI audio summarizer with key points and action items",
               "Extract audio as MP3 or the original M4A track",
+              "Extract audio from videos of any length into 320 kbps MP3, WAV, M4A, or FLAC",
               "Convert public media links to MP4 from 144p to 4K UHD",
               "Ephemeral in-memory pipelines with zero permanent storage",
               "No registration, no accounts, and no client software needed",

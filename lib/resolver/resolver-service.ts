@@ -20,7 +20,7 @@ import { buildMockResult } from "./mock";
 import { getResolver } from "./registry";
 
 /** Hosts that only ever redirect to the real content URL. */
-const SHORTLINK_HOSTS = new Set(["pin.it", "fb.watch"]);
+const SHORTLINK_HOSTS = new Set(["pin.it", "fb.watch", "t.co", "instagr.am", "fb.com"]);
 
 export interface ResolveOutcome {
   result: PublicResolveResult;

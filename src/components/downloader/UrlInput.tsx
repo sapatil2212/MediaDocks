@@ -63,8 +63,12 @@ export function UrlInput({
           const text =
             e.dataTransfer.getData("text/uri-list") || e.dataTransfer.getData("text/plain");
           if (text) {
-            onChange(text.trim());
+            const trimmed = text.trim();
+            onChange(trimmed);
             inputRef.current?.focus();
+            if (/^https?:\/\//i.test(trimmed)) {
+              setTimeout(() => onSubmit(), 50);
+            }
           }
         }}
         className={cn(
@@ -115,6 +119,15 @@ export function UrlInput({
               onFocus={() => setFocused(true)}
               onBlur={() => setFocused(false)}
               onChange={(e) => onChange(e.target.value)}
+              onPaste={(e) => {
+                const pasted = e.clipboardData.getData("text")?.trim();
+                if (pasted && /^https?:\/\//i.test(pasted)) {
+                  onChange(pasted);
+                  setTimeout(() => {
+                    onSubmit();
+                  }, 50);
+                }
+              }}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
                   e.preventDefault();

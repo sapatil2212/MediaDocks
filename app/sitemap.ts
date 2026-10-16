@@ -22,6 +22,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/audio-to-text", priority: 0.9, changeFrequency: "weekly" },
     { path: "/audio-summarizer", priority: 0.9, changeFrequency: "weekly" },
     { path: "/add-subtitles-to-video", priority: 0.9, changeFrequency: "weekly" },
+    { path: "/video-to-audio", priority: 0.9, changeFrequency: "weekly" },
     { path: "/youtube-to-mp3", priority: 0.9, changeFrequency: "weekly" },
     { path: "/url-shortener", priority: 0.9, changeFrequency: "weekly" },
     { path: "/image-converter", priority: 0.9, changeFrequency: "weekly" },

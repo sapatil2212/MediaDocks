@@ -37,7 +37,7 @@ const USE_CASES = [
     title: "Video & Audio Editors",
     icon: Film,
     desc: "Extract pristine audio streams (original M4A) without double-transcode generation loss. Download full resolution ladders (1080p/4K) with synchronized audio tracks for offline assembly.",
-    relevantTools: "Precision Downloader · YouTube to MP3 · Capabilities Studio",
+    relevantTools: "Video to Audio · Precision Downloader · YouTube to MP3",
   },
 ];
 

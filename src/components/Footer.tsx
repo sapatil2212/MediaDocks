@@ -45,6 +45,14 @@ export function Footer() {
             </li>
             <li>
               <Link
+                href="/video-to-audio"
+                className="transition-colors hover:text-foreground font-medium text-foreground"
+              >
+                Video to Audio
+              </Link>
+            </li>
+            <li>
+              <Link
                 href="/youtube-to-mp3"
                 className="transition-colors hover:text-foreground font-medium text-foreground"
               >

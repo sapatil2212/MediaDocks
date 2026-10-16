@@ -65,6 +65,17 @@ const TOOLS = [
     highlight: false,
   },
   {
+    name: "Video to Audio Converter",
+    path: "/video-to-audio",
+    icon: Music2,
+    badge: "Audio Extraction",
+    description:
+      "Extract pristine MP3 (up to 320 kbps), WAV, M4A, FLAC, OGG, or OPUS from any video. Upload long recordings of any duration with zero file size limits.",
+    useCase: "Podcasters, editors, and students extracting speech or soundtracks from full-length video recordings.",
+    cta: "Extract Audio",
+    highlight: false,
+  },
+  {
     name: "YouTube to MP3 & M4A Audio",
     path: "/youtube-to-mp3",
     icon: Music2,
@@ -95,7 +106,7 @@ export function ToolsSuite() {
         <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
           <Reveal className="max-w-2xl">
             <p className="eyebrow">What you can do here</p>
-            <h2 className="section-title mt-2">Six tools for working with recordings</h2>
+            <h2 className="section-title mt-2">Seven tools for working with recordings</h2>
             <p className="mt-3 text-muted-foreground">
               Speech to text, timed captions and summaries for files you already have, plus format
               conversion for public links. Everything runs in the browser with no account, no

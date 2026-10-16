@@ -187,6 +187,19 @@ async function verify(candidate: Command): Promise<Command | null> {
   return okLong ? candidate : null;
 }
 
+async function resolveFullPath(bin: string): Promise<string> {
+  if (bin.includes("/") || bin.includes("\\")) return bin;
+  try {
+    const lookupCmd = isWindows ? "where.exe" : "which";
+    const { ok, stdout } = await run(lookupCmd, [bin], 3000);
+    if (ok && stdout) {
+      const line = stdout.split(/\r?\n/)[0]?.trim();
+      if (line && isFile(line)) return line;
+    }
+  } catch {}
+  return bin;
+}
+
 async function locateBinary(name: string, configured: string, keyword = name): Promise<string | null> {
   if (configured) {
     const verified = await verify({ bin: configured, prefixArgs: [] });
@@ -195,7 +208,7 @@ async function locateBinary(name: string, configured: string, keyword = name): P
 
   // PATH first: cheapest, and respects whatever the operator intended.
   const onPath = await verify({ bin: name, prefixArgs: [] });
-  if (onPath) return onPath.bin;
+  if (onPath) return resolveFullPath(onPath.bin);
 
   const wanted = exeName(name);
   for (const root of searchRoots(keyword)) {

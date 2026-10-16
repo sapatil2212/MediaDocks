@@ -79,7 +79,7 @@ export function detectPlatformFromUrl(url: URL): PlatformDetection {
   const path = url.pathname.toLowerCase();
 
   // Instagram
-  if (host === "instagram.com" || host === "m.instagram.com") {
+  if (host === "instagram.com" || host === "m.instagram.com" || host === "instagr.am") {
     let typeHint = "post";
     if (path.startsWith("/reel/") || path.startsWith("/reels/")) typeHint = "reel";
     else if (path.startsWith("/tv/")) typeHint = "tv";
@@ -91,6 +91,7 @@ export function detectPlatformFromUrl(url: URL): PlatformDetection {
   if (
     host === "youtube.com" ||
     host === "m.youtube.com" ||
+    host === "music.youtube.com" ||
     host === "youtube-nocookie.com" ||
     host === "youtu.be"
   ) {
@@ -111,7 +112,8 @@ export function detectPlatformFromUrl(url: URL): PlatformDetection {
     host === "facebook.com" ||
     host === "m.facebook.com" ||
     host === "web.facebook.com" ||
-    host === "fb.watch"
+    host === "fb.watch" ||
+    host === "fb.com"
   ) {
     let typeHint = "video";
     if (path.startsWith("/reel/")) typeHint = "reel";
@@ -122,7 +124,12 @@ export function detectPlatformFromUrl(url: URL): PlatformDetection {
   }
 
   // X / Twitter
-  if (host === "x.com" || host === "twitter.com" || host === "mobile.twitter.com") {
+  if (
+    host === "x.com" ||
+    host === "twitter.com" ||
+    host === "mobile.twitter.com" ||
+    host === "t.co"
+  ) {
     return { platform: "x", typeHint: "status" };
   }
 

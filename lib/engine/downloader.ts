@@ -73,7 +73,11 @@ function buildArgs(
     outputTemplate,
   ];
 
-  if (ffmpeg) base.push("--ffmpeg-location", ffmpeg);
+  if (ffmpeg) {
+    if (ffmpeg.includes("/") || ffmpeg.includes("\\")) {
+      base.push("--ffmpeg-location", path.dirname(ffmpeg));
+    }
+  }
 
   switch (spec.strategy) {
     case "engine-format":

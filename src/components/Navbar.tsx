@@ -56,6 +56,12 @@ const TOOL_OPTIONS: Array<{
   icon: typeof FileVideo2;
 }> = [
   {
+    name: "Video to Audio",
+    slug: "/video-to-audio",
+    tagline: "Extract MP3, WAV, M4A from any long video",
+    icon: Music2,
+  },
+  {
     name: "Video to Text",
     slug: "/video-to-text",
     tagline: "MP4, MOV, WebM or a public video link",

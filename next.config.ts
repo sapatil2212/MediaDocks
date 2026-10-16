@@ -53,8 +53,11 @@ const nextConfig: NextConfig = {
       ["/youtube-mp3-downloader", "/youtube-to-mp3"],
       ["/yt-to-mp3", "/youtube-to-mp3"],
       ["/yt-mp3", "/youtube-to-mp3"],
-      ["/video-to-mp3", "/youtube-to-mp3"],
       ["/mp3-converter", "/youtube-to-mp3"],
+      // Video to Audio redirects
+      ["/video-to-mp3", "/video-to-audio"],
+      ["/extract-audio", "/video-to-audio"],
+      ["/video-audio-extractor", "/video-to-audio"],
       // Pinterest
       ["/pin-downloader", "/pinterest-downloader"],
       ["/pinterest-photo-downloader", "/pinterest-downloader"],

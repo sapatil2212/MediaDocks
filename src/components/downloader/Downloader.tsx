@@ -77,13 +77,14 @@ export function Downloader({ placeholder }: { placeholder?: string } = {}) {
   const paste = async () => {
     try {
       const text = await navigator.clipboard.readText();
-      if (!text.trim()) {
+      const trimmed = text.trim();
+      if (!trimmed) {
         toast.error("Clipboard is empty");
         return;
       }
-      setUrl(text.trim());
-      setStatus("idle");
+      setUrl(trimmed);
       toast.success("URL pasted from clipboard");
+      void run(trimmed);
     } catch {
       toast.error("Clipboard unavailable", {
         description: "Your browser blocked access — paste with Ctrl/Cmd + V instead.",
