@@ -1,117 +1,128 @@
-import type { Metadata } from "next";
 import { ImageConverterHero } from "@/components/converters/ImageConverterHero";
 import { ConverterSections } from "@/components/converters/ConverterSections";
+import { ContentSections } from "@/components/converters/ContentSections";
 import { InteractiveBackground } from "@/components/InteractiveBackground";
+import { JsonLd } from "@/components/JsonLd";
 import { Reveal } from "@/components/Reveal";
-import { Layers, ShieldCheck, Zap, Sparkles, Image as ImageIcon } from "lucide-react";
+import { CTASection } from "@/components/sections/CTASection";
+import {
+  breadcrumbJsonLd,
+  buildMetadata,
+  faqJsonLd,
+  howToJsonLd,
+  softwareAppJsonLd,
+} from "@/lib/seo";
+import { content } from "./content";
 
-export const metadata: Metadata = {
-  title: "Free Batch Image Converter — Convert JPG, PNG, WEBP, AVIF, GIF, SVG | MediaDocks",
+const TOOL_NAME = "Image Converter";
+const PATH = "/image-converter";
+
+export const metadata = buildMetadata({
+  title: "Free Batch Image Converter — JPG, PNG, WebP, AVIF, GIF, SVG | MediaDocks",
   description:
-    "Convert up to 10 images simultaneously between JPG, PNG, WebP, AVIF, GIF, BMP, SVG, and ICO. 100% private, processed in your browser with instant ZIP download.",
-  alternates: {
-    canonical: "/image-converter",
-  },
-};
-
-const FEATURES = [
-  {
-    icon: "layers",
-    title: "Batch Convert Up to 10 Files",
-    description: "Upload up to 10 images at once. Convert all to a single format or customize individual formats per file.",
-  },
-  {
-    icon: "zap",
-    title: "Zero Quality Loss & Fast Canvas",
-    description: "Uses HTML5 Canvas and browser image decoders for ultra-fast conversion with adjustable quality compression.",
-  },
-  {
-    icon: "shield",
-    title: "100% Client-Side Privacy",
-    description: "Your pictures never leave your device. All conversions happen entirely in local memory with zero tracking.",
-  },
-];
-
-const HOW_IT_WORKS = [
-  {
-    step: 1,
-    title: "Upload Your Images",
-    description: "Drag and drop up to 10 image files (JPG, PNG, WEBP, AVIF, GIF, BMP, SVG, or ICO).",
-  },
-  {
-    step: 2,
-    title: "Choose Target Format",
-    description: "Select a global format for all images or adjust the target format and quality slider per item.",
-  },
-  {
-    step: 3,
-    title: "Download Instantly or as ZIP",
-    description: "Download converted images individually or click 'Download All as ZIP' for a single packaged archive.",
-  },
-];
-
-const FAQS = [
-  {
-    q: "Is there a limit on how many images I can convert?",
-    a: "You can convert up to 10 images simultaneously in a single batch. Once finished, you can clear and convert another batch with zero restrictions.",
-  },
-  {
-    q: "Are my photos uploaded to any server?",
-    a: "No! All image conversions are performed locally in your browser memory using the HTML5 Canvas API. Your files are never sent over the network or stored on any server.",
-  },
-  {
-    q: "Which image formats are supported?",
-    a: "MediaDocks supports converting between JPG, JPEG, PNG, WebP, AVIF, GIF, BMP, SVG, and ICO formats.",
-  },
-  {
-    q: "Can I download all converted images at once?",
-    a: "Yes. When you convert multiple files, a 'Download All as ZIP' button automatically packages all converted files into a single zip archive for one-click downloading.",
-  },
-];
+    "Convert up to 10 images between JPG, PNG, WebP, AVIF, GIF, BMP, SVG and ICO with per-file control. Processed in your browser with an instant ZIP download.",
+  path: PATH,
+  keywords: [
+    "image converter",
+    "convert jpg to png",
+    "png to webp converter",
+    "convert to avif",
+    "batch image converter",
+    "image format converter",
+    "webp converter",
+    "free image converter online",
+  ],
+});
 
 export default function ImageConverterPage() {
   return (
-    <div className="relative overflow-hidden pt-8 pb-20">
-      <InteractiveBackground />
+    <>
+      <JsonLd
+        data={[
+          softwareAppJsonLd({
+            name: `${TOOL_NAME} — MediaDocks`,
+            description:
+              "Batch-convert images between JPG, PNG, WebP, AVIF, GIF, BMP, SVG and ICO in the browser, with per-file format and quality control.",
+            path: PATH,
+            featureList: content.featureList,
+          }),
+          howToJsonLd({
+            name: "How to convert an image to another format",
+            description:
+              "Add up to ten images, choose a target format, tune quality on lossy formats, and download one file or the whole batch as a ZIP.",
+            steps: content.howTo,
+          }),
+          faqJsonLd(content.faqs),
+          breadcrumbJsonLd([
+            { name: "Home", path: "/" },
+            { name: TOOL_NAME, path: PATH },
+          ]),
+        ]}
+      />
 
-      <div className="section-shell relative z-10">
-        <div className="mx-auto max-w-3xl text-center mb-10">
-          <Reveal>
-            <div className="inline-flex items-center gap-2 rounded-full border border-border/80 bg-surface/70 px-3.5 py-1 text-xs font-medium text-foreground/80 shadow-none backdrop-blur-md">
-              <span className="flex h-1.5 w-1.5 rounded-full bg-primary" />
-              <span className="font-mono text-[0.7rem] font-semibold uppercase tracking-wider text-muted-foreground">
-                Free & Unlimited
-              </span>
-              <span className="text-border">|</span>
-              <span>Batch Image Converter</span>
-            </div>
+      <div className="relative overflow-hidden pt-8 pb-10">
+        <InteractiveBackground />
+
+        <div className="section-shell relative z-10">
+          <div className="mx-auto max-w-3xl text-center mb-10">
+            <Reveal>
+              <div className="inline-flex items-center gap-2 rounded-full border border-border/80 bg-surface/70 px-3.5 py-1 text-xs font-medium text-foreground/80 shadow-none backdrop-blur-md">
+                <span className="flex h-1.5 w-1.5 rounded-full bg-primary" />
+                <span className="font-mono text-[0.7rem] font-semibold uppercase tracking-wider text-muted-foreground">
+                  Free &amp; Unlimited
+                </span>
+                <span className="text-border">|</span>
+                <span>Batch Image Converter</span>
+              </div>
+            </Reveal>
+
+            <Reveal delay={60}>
+              <h1 className="hero-title mt-4 text-balance font-display font-bold tracking-tight text-foreground text-3xl sm:text-4xl md:text-5xl">
+                Convert Images to Any Format
+              </h1>
+            </Reveal>
+
+            <Reveal delay={120}>
+              <p className="mx-auto mt-3 max-w-2xl text-xs sm:text-sm text-muted-foreground leading-relaxed">
+                Batch convert between JPG, PNG, WebP, AVIF, GIF, BMP, SVG and ICO. Private by design,
+                processed locally in your browser with bulk ZIP download.
+              </p>
+            </Reveal>
+          </div>
+
+          <Reveal delay={180}>
+            <ImageConverterHero />
           </Reveal>
 
-          <Reveal delay={60}>
-            <h1 className="hero-title mt-4 text-balance font-display font-bold tracking-tight text-foreground text-3xl sm:text-4xl md:text-5xl">
-              Convert Images to Any Format
-            </h1>
-          </Reveal>
-
-          <Reveal delay={120}>
-            <p className="mx-auto mt-3 max-w-2xl text-xs sm:text-sm text-muted-foreground leading-relaxed">
-              Batch convert between JPG, PNG, WebP, AVIF, GIF, BMP, SVG, and ICO. 100% private,
-              processed locally in your browser with bulk ZIP download.
-            </p>
-          </Reveal>
+          <ConverterSections
+            toolName={TOOL_NAME}
+            features={content.features}
+            howItWorks={content.howItWorks}
+            featuresHeading={content.featuresHeading}
+            featuresSubline={content.featuresSubline}
+            privacyBannerTitle={content.privacyBannerTitle}
+            privacyBannerBody={content.privacyBannerBody}
+          />
         </div>
-
-        <Reveal delay={180}>
-          <ImageConverterHero />
-        </Reveal>
-
-        <ConverterSections
-          toolName="Image Converter"
-          features={FEATURES}
-          howItWorks={HOW_IT_WORKS}
-          faqs={FAQS}
-        />
       </div>
-    </div>
+
+      <ContentSections
+        toolName={TOOL_NAME}
+        intro={content.intro}
+        howToTitle={content.howToTitle}
+        howTo={content.howTo}
+        formatsTitle={content.formatsTitle}
+        formats={content.formats}
+        useCasesTitle={content.useCasesTitle}
+        useCases={content.useCases}
+        privacyTitle={content.privacyTitle}
+        privacyNote={content.privacyNote}
+        faqs={content.faqs}
+        relatedGuides={content.relatedGuides}
+        relatedTools={content.relatedTools}
+      />
+
+      <CTASection />
+    </>
   );
 }

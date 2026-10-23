@@ -1,8 +1,6 @@
 "use client";
 
-import { useState } from "react";
 import {
-  ChevronDown,
   ShieldCheck,
   Zap,
   Lock,
@@ -15,8 +13,8 @@ import {
   Binary,
   Image as ImageIcon,
   QrCode,
+  Link2,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 export interface FaqItem {
   q: string;
@@ -41,22 +39,35 @@ const ICON_MAP: Record<string, any> = {
   binary: Binary,
   image: ImageIcon,
   qrcode: QrCode,
+  link: Link2,
   sparkles: Sparkles,
 };
 
+/**
+ * Presentational chrome for the converter pages. This component deliberately
+ * holds NO literal body copy: the features heading, its sub-line, the privacy
+ * banner title and the privacy banner body are all REQUIRED props with no
+ * defaults, so each converter page is forced to supply its own unique wording.
+ * This is what prevents the eight pages from sharing a verbatim paragraph the
+ * way the old shared template did (see the AdSense "low-value content" fix).
+ */
 export function ConverterSections({
   toolName,
   features,
   howItWorks,
-  faqs,
+  featuresHeading,
+  featuresSubline,
+  privacyBannerTitle,
+  privacyBannerBody,
 }: {
   toolName: string;
   features: FeatureItem[];
   howItWorks: Array<{ step: number; title: string; description: string }>;
-  faqs: FaqItem[];
+  featuresHeading: string;
+  featuresSubline: string;
+  privacyBannerTitle: string;
+  privacyBannerBody: string;
 }) {
-  const [openIdx, setOpenIdx] = useState<number | null>(0);
-
   return (
     <div className="section-shell relative z-10 space-y-20 py-16">
       {/* Features Grid */}
@@ -65,12 +76,8 @@ export function ConverterSections({
           <span className="text-xs font-mono font-semibold uppercase tracking-wider text-primary">
             Key Advantages
           </span>
-          <h2 className="text-2xl sm:text-3xl font-display font-bold mt-2">
-            Engineered for Speed, Quality & Privacy
-          </h2>
-          <p className="text-sm text-muted-foreground mt-2">
-            MediaDocks processes everything directly in your browser. No files are stored or logged.
-          </p>
+          <h2 className="text-2xl sm:text-3xl font-display font-bold mt-2">{featuresHeading}</h2>
+          <p className="text-sm text-muted-foreground mt-2">{featuresSubline}</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
@@ -98,11 +105,9 @@ export function ConverterSections({
       <section className="rounded-2xl border border-border/80 bg-surface-strong/60 p-8 sm:p-12">
         <div className="text-center max-w-2xl mx-auto mb-10">
           <span className="text-xs font-mono font-semibold uppercase tracking-wider text-primary">
-            Simple 3-Step Process
+            Step by Step
           </span>
-          <h2 className="text-2xl sm:text-3xl font-display font-bold mt-2">
-            How to use {toolName}
-          </h2>
+          <h2 className="text-2xl sm:text-3xl font-display font-bold mt-2">How to use {toolName}</h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -112,69 +117,20 @@ export function ConverterSections({
                 {step.step}
               </div>
               <h4 className="text-sm font-semibold text-foreground">{step.title}</h4>
-              <p className="mt-1.5 text-xs text-muted-foreground max-w-xs">
-                {step.description}
-              </p>
+              <p className="mt-1.5 text-xs text-muted-foreground max-w-xs">{step.description}</p>
             </div>
           ))}
         </div>
       </section>
 
-      {/* Privacy Guarantee Banner */}
+      {/* Privacy Guarantee Banner — wording supplied per page */}
       <section className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-6 flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
         <div className="h-12 w-12 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-500 shrink-0">
           <ShieldCheck className="h-6 w-6" />
         </div>
         <div>
-          <h4 className="text-sm font-semibold text-foreground">
-            Zero Server Uploads & Client-Side Privacy
-          </h4>
-          <p className="mt-1 text-xs text-muted-foreground leading-relaxed">
-            Your images, PDFs, and data never leave your computer. Processing occurs entirely in local memory via HTML5 Canvas and WebAssembly. No permanent storage, no tracking, and no data retention.
-          </p>
-        </div>
-      </section>
-
-      {/* Frequently Asked Questions */}
-      <section className="max-w-3xl mx-auto">
-        <div className="text-center mb-8">
-          <span className="text-xs font-mono font-semibold uppercase tracking-wider text-primary">
-            FAQ
-          </span>
-          <h2 className="text-2xl font-display font-bold mt-2">
-            Frequently Asked Questions
-          </h2>
-        </div>
-
-        <div className="space-y-3">
-          {faqs.map((faq, idx) => {
-            const isOpen = openIdx === idx;
-            return (
-              <div
-                key={idx}
-                className="rounded-lg border border-border/80 bg-surface/80 overflow-hidden"
-              >
-                <button
-                  type="button"
-                  onClick={() => setOpenIdx(isOpen ? null : idx)}
-                  className="flex w-full items-center justify-between p-4 text-left text-sm font-semibold transition-colors hover:text-primary"
-                >
-                  <span>{faq.q}</span>
-                  <ChevronDown
-                    className={cn(
-                      "h-4 w-4 shrink-0 transition-transform duration-200 text-muted-foreground",
-                      isOpen && "rotate-180 text-primary",
-                    )}
-                  />
-                </button>
-                {isOpen && (
-                  <div className="px-4 pb-4 text-xs text-muted-foreground leading-relaxed border-t border-border/40 pt-3">
-                    {faq.a}
-                  </div>
-                )}
-              </div>
-            );
-          })}
+          <h4 className="text-sm font-semibold text-foreground">{privacyBannerTitle}</h4>
+          <p className="mt-1 text-xs text-muted-foreground leading-relaxed">{privacyBannerBody}</p>
         </div>
       </section>
     </div>
