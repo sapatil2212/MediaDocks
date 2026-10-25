@@ -317,6 +317,18 @@
   box-shadow: var(--shadow-soft);
 }
 
+/* Transparency checkerboard behind cut-out previews. */
+@utility checkerboard {
+  background-color: #ffffff;
+  background-image: conic-gradient(#e5e7eb 25%, transparent 0 50%, #e5e7eb 0 75%, transparent 0);
+  background-size: 16px 16px;
+
+  @variant dark {
+    background-color: #27272a;
+    background-image: conic-gradient(#3f3f46 25%, transparent 0 50%, #3f3f46 0 75%, transparent 0);
+  }
+}
+
 /* Monospace figures that must not jitter while animating. */
 @utility figure-mono {
   font-variant-numeric: tabular-nums;

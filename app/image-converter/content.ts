@@ -118,6 +118,7 @@ export const content: ConverterContent = {
   relatedTools: [
     { href: "/image-resizer", label: "Image resizer — change dimensions" },
     { href: "/svg-to-png", label: "SVG to PNG — rasterize vectors" },
+    { href: "/background-remover", label: "Background remover — transparent cutouts" },
   ],
   featuresHeading: "Every format, one batch, zero uploads",
   featuresSubline:

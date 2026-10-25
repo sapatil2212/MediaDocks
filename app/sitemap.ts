@@ -27,6 +27,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/url-shortener", priority: 0.9, changeFrequency: "weekly" },
     { path: "/image-converter", priority: 0.9, changeFrequency: "weekly" },
     { path: "/image-resizer", priority: 0.9, changeFrequency: "weekly" },
+    { path: "/background-remover", priority: 0.9, changeFrequency: "weekly" },
     { path: "/pdf-to-image", priority: 0.9, changeFrequency: "weekly" },
     { path: "/image-to-pdf", priority: 0.9, changeFrequency: "weekly" },
     { path: "/qr-code-generator", priority: 0.9, changeFrequency: "weekly" },

@@ -25,6 +25,7 @@ const RESERVED_SLUGS = new Set([
   "how-it-works",
   "image-converter",
   "image-resizer",
+  "background-remover",
   "pdf-to-image",
   "image-to-pdf",
   "qr-code-generator",

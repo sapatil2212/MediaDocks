@@ -112,7 +112,10 @@ export const content: ConverterContent = {
       label: "Resolutions explained: how dimensions work",
     },
   ],
-  relatedTools: [{ href: "/image-converter", label: "Image converter — change the format" }],
+  relatedTools: [
+    { href: "/image-converter", label: "Image converter — change the format" },
+    { href: "/background-remover", label: "Background remover — cut out the subject" },
+  ],
   featuresHeading: "The right dimensions, without the distortion",
   featuresSubline:
     "Resize by pixels or percentage with the aspect ratio locked, and reformat on export if you need to.",

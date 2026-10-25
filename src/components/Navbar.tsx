@@ -23,6 +23,7 @@ import {
   FileCode2,
   Binary,
   Link2,
+  Eraser,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/Logo";
@@ -105,6 +106,12 @@ const CONVERTER_OPTIONS = [
     slug: "/image-resizer",
     tagline: "Resize by px or %, auto-detect aspect ratio",
     icon: Scaling,
+  },
+  {
+    name: "Background Remover",
+    slug: "/background-remover",
+    tagline: "AI cutouts to transparent PNG, bulk ZIP (up to 25)",
+    icon: Eraser,
   },
   {
     name: "PDF to Image",

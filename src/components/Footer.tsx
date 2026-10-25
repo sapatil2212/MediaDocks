@@ -110,6 +110,11 @@ export function Footer() {
               </Link>
             </li>
             <li>
+              <Link href="/background-remover" className="transition-colors hover:text-foreground">
+                Background Remover
+              </Link>
+            </li>
+            <li>
               <Link href="/pdf-to-image" className="transition-colors hover:text-foreground">
                 PDF to Image
               </Link>

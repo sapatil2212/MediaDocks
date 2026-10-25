@@ -1,7 +1,13 @@
+import path from "path";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: "standalone",
+  // Pin the tracing root to this project. Without it, Next infers the root from
+  // the nearest parent lockfile, so a build inside a git worktree nests
+  // server.js under .next/standalone/<subpath>/ and the postbuild check fails.
+  // In a normal checkout and in Docker (/app) this equals the inferred root.
+  outputFileTracingRoot: path.resolve(__dirname),
   reactStrictMode: true,
   images: {
     remotePatterns: [
@@ -58,6 +64,11 @@ const nextConfig: NextConfig = {
       ["/video-to-mp3", "/video-to-audio"],
       ["/extract-audio", "/video-to-audio"],
       ["/video-audio-extractor", "/video-to-audio"],
+      // Background remover
+      ["/remove-background", "/background-remover"],
+      ["/remove-bg", "/background-remover"],
+      ["/bg-remover", "/background-remover"],
+      ["/background-eraser", "/background-remover"],
       // Pinterest
       ["/pin-downloader", "/pinterest-downloader"],
       ["/pinterest-photo-downloader", "/pinterest-downloader"],

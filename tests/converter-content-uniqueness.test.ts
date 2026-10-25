@@ -9,9 +9,10 @@ import { content as base64Image } from "@/app/base64-image/content";
 import { content as qrCode } from "@/app/qr-code-generator/content";
 import { content as svgToPng } from "@/app/svg-to-png/content";
 import { content as urlShortener } from "@/app/url-shortener/content";
+import { content as backgroundRemover } from "@/app/background-remover/content";
 
 /**
- * LOCKED invariant for the AdSense "low-value content" fix: the eight converter
+ * LOCKED invariant for the AdSense "low-value content" fix: the nine converter
  * pages must not share templated prose. This test reads every content module,
  * pulls out all the real prose (intro paragraphs, use cases, the privacy note,
  * every FAQ answer, every how-to body, and the per-page ConverterSections copy),
@@ -29,6 +30,7 @@ const PAGES: Array<{ name: string; content: ConverterContent }> = [
   { name: "qr-code-generator", content: qrCode },
   { name: "svg-to-png", content: svgToPng },
   { name: "url-shortener", content: urlShortener },
+  { name: "background-remover", content: backgroundRemover },
 ];
 
 const MIN_WORDS_PER_PAGE = 450;

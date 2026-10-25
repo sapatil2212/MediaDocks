@@ -14,6 +14,7 @@ import {
   Image as ImageIcon,
   QrCode,
   Link2,
+  Eraser,
 } from "lucide-react";
 
 export interface FaqItem {
@@ -41,6 +42,7 @@ const ICON_MAP: Record<string, any> = {
   qrcode: QrCode,
   link: Link2,
   sparkles: Sparkles,
+  eraser: Eraser,
 };
 
 /**
