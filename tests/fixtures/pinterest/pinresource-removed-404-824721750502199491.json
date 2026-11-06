@@ -1,0 +1,15 @@
+{
+  "_fixture": "PinResource/get unauth_react_main_pin for pin 824721750502199491; HTTP 404; trimmed to media fields, client_context removed; fetched 2026-11-06",
+  "resource_response": {
+    "status": null,
+    "http_status": 404,
+    "error": {
+      "status": "failure",
+      "http_status": 404,
+      "code": 50,
+      "message": "Pin not found.",
+      "api_error_code": 50
+    },
+    "data": null
+  }
+}

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { groupFormats } from "@/lib/engine/format-groups";
-import type { YtdlpInfo } from "@/lib/engine/ytdlp";
+import { classifyError, type YtdlpInfo } from "@/lib/engine/ytdlp";
+import { readJsonFixture } from "./helpers/fixtures";
 
 /** A realistic YouTube-style info blob: separate video-only + audio-only streams. */
 const youtubeInfo: YtdlpInfo = {
@@ -94,6 +95,87 @@ describe("groupFormats — audio menu", () => {
     const { options } = groupFormats(youtubeInfo, false);
     const audio = options.filter((o) => o.kind === "audio");
     expect(audio.map((o) => o.id)).toEqual(["a-source"]);
+  });
+});
+
+describe("groupFormats — Pinterest (saved yt-dlp -J output)", () => {
+  const classic = readJsonFixture<YtdlpInfo>("ytdlp-J-664281013778109217.json");
+  const separateAudio = readJsonFixture<YtdlpInfo>("ytdlp-J-32580797303002442.json");
+  const separateAudioWithMp4 = readJsonFixture<YtdlpInfo>("ytdlp-J-1052575744158055904.json");
+
+  it("labels portrait renditions by their short side and prefers the direct V_720P file", () => {
+    const { postKind, options } = groupFormats(classic, true);
+    const video = options.filter((o) => o.kind === "video");
+
+    expect(postKind).toBe("video");
+    expect(video.map((o) => o.id)).toEqual(["v-720", "v-480", "v-360", "v-240"]);
+    // yt-dlp reports V_720P as 1080x1920; the file is 720x1280.
+    expect(video[0]).toMatchObject({
+      label: "720p",
+      width: 720,
+      height: 1280,
+      spec: { strategy: "engine-format", formatId: "V_720P" },
+    });
+    // 640x1136 beats 480x852 on the 480 rung by frame size.
+    expect(video[1]?.spec).toEqual({ strategy: "engine-format", formatId: "V_HLSV4-1613" });
+    expect(video[1]).toMatchObject({ width: 640, height: 1136 });
+  });
+
+  it("pairs video-only HLS with the separate audio rendition that has no acodec", () => {
+    const { postKind, options } = groupFormats(separateAudio, true);
+
+    expect(postKind).toBe("video");
+    const p720 = options.find((o) => o.id === "v-720");
+    expect(p720?.spec).toEqual({
+      strategy: "engine-mux",
+      videoFormatId: "V_HLSV3_MOBILE-1442",
+      audioFormatId: "V_HLSV3_MOBILE-audio1-1",
+    });
+    expect(options.some((o) => o.id === "a-source")).toBe(true);
+  });
+
+  it("uses V_720P for 720p and muxes the lower rungs with the HLS audio", () => {
+    const { options } = groupFormats(separateAudioWithMp4, true);
+    const video = options.filter((o) => o.kind === "video");
+
+    expect(video[0]).toMatchObject({
+      id: "v-720",
+      spec: { strategy: "engine-format", formatId: "V_720P" },
+    });
+    for (const lower of video.slice(1)) {
+      expect(lower.spec).toMatchObject({ strategy: "engine-mux", audioFormatId: "V_HLSV4-audio1-1" });
+    }
+  });
+
+  it("offers no mux options without FFmpeg", () => {
+    const { options } = groupFormats(separateAudio, false);
+    expect(options.some((o) => o.spec.strategy === "engine-mux")).toBe(false);
+  });
+
+  it("labels a portrait 1080x1920 progressive format 1080p", () => {
+    const { options } = groupFormats(
+      {
+        formats: [
+          { format_id: "22", ext: "mp4", vcodec: "avc1", acodec: "mp4a", width: 1080, height: 1920, protocol: "https" },
+        ],
+      },
+      true,
+    );
+    expect(options[0]).toMatchObject({ id: "v-1080", label: "1080p", width: 1080, height: 1920 });
+  });
+});
+
+describe("classifyError", () => {
+  it("does not mistake an ordinary download error for private content", () => {
+    expect(classifyError("ERROR: Unable to download webpage: HTTP Error 404: Not Found")).not.toBe(
+      "private",
+    );
+    expect(classifyError("ERROR: Unable to extract image url")).not.toBe("private");
+  });
+
+  it("still recognises age-restricted and missing-format errors", () => {
+    expect(classifyError("ERROR: This video is age-restricted")).toBe("private");
+    expect(classifyError("ERROR: No video formats found!")).toBe("unsupported");
   });
 });
 

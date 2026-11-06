@@ -29,6 +29,20 @@ describe("detectPlatform", () => {
     expect(detection.normalizedUrl).toBeTruthy();
   });
 
+  it.each([
+    "https://pinterest.co.uk/pin/311241024270560610/",
+    "https://www.pinterest.com.au/pin/311241024270560610/",
+    "https://in.pinterest.com/pin/1084663891475263837/",
+    "https://pinterest.de/pin/311241024270560610/",
+  ])("detects the Pinterest country domain %s", (url) => {
+    expect(detectPlatform(url).platform).toBe("pinterest");
+  });
+
+  it("does not treat look-alike hosts as Pinterest", () => {
+    expect(detectPlatform("https://pinterest.evil.com/pin/123").platform).toBeNull();
+    expect(detectPlatform("https://notpinterest.com/pin/123").platform).toBeNull();
+  });
+
   it("accepts URLs without a protocol", () => {
     expect(detectPlatform("instagram.com/reel/example").platform).toBe("instagram");
     expect(detectPlatform("  www.x.com/user/status/1  ").platform).toBe("x");

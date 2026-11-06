@@ -247,7 +247,7 @@ export function ResultCard({ result, onReset }: { result: MediaResult; onReset: 
       const zipBlob = await zip.generateAsync({ type: "blob" });
       if (!alive.current) return;
 
-      const safeTitle = (result.title || "instagram_carousel")
+      const safeTitle = (result.title || `${result.platform}_carousel`)
         .slice(0, 30)
         .replace(/[^a-zA-Z0-9_-]/g, "_")
         .replace(/_+/g, "_");

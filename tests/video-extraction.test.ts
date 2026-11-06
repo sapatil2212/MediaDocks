@@ -2,7 +2,9 @@ import { describe, expect, it } from "vitest";
 import { validateCandidates, type MediaCandidate } from "@/lib/media/candidates";
 import { extractEmbeddedVideoUrls, looksLikeVideoPayload } from "@/lib/platforms/video/embedded-json";
 import { InstagramVideoResolver } from "@/lib/platforms/video/instagram";
-import { PinterestVideoResolver } from "@/lib/platforms/video/pinterest";
+import { PinterestVideoResolver, selectPinterestHls } from "@/lib/platforms/video/pinterest";
+import { parsePinterestPage, pinRecordFromResource } from "@/lib/platforms/pinterest-data";
+import { readFixture, readJsonFixture } from "./helpers/fixtures";
 import { FacebookVideoResolver } from "@/lib/platforms/video/facebook";
 import { TwitterVideoResolver } from "@/lib/platforms/video/x";
 import { parsePublicMetadata } from "@/lib/platforms/metadata";
@@ -234,6 +236,55 @@ describe("PinterestVideoResolver", () => {
       metadata: parsePublicMetadata(html),
     });
     expect(candidates).toEqual([]);
+  });
+
+  it("labels the structured v720P rendition by its real size", async () => {
+    const html = readFixture("video-pin-classic-videos-videolist.html");
+    const records = parsePinterestPage(html, "664281013778109217").records;
+    const candidates = await new PinterestVideoResolver().resolve({
+      url: new URL("https://www.pinterest.com/pin/664281013778109217/"),
+      html,
+      metadata: parsePublicMetadata(html),
+      payload: records,
+    });
+
+    expect(candidates[0]).toMatchObject({
+      url: "https://v1.pinimg.com/videos/mc/720p/12/83/f0/1283f06c1c8fa040011cd7231f33f069.mp4",
+      quality: "720p",
+      width: 720,
+      height: 1280,
+      duration: 58,
+      source: "pinterest:records",
+    });
+    // Manifests are never direct candidates.
+    expect(candidates.some((candidate) => candidate.url.includes(".m3u8"))).toBe(false);
+  });
+
+  it("drops HEVC/HDR files when an h264 MP4 exists", async () => {
+    const html = page(
+      `<meta property="og:image" content="https://i.pinimg.com/736x/a.jpg" />`,
+      `<script>{"a":"https://v1.pinimg.com/videos/iht/hdrct/aa/bb/x_t3.mp4","b":"https://v1.pinimg.com/videos/iht/720p/aa/bb/x.mp4"}</script>`,
+    );
+    const candidates = await new PinterestVideoResolver().resolve({
+      url: new URL("https://www.pinterest.com/pin/123/"),
+      html,
+      metadata: parsePublicMetadata(html),
+    });
+
+    expect(candidates.map((candidate) => candidate.url)).toEqual([
+      "https://v1.pinimg.com/videos/iht/720p/aa/bb/x.mp4",
+    ]);
+    expect(candidates[0]?.quality).toBe("720p");
+  });
+
+  it("selects the HLS master playlist of an HLS-only Pin", () => {
+    const { record } = pinRecordFromResource(
+      readJsonFixture("pinresource-story-video-hls-only-32580797303002442.json"),
+    );
+    expect(selectPinterestHls(record ? [record] : [])).toBe(
+      "https://v1.pinimg.com/videos/iht/hls/5b/10/89/5b1089ac8eb5dff80ff2989f5b5b2b95.m3u8",
+    );
+    expect(selectPinterestHls([])).toBeUndefined();
   });
 });
 

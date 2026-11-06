@@ -1,3 +1,4 @@
+import { isPinterestHost } from "@/lib/platforms/pinterest-url";
 import type { Platform } from "./media";
 
 export interface PlatformMeta {
@@ -8,6 +9,8 @@ export interface PlatformMeta {
   description: string;
   status: "available" | "soon";
   hosts: string[];
+  /** Extra host rule for platforms with many domains (Pinterest country TLDs). */
+  matchesHost?: (host: string) => boolean;
   /**
    * A real, public URL used by the "try an example" affordance.
    *
@@ -61,9 +64,10 @@ export const PLATFORMS: PlatformMeta[] = [
     id: "pinterest",
     name: "Pinterest",
     colorClass: "text-brand-pinterest",
-    description: "Pin images at published size, and video Pins.",
+    description: "Pin images at original size, video and Idea Pins as MP4.",
     status: "available",
-    hosts: ["pinterest.com", "pinterest.ca", "pin.it"],
+    hosts: ["pinterest.com", "pin.it"],
+    matchesHost: isPinterestHost,
     exampleUrl: "https://www.pinterest.com/pin/350295677252925156/",
     exampleLabel: "An image Pin",
     outputs: "JPEG / PNG · video Pin MP4",
@@ -111,7 +115,10 @@ export function detectPlatform(raw: string): DetectionResult {
   }
   const host = url.hostname.replace(/^www\./, "").toLowerCase();
   const platform =
-    PLATFORMS.find((p) => p.hosts.some((h) => host === h || host.endsWith(`.${h}`))) ?? null;
+    PLATFORMS.find(
+      (p) =>
+        p.hosts.some((h) => host === h || host.endsWith(`.${h}`)) || Boolean(p.matchesHost?.(host)),
+    ) ?? null;
   const path = url.pathname === "/" ? "" : url.pathname;
   const label = `${host}${path}${url.search}`.slice(0, 72);
   return { isUrl: true, platform, label };

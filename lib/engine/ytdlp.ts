@@ -20,14 +20,18 @@ export interface YtdlpFormat {
   height?: number;
   width?: number;
   fps?: number;
-  abr?: number;
-  tbr?: number;
+  abr?: number | null;
+  tbr?: number | null;
   vbr?: number;
   filesize?: number;
   filesize_approx?: number;
   protocol?: string;
   format_note?: string;
   language?: string | null;
+  /** "1280x720", or "audio only" for audio renditions. */
+  resolution?: string;
+  url?: string;
+  manifest_url?: string;
 }
 
 export interface YtdlpInfo {
@@ -67,7 +71,12 @@ const PRIVATE_MARKERS = [
   "sign in",
   "not available",
   "members-only",
-  "age",
+  // A bare "age" also matched "webpage", "image" and "message", which turned
+  // ordinary network errors into "private content" and skipped the fallback.
+  "age-restricted",
+  "age restricted",
+  "confirm your age",
+  "inappropriate for some users",
   "requested format is not available",
 ];
 
@@ -138,7 +147,7 @@ const BLOCKED_MARKERS = [
   "unable to extract yt initial data",
 ];
 
-function classifyError(stderr: string): ProbeResult["errorKind"] {
+export function classifyError(stderr: string): ProbeResult["errorKind"] {
   const lower = stderr.toLowerCase();
   if (lower.includes("engine-missing")) return "engine-missing";
   if (BLOCKED_MARKERS.some((marker) => lower.includes(marker))) return "blocked";
@@ -182,12 +191,49 @@ export async function probeUrl(url: string): Promise<ProbeResult> {
   }
 }
 
+/** yt-dlp reported neither codec. */
+export function hasUnknownCodecs(format: YtdlpFormat): boolean {
+  return !format.vcodec && !format.acodec;
+}
+
+const PROGRESSIVE_EXTS = new Set(["mp4", "webm", "mov", "m4v"]);
+
+/**
+ * A direct file with unknown codecs but real dimensions, such as Pinterest's
+ * `V_720P` (an h264+aac MP4 that yt-dlp lists without codec strings). yt-dlp
+ * itself treats unknown codecs as audio+video, so we do the same.
+ */
+function isCodecUnknownProgressive(format: YtdlpFormat): boolean {
+  const protocol = (format.protocol ?? "").toLowerCase();
+  return (
+    hasUnknownCodecs(format) &&
+    (format.height ?? 0) > 0 &&
+    PROGRESSIVE_EXTS.has((format.ext ?? "").toLowerCase()) &&
+    (protocol === "http" || protocol === "https")
+  );
+}
+
+/**
+ * An audio rendition whose codec yt-dlp did not report, such as Pinterest's
+ * separate HLS audio (`V_HLSV4-audio1-1`: vcodec "none", no acodec).
+ */
+function isCodecUnknownAudio(format: YtdlpFormat): boolean {
+  if (format.vcodec !== "none" || format.acodec) return false;
+  return (
+    format.resolution === "audio only" || /audio/i.test(format.format_id) || (format.abr ?? 0) > 0
+  );
+}
+
 export function isVideoFormat(format: YtdlpFormat): boolean {
-  return Boolean(format.vcodec && format.vcodec !== "none");
+  return Boolean(format.vcodec && format.vcodec !== "none") || isCodecUnknownProgressive(format);
 }
 
 export function isAudioFormat(format: YtdlpFormat): boolean {
-  return Boolean(format.acodec && format.acodec !== "none");
+  return (
+    Boolean(format.acodec && format.acodec !== "none") ||
+    isCodecUnknownAudio(format) ||
+    isCodecUnknownProgressive(format)
+  );
 }
 
 export function isMuxedFormat(format: YtdlpFormat): boolean {

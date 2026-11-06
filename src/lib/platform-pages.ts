@@ -192,7 +192,7 @@ const PAGES: Record<Platform, PlatformPage> = {
     name: "Pinterest",
     metaTitle: "Pinterest Photo Downloader — Images & Video Pins",
     metaDescription:
-      "Paste a pinterest.com Pin or pin.it link to save the image at its published size, or the MP4 from a video Pin. Free, no login, no sign up.",
+      "Paste a pinterest.com Pin or pin.it link to save the image at original size, or the MP4 from a video Pin. Free, no login, no sign up.",
     h1: "Pinterest photo & video downloader",
     tagline: "Paste a Pin link. Save the image Pinterest publishes.",
     intro:
@@ -238,7 +238,7 @@ const PAGES: Record<Platform, PlatformPage> = {
       },
       {
         heading: "Pinterest video downloader",
-        body: "Video Pins resolve to the MP4 Pinterest publishes for them, and the audio can be taken separately as MP3. Many Idea Pins publish no video file at all; those report the details and the cover image rather than inventing a stream.",
+        body: "Video Pins and Idea Pin videos are saved as MP4 with their sound, and the audio can be taken separately as MP3. When Pinterest streams a video only as separate video and audio tracks, MediaDocks joins them into one MP4 instead of handing you the cover image.",
       },
       {
         heading: "pin.it link downloader",
@@ -267,7 +267,7 @@ const PAGES: Record<Platform, PlatformPage> = {
     faqs: [
       {
         q: "Can I download Pinterest images in full quality?",
-        a: "MediaDocks saves exactly the file Pinterest publishes for that Pin. When that file is a resized derivative, the format is labelled Preview so you know it is not the original.",
+        a: "Yes, when Pinterest serves the original upload. MediaDocks asks for the original-size file first and labels it Original; if only a resized derivative is available, the format is labelled Preview so you know it is not the original.",
       },
       {
         q: "Do pin.it short links work?",
@@ -275,7 +275,7 @@ const PAGES: Record<Platform, PlatformPage> = {
       },
       {
         q: "Can I download Pinterest videos and Idea Pins?",
-        a: "When Pinterest publishes a video URL for the Pin, it is offered as a download. Many Idea Pins do not publish one, and in that case you get the details and the cover image.",
+        a: "Yes. Video Pins and Idea Pin videos download as MP4 with audio, including Pins that Pinterest only streams as separate video and audio tracks. A Pin that is removed or private shows a clear not-found message instead.",
       },
       {
         q: "Is a Pinterest account needed?",

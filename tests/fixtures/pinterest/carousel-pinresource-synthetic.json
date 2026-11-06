@@ -1,0 +1,47 @@
+{
+  "_fixture": "SYNTHETIC PinResource response for a carousel Pin (snake_case), derived from pinresource-image-311241024270560610.json. Not captured from a live Pin.",
+  "resource_response": {
+    "status": "success",
+    "http_status": 200,
+    "error": null,
+    "data": {
+      "id": "900000000000000002",
+      "title": "Kitchen shelf ideas",
+      "is_video": false,
+      "videos": null,
+      "story_pin_data": null,
+      "images": {
+        "736x": { "width": 736, "height": 736, "url": "https://i.pinimg.com/736x/dd/dd/dd/dddd000000000000000000000000001.jpg" },
+        "orig": { "width": 1080, "height": 1080, "url": "https://i.pinimg.com/originals/dd/dd/dd/dddd000000000000000000000000001.jpg" }
+      },
+      "carousel_data": {
+        "id": "synthetic-carousel-2",
+        "index": 0,
+        "carousel_slots": [
+          {
+            "id": "slot-1",
+            "images": {
+              "736x": { "width": 736, "height": 736, "url": "https://i.pinimg.com/736x/dd/dd/dd/dddd000000000000000000000000001.jpg" },
+              "orig": { "width": 1080, "height": 1080, "url": "https://i.pinimg.com/originals/dd/dd/dd/dddd000000000000000000000000001.jpg" }
+            }
+          },
+          {
+            "id": "slot-2",
+            "images": {
+              "736x": { "width": 736, "height": 736, "url": "https://i.pinimg.com/736x/ee/ee/ee/eeee000000000000000000000000002.jpg" },
+              "orig": { "width": 1080, "height": 1080, "url": "https://i.pinimg.com/originals/ee/ee/ee/eeee000000000000000000000000002.jpg" }
+            }
+          },
+          {
+            "id": "slot-3",
+            "images": {
+              "736x": { "width": 736, "height": 736, "url": "https://i.pinimg.com/736x/ff/ff/ff/ffff000000000000000000000000003.jpg" }
+            }
+          }
+        ]
+      },
+      "embed": null,
+      "domain": "Uploaded by user"
+    }
+  }
+}

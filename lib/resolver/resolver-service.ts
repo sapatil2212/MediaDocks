@@ -79,9 +79,10 @@ export async function resolveMedia(
   }
 
   let target = await assertSafeUrl(validated.normalizedUrl);
+  const fromShortLink = SHORTLINK_HOSTS.has(target.hostname.toLowerCase().replace(/^www\./, ""));
 
   // Shortlinks: follow validated redirects, then detect the platform again.
-  if (SHORTLINK_HOSTS.has(target.hostname.toLowerCase().replace(/^www\./, ""))) {
+  if (fromShortLink) {
     const expanded = await expandShortLink(target);
     if (expanded && expanded.toString() !== target.toString()) {
       const redetected = detectPlatformFromUrl(expanded);
@@ -99,6 +100,14 @@ export async function resolveMedia(
       platform = redetected.platform;
       typeHint = redetected.typeHint;
     }
+  }
+
+  // Canonical item URL: drops share parameters and country domains so the
+  // engine and the resolver both read one stable address.
+  const canonical = getResolver(platform).canonicalize?.(target, { fromShortLink });
+  if (canonical && canonical.toString() !== target.toString()) {
+    target = await assertSafeUrl(canonical);
+    trace.add("REDIRECT", { canonical: true, to: target.hostname });
   }
 
   // Primary path: the yt-dlp engine, which handles every platform uniformly and

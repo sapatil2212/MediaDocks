@@ -21,6 +21,7 @@ export function Downloader({ placeholder }: { placeholder?: string } = {}) {
   const [step, setStep] = useState(0);
   const [result, setResult] = useState<MediaResult | null>(null);
   const [errorCode, setErrorCode] = useState<ResolveErrorCode>("invalid_url");
+  const [errorDetail, setErrorDetail] = useState<string | undefined>(undefined);
   const runId = useRef(0);
   const { items, add, remove, clear } = useRecent();
 
@@ -69,6 +70,14 @@ export function Downloader({ placeholder }: { placeholder?: string } = {}) {
       if (runId.current !== id) return;
       const code = error instanceof ResolveError ? error.code : "restricted";
       setErrorCode(code);
+      // Pinterest's resolver words its not-found / not-a-Pin errors for users
+      // ("This Pin was removed…", "This pin.it link…"); other platforms keep
+      // the generic copy.
+      setErrorDetail(
+        error instanceof ResolveError && detectPlatform(trimmed).platform?.id === "pinterest"
+          ? error.message
+          : undefined,
+      );
       setStatus("error");
       toast.error(code === "invalid_url" ? "Invalid URL" : "Couldn't process that link");
     }
@@ -113,7 +122,9 @@ export function Downloader({ placeholder }: { placeholder?: string } = {}) {
       />
 
       {status === "processing" ? <ProcessingState step={step} /> : null}
-      {status === "error" ? <ErrorState code={errorCode} onRetry={() => run(url)} /> : null}
+      {status === "error" ? (
+        <ErrorState code={errorCode} detail={errorDetail} onRetry={() => run(url)} />
+      ) : null}
       {status === "result" && result ? (
         <ResultCard
           result={result}

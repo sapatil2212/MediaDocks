@@ -42,6 +42,7 @@ const CONTAINER_MIME: Record<string, string> = {
 function extForSpec(spec: DownloadSpec): string {
   switch (spec.strategy) {
     case "engine-mux":
+    case "engine-hls":
       return "mp4";
     case "engine-audio":
       return spec.audioCodec === "mp3" ? "mp3" : "m4a";
@@ -54,7 +55,7 @@ function extForSpec(spec: DownloadSpec): string {
  * Builds the yt-dlp argument list for a spec. All output is confined to
  * `workDir`, and `--max-filesize` guards the download size.
  */
-function buildArgs(
+export function buildEngineArgs(
   spec: DownloadSpec,
   sourceUrl: string,
   outputTemplate: string,
@@ -86,6 +87,11 @@ function buildArgs(
     case "engine-mux":
       // Merge the chosen video with the chosen audio into an mp4.
       base.push("-f", `${spec.videoFormatId}+${spec.audioFormatId}`, "--merge-output-format", "mp4");
+      break;
+    case "engine-hls":
+      // Best video with the separate audio rendition when there is one,
+      // otherwise the best muxed variant.
+      base.push("-f", "bv*+ba/b", "--merge-output-format", "mp4");
       break;
     case "engine-audio":
       base.push("-f", spec.formatId);
@@ -138,11 +144,16 @@ export async function runEngineDownload(
     throw new MediaFlowError("DOWNLOAD_FAILED", "The download engine is not available.");
   }
 
-  // yt-dlp only fetches this validated public URL.
-  await assertSafeUrl(sourceUrl);
+  // yt-dlp only fetches this validated public URL. A bare HLS manifest is a
+  // media file, so it must also sit on an allow-listed media CDN.
+  await assertSafeUrl(sourceUrl, { requireMediaHost: spec.strategy === "engine-hls" });
 
   const ffmpeg = await ffmpegPath();
-  if ((spec.strategy === "engine-mux" || (spec.strategy === "engine-audio" && spec.audioCodec === "mp3")) && !ffmpeg) {
+  const needsFfmpeg =
+    spec.strategy === "engine-mux" ||
+    spec.strategy === "engine-hls" ||
+    (spec.strategy === "engine-audio" && spec.audioCodec === "mp3");
+  if (needsFfmpeg && !ffmpeg) {
     throw new MediaFlowError("DOWNLOAD_FAILED", "This format needs FFmpeg, which isn't available.");
   }
 
@@ -156,7 +167,7 @@ export async function runEngineDownload(
   };
 
   try {
-    const args = buildArgs(spec, sourceUrl, outputTemplate, ffmpeg);
+    const args = buildEngineArgs(spec, sourceUrl, outputTemplate, ffmpeg);
     debugLog("MEDIA", { engineDownload: spec.strategy, ext: expectedExt });
 
     const { code, stderr, timedOut } = await runToCompletion(command.bin, [
@@ -204,7 +215,10 @@ export async function runEngineDownload(
       );
     }
 
-    const actualExt = path.extname(filePath).replace(/^\./, "").toLowerCase() || expectedExt;
+    let actualExt = path.extname(filePath).replace(/^\./, "").toLowerCase() || expectedExt;
+    // An audio-only rendition delivered in an .mp4 container (Pinterest's HLS
+    // audio) is still audio: serve it as M4A rather than as video/mp4.
+    if (spec.strategy === "engine-audio" && actualExt === "mp4") actualExt = "m4a";
     const nodeStream = fs.createReadStream(filePath);
     nodeStream.once("close", cleanup);
     nodeStream.once("error", cleanup);

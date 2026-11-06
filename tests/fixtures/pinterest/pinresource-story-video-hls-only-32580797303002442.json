@@ -1,0 +1,206 @@
+{
+  "_fixture": "PinResource/get unauth_react_main_pin for pin 32580797303002442; HTTP 200; trimmed to media fields, client_context removed; fetched 2026-11-06",
+  "resource_response": {
+    "status": "success",
+    "http_status": 200,
+    "error": null,
+    "data": {
+      "id": "32580797303002442",
+      "title": "",
+      "grid_title": "",
+      "seo_title": "Amor demais | Races de chats, Desenho de lábios, Vídeo gato",
+      "description": " ",
+      "is_video": false,
+      "images": {
+        "60x60": {
+          "width": 60,
+          "height": 60,
+          "url": "https://i.pinimg.com/60x60/e9/db/26/e9db26eb6d677cf7dc3a580cd730483a.jpg"
+        },
+        "136x136": {
+          "width": 136,
+          "height": 136,
+          "url": "https://i.pinimg.com/136x136/e9/db/26/e9db26eb6d677cf7dc3a580cd730483a.jpg"
+        },
+        "170x": {
+          "width": 236,
+          "height": 419,
+          "url": "https://i.pinimg.com/236x/e9/db/26/e9db26eb6d677cf7dc3a580cd730483a.jpg"
+        },
+        "236x": {
+          "width": 236,
+          "height": 419,
+          "url": "https://i.pinimg.com/236x/e9/db/26/e9db26eb6d677cf7dc3a580cd730483a.jpg"
+        },
+        "474x": {
+          "width": 474,
+          "height": 842,
+          "url": "https://i.pinimg.com/474x/e9/db/26/e9db26eb6d677cf7dc3a580cd730483a.jpg"
+        },
+        "564x": {
+          "width": 564,
+          "height": 1002,
+          "url": "https://i.pinimg.com/564x/e9/db/26/e9db26eb6d677cf7dc3a580cd730483a.jpg"
+        },
+        "736x": {
+          "width": 736,
+          "height": 1308,
+          "url": "https://i.pinimg.com/736x/e9/db/26/e9db26eb6d677cf7dc3a580cd730483a.jpg"
+        },
+        "600x315": {
+          "width": 600,
+          "height": 315,
+          "url": "https://i.pinimg.com/600x315/e9/db/26/e9db26eb6d677cf7dc3a580cd730483a.jpg"
+        },
+        "orig": {
+          "width": 1080,
+          "height": 1920,
+          "url": "https://i.pinimg.com/originals/e9/db/26/e9db26eb6d677cf7dc3a580cd730483a.jpg"
+        }
+      },
+      "videos": null,
+      "story_pin_data": {
+        "node_id": "U3RvcnlQaW5EYXRhOjUzNTgyMTAzMDQzNDU5NTIxNTE=",
+        "pages": [
+          {
+            "video": {
+              "video_list": {
+                "V_HLSV3_MOBILE": {
+                  "width": 1080,
+                  "height": 1920,
+                  "duration": 14100,
+                  "url": "https://v1.pinimg.com/videos/iht/hls/5b/10/89/5b1089ac8eb5dff80ff2989f5b5b2b95.m3u8",
+                  "thumbnail": "https://i.pinimg.com/videos/thumbnails/originals/5b/10/89/5b1089ac8eb5dff80ff2989f5b5b2b95.0000000.jpg",
+                  "captions_urls": null,
+                  "best_captions_url": null,
+                  "block_id": "5358210293669356612",
+                  "bitrates": null
+                }
+              },
+              "id": "5358210293669356612",
+              "bitrates": null
+            },
+            "image_signature": "ca40d0c4f66f33cf6d9f03e5522d573e",
+            "blocks": [
+              {
+                "video": {
+                  "video_list": {
+                    "V_HLSV3_MOBILE": {
+                      "width": 1080,
+                      "height": 1920,
+                      "duration": 14100,
+                      "url": "https://v1.pinimg.com/videos/iht/hls/5b/10/89/5b1089ac8eb5dff80ff2989f5b5b2b95.m3u8",
+                      "thumbnail": "https://i.pinimg.com/videos/thumbnails/originals/5b/10/89/5b1089ac8eb5dff80ff2989f5b5b2b95.0000000.jpg",
+                      "captions_urls": null,
+                      "best_captions_url": null,
+                      "block_id": "5358210293669356612",
+                      "bitrates": null
+                    }
+                  },
+                  "id": "5358210293669356612",
+                  "bitrates": null
+                },
+                "block_style": {
+                  "corner_radius": 0,
+                  "width": 100,
+                  "rotation": 0,
+                  "x_coord": 0,
+                  "height": 100,
+                  "y_coord": 0
+                },
+                "type": "story_pin_video_block",
+                "video_signature": "5b1089ac8eb5dff80ff2989f5b5b2b95",
+                "block_type": 3
+              }
+            ],
+            "style": {
+              "background_color": "#8C7163",
+              "media_fit": null
+            },
+            "image": {
+              "images": {
+                "originals": {
+                  "url": "https://i.pinimg.com/originals/ca/40/d0/ca40d0c4f66f33cf6d9f03e5522d573e.jpg",
+                  "width": 1080,
+                  "height": 1920
+                },
+                "750x": {
+                  "url": "https://i.pinimg.com/736x/ca/40/d0/ca40d0c4f66f33cf6d9f03e5522d573e.jpg",
+                  "width": 736,
+                  "height": 1308
+                },
+                "736x": {
+                  "url": "https://i.pinimg.com/736x/ca/40/d0/ca40d0c4f66f33cf6d9f03e5522d573e.jpg",
+                  "width": 736,
+                  "height": 1308
+                },
+                "236x": {
+                  "url": "https://i.pinimg.com/236x/ca/40/d0/ca40d0c4f66f33cf6d9f03e5522d573e.jpg",
+                  "width": 236,
+                  "height": 419
+                }
+              },
+              "dominant_color": "#8b7b72"
+            },
+            "type": "storypinpage",
+            "id": "4047693743",
+            "layout": 0,
+            "should_mute": false,
+            "image_signature_adjusted": "ca40d0c4f66f33cf6d9f03e5522d573e",
+            "music_attributions": [],
+            "image_adjusted": {
+              "images": {
+                "originals": {
+                  "url": "https://i.pinimg.com/originals/ca/40/d0/ca40d0c4f66f33cf6d9f03e5522d573e.jpg",
+                  "width": 1080,
+                  "height": 1920
+                },
+                "750x": {
+                  "url": "https://i.pinimg.com/736x/ca/40/d0/ca40d0c4f66f33cf6d9f03e5522d573e.jpg",
+                  "width": 736,
+                  "height": 1308
+                },
+                "736x": {
+                  "url": "https://i.pinimg.com/736x/ca/40/d0/ca40d0c4f66f33cf6d9f03e5522d573e.jpg",
+                  "width": 736,
+                  "height": 1308
+                }
+              },
+              "dominant_color": "#8b7b72"
+            },
+            "video_signature": "5b1089ac8eb5dff80ff2989f5b5b2b95"
+          }
+        ],
+        "page_count": 1,
+        "last_edited": null,
+        "has_affiliate_products": false,
+        "metadata": {
+          "basics": null,
+          "is_editable": false,
+          "is_compatible": false,
+          "root_user_id": "1072560604914439303",
+          "version": "0.9.0",
+          "compatible_version": "0.9.0",
+          "template_type": null,
+          "showreel_data": null,
+          "recipe_data": null,
+          "root_pin_id": "1072560467498038490",
+          "pin_image_signature": "e9db26eb6d677cf7dc3a580cd730483a",
+          "diy_data": null,
+          "pin_title": "",
+          "is_promotable": true,
+          "canvas_aspect_ratio": 0.5625
+        },
+        "type": "storypindata",
+        "id": "5358210304345952151",
+        "mentioned_users": [],
+        "has_product_pins": false,
+        "is_deleted": false
+      },
+      "carousel_data": null,
+      "embed": null,
+      "domain": "Uploaded by user",
+      "created_at": "Sun, 22 Jun 2025 19:00:15 +0000"
+    }
+  }
+}

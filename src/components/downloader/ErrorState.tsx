@@ -43,8 +43,21 @@ const COPY: Record<
   },
 };
 
-export function ErrorState({ code, onRetry }: { code: ResolveErrorCode; onRetry: () => void }) {
-  const { title, body, icon: Icon } = COPY[code];
+/** Codes whose server message is written for users and says what went wrong. */
+const DETAIL_CODES: ReadonlySet<ResolveErrorCode> = new Set(["not_found", "invalid_url"]);
+
+export function ErrorState({
+  code,
+  detail,
+  onRetry,
+}: {
+  code: ResolveErrorCode;
+  /** Specific server message, shown instead of the generic body for some codes. */
+  detail?: string;
+  onRetry: () => void;
+}) {
+  const { title, body: genericBody, icon: Icon } = COPY[code];
+  const body = detail && detail !== code && DETAIL_CODES.has(code) ? detail : genericBody;
 
   return (
     <div

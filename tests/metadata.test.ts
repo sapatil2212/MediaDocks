@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { parseIsoDuration, parsePublicMetadata } from "@/lib/platforms/metadata";
 import { describeImageQuality, isDownloadableMediaUrl } from "@/lib/platforms/base";
+import { readFixture } from "./helpers/fixtures";
 
 function page(head: string): string {
   return `<!doctype html><html><head>${head}</head><body></body></html>`;
@@ -114,6 +115,18 @@ describe("parsePublicMetadata", () => {
             <meta property="og:title" content="Still fine" />`),
     );
     expect(meta.title).toBe("Still fine");
+  });
+
+  it("reads a VideoObject that follows another JSON-LD block (Pinterest)", () => {
+    const meta = parsePublicMetadata(readFixture("video-pin-story-separate-audio.html"));
+
+    expect(meta.duration).toBe(31);
+    expect(meta.video).toMatch(/_720w\.mp4$/);
+    // VideoObject dimensions describe the video, not the og:image poster.
+    expect(meta.imageWidth).toBe(736);
+    expect(meta.videoWidth).toBe(1080);
+    const posting = meta.jsonLd.find((node) => node["@type"] === "SocialMediaPosting");
+    expect(String(posting?.image)).toContain("/originals/");
   });
 
   it("returns an empty result for an empty document", () => {

@@ -19,6 +19,12 @@ export interface PlatformResolver {
   /** Cheap structural check: does this URL look like a resolvable item? */
   canHandle(url: URL): boolean;
   resolve(url: URL): Promise<ResolvedResult>;
+  /**
+   * Optional rewrite to the platform's canonical item URL, applied after
+   * shortlink expansion and before the engine or `resolve` run. May throw a
+   * MediaFlowError when the link cannot point at a single item.
+   */
+  canonicalize?(url: URL, context: { fromShortLink: boolean }): URL;
 }
 
 /**
@@ -48,6 +54,11 @@ export interface SafeFetchOptions {
   maxRedirects?: number;
   /** Label used in debug output. */
   label?: string;
+  /**
+   * fetchPublicJson only: parse a JSON error body (4xx/5xx) instead of
+   * discarding it, for APIs that explain failures in the body.
+   */
+  readErrorBody?: boolean;
 }
 
 export interface SafeFetchResult {
@@ -221,8 +232,9 @@ export async function fetchPublicJson<T>(
   });
 
   const contentType = contentTypeOf(response);
+  const usableStatus = response.ok || Boolean(options.readErrorBody);
 
-  if (!response.ok || !JSON_TYPES.includes(contentType)) {
+  if (!usableStatus || !JSON_TYPES.includes(contentType)) {
     await response.body?.cancel().catch(() => undefined);
     return { status: response.status, data: null, contentType };
   }

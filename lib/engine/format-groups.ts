@@ -1,5 +1,6 @@
 import {
   formatFileSize,
+  hasUnknownCodecs,
   isAudioOnly,
   isMuxedFormat,
   isVideoOnly,
@@ -21,6 +22,11 @@ export type DownloadSpec =
   | { strategy: "direct"; url: string }
   | { strategy: "engine-format"; formatId: string }
   | { strategy: "engine-mux"; videoFormatId: string; audioFormatId: string }
+  /**
+   * Best video + best audio from an HLS master playlist (`sourceUrl` is the
+   * .m3u8 on a media CDN), merged into MP4 by yt-dlp + FFmpeg.
+   */
+  | { strategy: "engine-hls" }
   | {
       strategy: "engine-audio";
       formatId: string;
@@ -87,6 +93,56 @@ function normalizeHeight(height: number): number {
   return rung ?? height;
 }
 
+/** Height named by the format id itself, e.g. Pinterest's `V_720P`. */
+function namedHeight(formatId: string): number | undefined {
+  const match = formatId.match(/(\d{3,4})p$/i);
+  const value = match ? Number(match[1]) : NaN;
+  return Number.isFinite(value) && value > 0 ? value : undefined;
+}
+
+interface FrameSize {
+  /** The rung source: short side of the frame, so portrait 720x1280 is 720p. */
+  short: number;
+  width?: number;
+  height?: number;
+}
+
+/**
+ * Real frame size and label height for a format.
+ *
+ * Labels use the short side of the frame (as `qualityLabel()` does for direct
+ * renditions), so portrait video is not inflated onto the landscape ladder. A
+ * height named in the format id wins over reported dimensions, which some
+ * extractors copy from the source upload: Pinterest reports `V_720P` as
+ * 1080x1920 while the file is 720x1280, so the dimensions are scaled to match.
+ */
+function frameSize(format: YtdlpFormat): FrameSize | undefined {
+  const width = format.width && format.width > 0 ? format.width : undefined;
+  const height = format.height && format.height > 0 ? format.height : undefined;
+  const reportedShort = width && height ? Math.min(width, height) : height;
+  const named = namedHeight(format.format_id);
+
+  if (named) {
+    if (width && height && reportedShort && reportedShort !== named) {
+      const scale = named / reportedShort;
+      return {
+        short: named,
+        width: Math.round((width * scale) / 2) * 2,
+        height: Math.round((height * scale) / 2) * 2,
+      };
+    }
+    return { short: named, ...(width ? { width } : {}), ...(height ? { height } : {}) };
+  }
+
+  if (!reportedShort) return undefined;
+  return { short: reportedShort, ...(width ? { width } : {}), ...(height ? { height } : {}) };
+}
+
+function isDirectProtocol(format: YtdlpFormat): boolean {
+  const protocol = (format.protocol ?? "").toLowerCase();
+  return protocol === "https" || protocol === "http";
+}
+
 interface BestAudio {
   format: YtdlpFormat;
   abr: number;
@@ -110,36 +166,50 @@ function pickBestAudio(formats: YtdlpFormat[]): BestAudio | undefined {
  */
 function buildVideoOptions(formats: YtdlpFormat[]): EngineOption[] {
   const bestAudio = pickBestAudio(formats);
-  const byHeight = new Map<number, EngineOption>();
+  const byRung = new Map<number, { option: EngineOption; rank: number[] }>();
 
-  const consider = (option: EngineOption, height: number) => {
-    const existing = byHeight.get(height);
-    // Prefer mp4, then progressive (no mux needed), then larger known size.
-    const score = (o: EngineOption) =>
-      (o.container === "mp4" ? 2 : 0) + (o.spec.strategy === "engine-format" ? 1 : 0);
-    if (!existing || score(option) > score(existing)) byHeight.set(height, option);
+  /**
+   * Per rung, higher wins: mp4 container (+8), no mux needed (+4), direct
+   * http(s) file rather than HLS/DASH (+2), codecs known (+1). Ties go to the
+   * larger frame, then the higher bitrate.
+   */
+  const consider = (option: EngineOption, rung: number, format: YtdlpFormat) => {
+    const score =
+      (option.container === "mp4" ? 8 : 0) +
+      (option.spec.strategy === "engine-format" ? 4 : 0) +
+      (isDirectProtocol(format) ? 2 : 0) +
+      (hasUnknownCodecs(format) ? 0 : 1);
+    const rank = [score, (option.width ?? 0) * (option.height ?? 0), format.tbr ?? 0];
+
+    const existing = byRung.get(rung);
+    if (!existing || isHigherRank(rank, existing.rank)) byRung.set(rung, { option, rank });
   };
 
   for (const format of formats) {
-    if (!format.height) continue;
-    const height = normalizeHeight(format.height);
+    const frame = frameSize(format);
+    if (!frame) continue;
+    const rung = normalizeHeight(frame.short);
     const container = videoContainer(format.ext);
+    const dims = {
+      ...(frame.width ? { width: frame.width } : {}),
+      ...(frame.height ? { height: frame.height } : {}),
+    };
 
     if (isMuxedFormat(format)) {
       consider(
         {
-          id: `v-${height}`,
+          id: `v-${rung}`,
           kind: "video",
-          label: heightToLabel(height),
+          label: heightToLabel(rung),
           container,
           mimeType: VIDEO_MIME[container] ?? "video/mp4",
-          height,
-          ...(format.width ? { width: format.width } : {}),
+          ...dims,
           ...(format.fps ? { fps: format.fps } : {}),
           ...(formatFileSize(format) ? { fileSize: formatFileSize(format) } : {}),
           spec: { strategy: "engine-format", formatId: format.format_id },
         },
-        height,
+        rung,
+        format,
       );
     } else if (isVideoOnly(format) && bestAudio) {
       // mp4 video muxed with the best audio yields a clean mp4.
@@ -148,13 +218,12 @@ function buildVideoOptions(formats: YtdlpFormat[]): EngineOption[] {
       const audioSize = formatFileSize(bestAudio.format);
       consider(
         {
-          id: `v-${height}`,
+          id: `v-${rung}`,
           kind: "video",
-          label: heightToLabel(height),
+          label: heightToLabel(rung),
           container: muxContainer,
           mimeType: VIDEO_MIME[muxContainer] ?? "video/mp4",
-          height,
-          ...(format.width ? { width: format.width } : {}),
+          ...dims,
           ...(format.fps ? { fps: format.fps } : {}),
           ...(videoSize && audioSize ? { approxFileSize: videoSize + audioSize } : {}),
           spec: {
@@ -163,12 +232,22 @@ function buildVideoOptions(formats: YtdlpFormat[]): EngineOption[] {
             audioFormatId: bestAudio.format.format_id,
           },
         },
-        height,
+        rung,
+        format,
       );
     }
   }
 
-  return [...byHeight.values()].sort((a, b) => (b.height ?? 0) - (a.height ?? 0));
+  return [...byRung.entries()].sort((a, b) => b[0] - a[0]).map(([, entry]) => entry.option);
+}
+
+function isHigherRank(next: number[], current: number[]): boolean {
+  for (let i = 0; i < next.length; i++) {
+    const a = next[i] ?? 0;
+    const b = current[i] ?? 0;
+    if (a !== b) return a > b;
+  }
+  return false;
 }
 
 /**

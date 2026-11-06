@@ -1,0 +1,69 @@
+{
+  "_fixture": "PinResource/get unauth_react_main_pin for pin 311241024270560610; HTTP 200; trimmed to media fields, client_context removed; fetched 2026-11-06",
+  "resource_response": {
+    "status": "success",
+    "http_status": 200,
+    "error": null,
+    "data": {
+      "id": "311241024270560610",
+      "title": "Upcycled Denim Fox Dolls with Sewing Pattern Pieces for Creative DIY Crafting",
+      "grid_title": "Upcycled Denim Fox Dolls with Sewing Pattern Pieces for Creative DIY Crafting",
+      "seo_title": "Upcycled Denim Fox Dolls with Sewing Pattern Pieces for Creative DIY Crafting | Sewing projects for adults, Diy doll from jeans, Recycle doll",
+      "description": "🧶 This pattern is now in the shop! Link in bio. \nUpcycled Denim Fox Dolls with Sewing Pattern Pieces for Creative DIY Crafting\n\n\nWe don't throw away the old ones, we sew them! Here is my last recycling work.\n\n#UpcycledDolls #SewingPattern #DenimCrafts #DIYFoxDolls #RecycledFabric #HandmadeToys #SewingProjects #CreativeUpcycling\n\n\nPlease Follow and Support me please :)\n\n\n#crochetpattern #crochetdesign  #handmadecrochet  #handmadecrafts #crochetaddict #handmadegifts  #handmadewithlove  #makersgonnamake  \n#etsyshop #easycrochetpattern, #beginnercrochet #handtrendy",
+      "is_video": false,
+      "images": {
+        "60x60": {
+          "width": 60,
+          "height": 60,
+          "url": "https://i.pinimg.com/60x60/44/12/19/441219cffb210a6af2ad959717f6f199.jpg"
+        },
+        "136x136": {
+          "width": 136,
+          "height": 136,
+          "url": "https://i.pinimg.com/136x136/44/12/19/441219cffb210a6af2ad959717f6f199.jpg"
+        },
+        "170x": {
+          "width": 236,
+          "height": 354,
+          "url": "https://i.pinimg.com/236x/44/12/19/441219cffb210a6af2ad959717f6f199.jpg"
+        },
+        "236x": {
+          "width": 236,
+          "height": 354,
+          "url": "https://i.pinimg.com/236x/44/12/19/441219cffb210a6af2ad959717f6f199.jpg"
+        },
+        "474x": {
+          "width": 474,
+          "height": 711,
+          "url": "https://i.pinimg.com/474x/44/12/19/441219cffb210a6af2ad959717f6f199.jpg"
+        },
+        "564x": {
+          "width": 564,
+          "height": 846,
+          "url": "https://i.pinimg.com/564x/44/12/19/441219cffb210a6af2ad959717f6f199.jpg"
+        },
+        "736x": {
+          "width": 736,
+          "height": 1104,
+          "url": "https://i.pinimg.com/736x/44/12/19/441219cffb210a6af2ad959717f6f199.jpg"
+        },
+        "600x315": {
+          "width": 600,
+          "height": 315,
+          "url": "https://i.pinimg.com/600x315/44/12/19/441219cffb210a6af2ad959717f6f199.jpg"
+        },
+        "orig": {
+          "width": 1024,
+          "height": 1536,
+          "url": "https://i.pinimg.com/originals/44/12/19/441219cffb210a6af2ad959717f6f199.jpg"
+        }
+      },
+      "videos": null,
+      "story_pin_data": null,
+      "carousel_data": null,
+      "embed": null,
+      "domain": "handtrendy.com",
+      "created_at": "Sun, 01 Feb 2026 20:46:14 +0000"
+    }
+  }
+}

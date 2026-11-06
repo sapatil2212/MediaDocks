@@ -29,6 +29,12 @@ export interface PublicMetadata {
    * parsing strategy without re-reading the document.
    */
   tags: Record<string, string>;
+  /**
+   * Every JSON-LD node from every block, flattened, so a platform resolver can
+   * read a node other than the preferred one (e.g. Pinterest's
+   * SocialMediaPosting image next to its VideoObject).
+   */
+  jsonLd: Array<Record<string, unknown>>;
 }
 
 interface JsonLdNode {
@@ -51,7 +57,7 @@ interface JsonLdNode {
 }
 
 export function parsePublicMetadata(html: string): PublicMetadata {
-  const meta: PublicMetadata = { sources: [], isEmptyShell: true, tags: {} };
+  const meta: PublicMetadata = { sources: [], isEmptyShell: true, tags: {}, jsonLd: [] };
   if (!html) return meta;
 
   const $ = cheerio.load(html);
@@ -104,7 +110,9 @@ export function parsePublicMetadata(html: string): PublicMetadata {
   meta.creator ??= tag("twitter:creator")?.replace(/^@?/, "@");
 
   // ── JSON-LD ───────────────────────────────────────────────────────────────
-  const jsonLd = readJsonLd($);
+  const nodes = readJsonLdNodes($);
+  meta.jsonLd = nodes as Array<Record<string, unknown>>;
+  const jsonLd = preferredJsonLd(nodes);
   if (jsonLd) {
     meta.sources.push("json-ld");
     const node = jsonLd.video ?? jsonLd;
@@ -112,8 +120,14 @@ export function parsePublicMetadata(html: string): PublicMetadata {
     meta.description ??= firstString(node.description);
     meta.image ??= firstString(pickImage(node.thumbnailUrl), pickImage(node.image));
     meta.duration ??= parseIsoDuration(node.duration);
-    meta.imageWidth ??= toInt(node.width);
-    meta.imageHeight ??= toInt(node.height);
+    // A VideoObject's width/height describe the video, not the poster image.
+    if (hasType(node, ["VideoObject"]) || node !== jsonLd) {
+      meta.videoWidth ??= toInt(node.width);
+      meta.videoHeight ??= toInt(node.height);
+    } else {
+      meta.imageWidth ??= toInt(node.width);
+      meta.imageHeight ??= toInt(node.height);
+    }
     meta.creator ??= readName(node.author) ?? readName(node.creator);
 
     // contentUrl on a VideoObject is a real media file; embedUrl is a player.
@@ -144,30 +158,36 @@ export function parsePublicMetadata(html: string): PublicMetadata {
   return meta;
 }
 
-function readJsonLd($: cheerio.CheerioAPI): JsonLdNode | null {
+/** Every node of every JSON-LD block, in document order. Bad blocks are skipped. */
+function readJsonLdNodes($: cheerio.CheerioAPI): JsonLdNode[] {
   const blocks = $('script[type="application/ld+json"]')
     .map((_, element) => $(element).contents().text())
     .get();
 
+  const nodes: JsonLdNode[] = [];
   for (const block of blocks) {
-    let parsed: unknown;
     try {
-      parsed = JSON.parse(block);
+      nodes.push(...flatten(JSON.parse(block)));
     } catch {
       continue;
     }
-
-    const candidates = flatten(parsed);
-    const preferred =
-      candidates.find((node) => hasType(node, ["VideoObject", "ImageObject"])) ??
-      candidates.find((node) => Boolean(node.video)) ??
-      candidates.find((node) => hasType(node, ["SocialMediaPosting", "Article", "Product"])) ??
-      candidates[0];
-
-    if (preferred) return preferred;
   }
+  return nodes;
+}
 
-  return null;
+/**
+ * Picks the node that describes the media. All blocks are considered together,
+ * because pages such as Pinterest publish a SocialMediaPosting block first and
+ * the VideoObject in a later block.
+ */
+function preferredJsonLd(nodes: JsonLdNode[]): JsonLdNode | null {
+  return (
+    nodes.find((node) => hasType(node, ["VideoObject", "ImageObject"])) ??
+    nodes.find((node) => Boolean(node.video)) ??
+    nodes.find((node) => hasType(node, ["SocialMediaPosting", "Article", "Product"])) ??
+    nodes[0] ??
+    null
+  );
 }
 
 function flatten(value: unknown): JsonLdNode[] {

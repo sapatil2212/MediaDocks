@@ -10,6 +10,7 @@ const { PinterestResolver } = await import("@/lib/platforms/pinterest");
 const { FacebookResolver } = await import("@/lib/platforms/facebook");
 const { XResolver } = await import("@/lib/platforms/x");
 const { YouTubeResolver } = await import("@/lib/platforms/youtube");
+const { readFixture } = await import("./helpers/fixtures");
 
 function htmlResponse(head: string, status = 200) {
   return new Response(`<!doctype html><html><head>${head}</head><body></body></html>`, {
@@ -274,6 +275,224 @@ describe("PinterestResolver", () => {
     });
     // The poster is not a media item.
     expect(result.media.every((item) => item.kind === "video")).toBe(true);
+  });
+});
+
+describe("PinterestResolver — saved Pinterest responses", () => {
+  type Route = [RegExp, (init?: RequestInit) => Response];
+
+  /** Routes fetches by URL; anything unrouted is recorded and fails loudly. */
+  function routeFetch(routes: Route[]) {
+    const calls: Array<{ url: string; init?: RequestInit }> = [];
+    const unrouted: string[] = [];
+    vi.spyOn(globalThis, "fetch").mockImplementation(async (input, init) => {
+      const url = String(input);
+      calls.push({ url, ...(init ? { init } : {}) });
+      const route = routes.find(([pattern]) => pattern.test(url));
+      if (!route) {
+        unrouted.push(url);
+        throw new Error(`unrouted fetch ${url}`);
+      }
+      return route[1](init);
+    });
+    return { calls, unrouted };
+  }
+
+  const fixtureHtml = (name: string, transform: (html: string) => string = (html) => html) => () =>
+    new Response(transform(readFixture(name)), {
+      status: 200,
+      headers: { "content-type": "text/html; charset=utf-8" },
+    });
+  const fixtureJson = (name: string, status = 200) => () =>
+    new Response(readFixture(name), {
+      status,
+      headers: { "content-type": "application/json; charset=utf-8" },
+    });
+  const emptyShell = () => htmlResponse("");
+  const imageProbe = () => probeResponse("image/jpeg");
+
+  const PIN_PAGE = /^https:\/\/www\.pinterest\.com\/pin\/\d+\/$/;
+  const PIN_API = /^https:\/\/www\.pinterest\.com\/resource\/PinResource\/get\//;
+  const ORIGINALS = /^https:\/\/i\.pinimg\.com\/originals\//;
+
+  const noHls = () => new PinterestResolver({ hlsCapable: async () => false });
+
+  it("returns the original image from the legacy page state", async () => {
+    const { calls, unrouted } = routeFetch([
+      [PIN_PAGE, fixtureHtml("image-pin-legacy-initial-props.html")],
+      [ORIGINALS, imageProbe],
+    ]);
+
+    const result = await noHls().resolve(new URL("https://www.pinterest.com/pin/311241024270560610/"));
+
+    expect(result.postKind).toBe("image");
+    expect(result.media).toHaveLength(1);
+    expect(result.media[0]).toMatchObject({
+      kind: "image",
+      mimeType: "image/jpeg",
+      quality: "Original",
+      width: 1024,
+      height: 1536,
+      mediaUrl: "https://i.pinimg.com/originals/44/12/19/441219cffb210a6af2ad959717f6f199.jpg",
+    });
+    expect(result.sourceUrl).toBe("https://www.pinterest.com/pin/311241024270560610/");
+    // The page had a record, so the API fallback was not needed.
+    expect(calls.some((call) => PIN_API.test(call.url))).toBe(false);
+    expect(unrouted).toEqual([]);
+  });
+
+  it("returns the original image from the relay shape", async () => {
+    routeFetch([
+      [PIN_PAGE, fixtureHtml("image-pin-relay.html")],
+      [ORIGINALS, imageProbe],
+    ]);
+
+    const result = await noHls().resolve(new URL("https://www.pinterest.com/pin/350295677252925156/"));
+
+    expect(result.postKind).toBe("image");
+    expect(result.media[0]?.mediaUrl).toContain("/originals/be/f1/1f/");
+    expect(result.thumbnail).toContain("/originals/");
+  });
+
+  it("falls back to a sized image when the original is not served", async () => {
+    routeFetch([
+      [PIN_PAGE, fixtureHtml("image-pin-relay.html")],
+      [ORIGINALS, () => new Response("denied", { status: 403, headers: { "content-type": "text/html" } })],
+    ]);
+
+    const result = await noHls().resolve(new URL("https://www.pinterest.com/pin/350295677252925156/"));
+
+    expect(result.media).toHaveLength(1);
+    expect(result.media[0]?.mediaUrl).toMatch(/\/(1200x|736x)\//);
+    expect(result.media[0]?.quality).toBe("Preview");
+  });
+
+  it("returns a labelled MP4 for a classic video Pin, not the poster", async () => {
+    routeFetch([[PIN_PAGE, fixtureHtml("video-pin-classic-videos-videolist.html")]]);
+
+    const result = await noHls().resolve(new URL("https://www.pinterest.com/pin/664281013778109217/"));
+
+    expect(result.postKind).toBe("video");
+    expect(result.media[0]).toMatchObject({
+      kind: "video",
+      extension: "mp4",
+      quality: "720p",
+      width: 720,
+      height: 1280,
+    });
+    expect(result.media.every((item) => item.kind === "video")).toBe(true);
+    expect(result.width).toBe(720);
+    expect(result.duration).toBe(58);
+  });
+
+  const withoutMp4 = (html: string) => html.replace(/https:[^"]+?\.mp4[^"]*/g, "");
+
+  it("hands an HLS-only video Pin to the engine as an MP4", async () => {
+    routeFetch([[PIN_PAGE, fixtureHtml("video-pin-story-separate-audio.html", withoutMp4)]]);
+
+    const result = await new PinterestResolver({ hlsCapable: async () => true }).resolve(
+      new URL("https://www.pinterest.com/pin/873909502709617339/"),
+    );
+
+    expect(result.postKind).toBe("video");
+    expect(result.media).toHaveLength(1);
+    expect(result.media[0]).toMatchObject({
+      id: "pin-video-hls",
+      kind: "video",
+      mimeType: "video/mp4",
+      extension: "mp4",
+      engineKind: "video",
+      downloadSpec: { strategy: "engine-hls" },
+    });
+    expect(result.media[0]?.sourceUrl).toMatch(/^https:\/\/v1\.pinimg\.com\/videos\/iht\/hls\/.+\.m3u8$/);
+    expect(result.unavailable).toBeUndefined();
+  });
+
+  it("reports an HLS-only video Pin as unavailable without the engine, never as an image", async () => {
+    routeFetch([[PIN_PAGE, fixtureHtml("video-pin-story-separate-audio.html", withoutMp4)]]);
+
+    const result = await noHls().resolve(new URL("https://www.pinterest.com/pin/873909502709617339/"));
+
+    expect(result.postKind).toBe("video");
+    expect(result.media).toEqual([]);
+    expect(result.unavailable?.code).toBe("VIDEO_MEDIA_UNAVAILABLE");
+    expect(result.thumbnail).toContain("i.pinimg.com");
+  });
+
+  it("reports a removed Pin served as a 200 shell as not found", async () => {
+    routeFetch([[PIN_PAGE, fixtureHtml("removed-pin-200-pinnotfound.html")]]);
+
+    await expect(
+      noHls().resolve(new URL("https://www.pinterest.com/pin/824721750502199491/")),
+    ).rejects.toMatchObject({ code: "MEDIA_NOT_FOUND", message: expect.stringMatching(/removed/) });
+  });
+
+  it("uses the PinResource API when the page has no Pin record", async () => {
+    const { calls } = routeFetch([
+      [PIN_PAGE, emptyShell],
+      [PIN_API, fixtureJson("pinresource-image-311241024270560610.json")],
+      [ORIGINALS, imageProbe],
+    ]);
+
+    const result = await noHls().resolve(new URL("https://www.pinterest.com/pin/311241024270560610/"));
+
+    expect(result.postKind).toBe("image");
+    expect(result.media[0]?.mediaUrl).toBe(
+      "https://i.pinimg.com/originals/44/12/19/441219cffb210a6af2ad959717f6f199.jpg",
+    );
+    expect(result.title).toBe("Upcycled Denim Fox Dolls with Sewing Pattern Pieces for Creative DIY Crafting");
+
+    const api = calls.find((call) => PIN_API.test(call.url));
+    expect(api).toBeDefined();
+    const headers = (api?.init?.headers ?? {}) as Record<string, string>;
+    expect(headers["X-Pinterest-PWS-Handler"]).toBe("www/[username].js");
+    const data = JSON.parse(new URL(api!.url).searchParams.get("data") ?? "{}");
+    expect(data.options).toMatchObject({ field_set_key: "unauth_react_main_pin", id: "311241024270560610" });
+  });
+
+  it("reports not found when the API says the Pin is gone", async () => {
+    routeFetch([
+      [PIN_PAGE, emptyShell],
+      [PIN_API, fixtureJson("pinresource-removed-404-824721750502199491.json", 404)],
+    ]);
+
+    await expect(
+      noHls().resolve(new URL("https://www.pinterest.com/pin/824721750502199491/")),
+    ).rejects.toMatchObject({ code: "MEDIA_NOT_FOUND" });
+  });
+
+  it("reports the platform as unavailable when page and API both fail", async () => {
+    routeFetch([
+      [PIN_PAGE, emptyShell],
+      [PIN_API, () => new Response("slow down", { status: 429, headers: { "content-type": "text/html" } })],
+    ]);
+
+    await expect(
+      noHls().resolve(new URL("https://www.pinterest.com/pin/311241024270560610/")),
+    ).rejects.toMatchObject({ code: "PLATFORM_ACCESS_UNAVAILABLE" });
+  });
+
+  it("returns one image per slot for a relay carousel", async () => {
+    routeFetch([[PIN_PAGE, fixtureHtml("carousel-relay-synthetic.html")]]);
+
+    const result = await noHls().resolve(new URL("https://www.pinterest.com/pin/900000000000000001/"));
+
+    expect(result.postKind).toBe("carousel");
+    expect(result.media.map((item) => item.quality)).toEqual(["Image 1", "Image 2", "Image 3"]);
+    expect(result.media.map((item) => item.extension)).toEqual(["jpg", "jpg", "png"]);
+  });
+
+  it("returns one image per slot for a PinResource carousel", async () => {
+    routeFetch([
+      [PIN_PAGE, emptyShell],
+      [PIN_API, fixtureJson("carousel-pinresource-synthetic.json")],
+    ]);
+
+    const result = await noHls().resolve(new URL("https://www.pinterest.com/pin/900000000000000002/"));
+
+    expect(result.postKind).toBe("carousel");
+    expect(result.media).toHaveLength(3);
+    expect(result.media.every((item) => item.kind === "image")).toBe(true);
   });
 });
 

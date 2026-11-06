@@ -1,4 +1,5 @@
 import { MediaFlowError } from "@/lib/errors";
+import { isPinterestHost, isPinterestShortHost } from "./pinterest-url";
 import type { Platform, PlatformDetection } from "./types";
 
 /**
@@ -103,7 +104,7 @@ export function detectPlatformFromUrl(url: URL): PlatformDetection {
   }
 
   // Pinterest (incl. country domains such as pinterest.co.uk)
-  if (host === "pin.it" || host === "pinterest.com" || /(^|\.)pinterest\.[a-z.]{2,}$/.test(host)) {
+  if (isPinterestShortHost(host) || isPinterestHost(host)) {
     return { platform: "pinterest", typeHint: "pin" };
   }
 
