@@ -3,9 +3,11 @@
  * plus the pinned engine and model constants both sides rely on.
  */
 
-/** Must equal the exact `onnxruntime-web` version in package.json (guarded by a test). */
+/**
+ * Must equal the exact `onnxruntime-web` version in package.json; the wasm
+ * binary is bundled from that package (guarded by a test).
+ */
 export const ORT_VERSION = "1.30.0";
-export const ORT_WASM_BASE = `https://cdn.jsdelivr.net/npm/onnxruntime-web@${ORT_VERSION}/dist/`;
 
 /** Apache-2.0 ISNet-based salient-object model, pinned to an exact revision and hash. */
 export const MODEL = {

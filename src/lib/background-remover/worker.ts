@@ -2,15 +2,21 @@
  * Background-removal Web Worker. Downloads (or reads from Cache Storage) the
  * pinned segmentation model, verifies its integrity, runs inference with
  * onnxruntime-web on the WASM backend and composites a transparent PNG.
+ * The WebAssembly runtime is bundled and served from our own origin.
  * Images never leave this worker except as the finished PNG posted back.
  */
 import * as ort from "onnxruntime-web/wasm";
-import { MODEL, MODEL_CACHE_NAME, ORT_WASM_BASE } from "./protocol";
+import { MODEL, MODEL_CACHE_NAME } from "./protocol";
 import type { WorkerRequest, WorkerResponse } from "./protocol";
 import { fitWithinPixelBudget } from "./rules";
 import { MODEL_INPUT_SIZE, maskToRgba, maskToUint8, toModelInput } from "./tensor";
 
-ort.env.wasm.wasmPaths = ORT_WASM_BASE;
+// Self-hosted runtime: webpack emits this file (content-hashed) under
+// /_next/static/media/, so the binary comes from our own origin and is the
+// exact package-lock-pinned build. No third-party CDN is contacted.
+ort.env.wasm.wasmPaths = {
+  wasm: new URL("onnxruntime-web/ort-wasm-simd-threaded.wasm", import.meta.url).href,
+};
 // Single-threaded: multi-threading needs cross-origin isolation, which would
 // break AdSense. We are already off the main thread.
 ort.env.wasm.numThreads = 1;

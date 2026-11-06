@@ -4,12 +4,14 @@ import {
   useCallback,
   useEffect,
   useId,
+  useMemo,
   useRef,
   useState,
   type ChangeEvent,
   type Dispatch,
   type DragEvent,
   type KeyboardEvent,
+  type Ref,
   type SetStateAction,
 } from "react";
 import { toast } from "sonner";
@@ -31,14 +33,19 @@ import { useBackgroundRemoval, type EngineState } from "@/hooks/use-background-r
 import {
   ACCEPT_ATTRIBUTE,
   MAX_FILES,
-  dedupeFileNames,
   formatBytes,
   outputNameFor,
+  outputNamesFor,
   overflowMessage,
   planBatchAddition,
   rejectionMessage,
   validateImageFile,
 } from "@/lib/background-remover/rules";
+import {
+  engineAnnouncement,
+  engineProgressPercent,
+  engineProgressText,
+} from "@/lib/background-remover/status";
 
 type Engine = ReturnType<typeof useBackgroundRemoval>;
 
@@ -82,25 +89,22 @@ function triggerDownload(blob: Blob, filename: string) {
   URL.revokeObjectURL(url);
 }
 
-function megabytes(bytes: number) {
-  return (bytes / 1_000_000).toFixed(1);
-}
-
-function engineStatusText(engine: EngineState): string {
-  switch (engine.phase) {
-    case "downloading": {
-      const pct = engine.total ? Math.min(100, Math.round((engine.loaded / engine.total) * 100)) : 0;
-      return `Downloading AI model… ${pct}% (${megabytes(engine.loaded)} of ${megabytes(engine.total)} MB)`;
-    }
-    case "starting":
-      return "Starting the on-device engine…";
-    case "ready":
-      return "AI model ready.";
-    case "error":
-      return engine.message ?? "The AI model couldn't be loaded.";
-    default:
-      return "";
-  }
+/**
+ * Focus the element returned by the registered getter after the next commit.
+ * Used when a view transition unmounts the focused control, so keyboard and
+ * screen-reader users land on a stable target instead of `<body>`.
+ */
+function usePendingFocus() {
+  const pending = useRef<(() => HTMLElement | null | undefined) | null>(null);
+  useEffect(() => {
+    const get = pending.current;
+    if (!get) return;
+    pending.current = null;
+    get()?.focus();
+  });
+  return useCallback((get: () => HTMLElement | null | undefined) => {
+    pending.current = get;
+  }, []);
 }
 
 /**
@@ -203,12 +207,14 @@ function Dropzone({
   label,
   title,
   onFiles,
+  focusRef,
 }: {
   multiple: boolean;
   disabled?: boolean;
   label: string;
   title: string;
   onFiles: (files: File[]) => void;
+  focusRef?: Ref<HTMLDivElement>;
 }) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -234,6 +240,7 @@ function Dropzone({
 
   return (
     <div
+      ref={focusRef}
       role="button"
       tabIndex={0}
       aria-label={label}
@@ -285,20 +292,32 @@ function Dropzone({
   );
 }
 
-function EngineStatus({ engine, onRetry }: { engine: EngineState; onRetry: () => void }) {
-  const text = engineStatusText(engine);
+function EngineStatus({
+  engine,
+  onRetry,
+  containerRef,
+}: {
+  engine: EngineState;
+  onRetry: () => void;
+  containerRef?: Ref<HTMLDivElement>;
+}) {
+  // The live region only changes on phase transitions; the per-tick progress
+  // text stays visual and is exposed on demand via the progress bar's value.
+  const announcement = engineAnnouncement(engine);
+  const text = engineProgressText(engine);
   const busy = engine.phase === "downloading" || engine.phase === "starting";
-  const pct =
-    engine.phase === "starting"
-      ? 100
-      : engine.total
-        ? Math.min(100, Math.round((engine.loaded / engine.total) * 100))
-        : 0;
+  const pct = engineProgressPercent(engine);
 
   return (
-    <div className="mb-4">
+    <div
+      ref={containerRef}
+      tabIndex={-1}
+      role="group"
+      aria-label="AI model status"
+      className="focus-ring mb-4 rounded-lg"
+    >
       <p aria-live="polite" className="sr-only">
-        {text}
+        {announcement}
       </p>
       {busy && (
         <div className="rounded-lg border border-border/80 bg-surface/90 p-3 sm:px-4">
@@ -306,7 +325,11 @@ function EngineStatus({ engine, onRetry }: { engine: EngineState; onRetry: () =>
             <RefreshCw className="h-3.5 w-3.5 text-primary motion-safe:animate-spin" aria-hidden="true" />
             <span aria-hidden="true">{text}</span>
           </div>
-          <Progress value={pct} aria-label="AI model loading progress" />
+          <Progress
+            value={pct}
+            aria-label="AI model loading progress"
+            getValueLabel={() => text}
+          />
         </div>
       )}
       {engine.phase === "error" && (
@@ -343,6 +366,9 @@ function ResultMeta({ item }: { item: Item }) {
 function SingleMode({ api }: { api: Engine }) {
   const [items, setItems] = useState<Item[]>([]);
   const { markRemoved } = useQueueRunner(items, setItems, api);
+  const requestFocus = usePendingFocus();
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const dropzoneRef = useRef<HTMLDivElement>(null);
   const item = items[0];
 
   const onFiles = (files: File[]) => {
@@ -358,20 +384,27 @@ function SingleMode({ api }: { api: Engine }) {
     }
     items.forEach(markRemoved);
     setItems([createItem(file)]);
+    // The dropzone is replaced by the before/after view.
+    requestFocus(() => headingRef.current);
   };
 
   const reset = () => {
     items.forEach(markRemoved);
     setItems([]);
+    // "Try another image" unmounts itself; land on the upload control.
+    requestFocus(() => dropzoneRef.current);
   };
 
   const retry = () => {
     setItems((prev) => prev.map((i) => ({ ...i, status: "queued", error: undefined })));
+    // The Retry button unmounts once the item is re-queued.
+    requestFocus(() => headingRef.current);
   };
 
   if (!item) {
     return (
       <Dropzone
+        focusRef={dropzoneRef}
         multiple={false}
         label="Choose an image or drop it here"
         title="Choose an image or drag & drop it here"
@@ -425,7 +458,13 @@ function SingleMode({ api }: { api: Engine }) {
 
       <div className="flex flex-col gap-3 rounded-xl border border-border/80 bg-surface p-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0 text-xs">
-          <p className="truncate font-semibold text-foreground">{name}</p>
+          <h3
+            ref={headingRef}
+            tabIndex={-1}
+            className="focus-ring truncate rounded-[2px] font-sans font-semibold tracking-normal text-foreground"
+          >
+            {name}
+          </h3>
           <p
             aria-live="polite"
             className={cn("mt-1", item.status === "error" ? "text-destructive" : "text-muted-foreground")}
@@ -474,6 +513,17 @@ function BulkMode({ api }: { api: Engine }) {
   const [isDragging, setIsDragging] = useState(false);
   const addInputRef = useRef<HTMLInputElement | null>(null);
   const { markRemoved } = useQueueRunner(items, setItems, api);
+  const requestFocus = usePendingFocus();
+  const dropzoneRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLUListElement>(null);
+  const removeRefs = useRef(new Map<string, HTMLButtonElement>());
+
+  // One deduped name per item, over every row in display order. Row downloads,
+  // their aria-labels and ZIP entries all read from this map, so they agree.
+  const outputNames = useMemo(() => {
+    const names = outputNamesFor(items.map((i) => i.file.name));
+    return new Map(items.map((i, idx) => [i.id, names[idx]]));
+  }, [items]);
 
   const addFiles = (files: File[]) => {
     if (files.length === 0) return;
@@ -493,24 +543,43 @@ function BulkMode({ api }: { api: Engine }) {
     if (plan.accepted.length > 0) {
       setItems((prev) => [...prev, ...plan.accepted.map(createItem)]);
       toast.success(`Added ${plan.accepted.length} image${plan.accepted.length === 1 ? "" : "s"}`);
+      // Dropzone → list, or "Add more" about to become disabled: both drop focus.
+      if (items.length === 0 || items.length + plan.accepted.length >= MAX_FILES) {
+        requestFocus(() => listRef.current);
+      }
     }
   };
 
   const remove = (id: string) => {
-    const target = items.find((i) => i.id === id);
-    if (target) markRemoved(target);
+    const idx = items.findIndex((i) => i.id === id);
+    if (idx < 0) return;
+    markRemoved(items[idx]);
     setItems((prev) => prev.filter((i) => i.id !== id));
+    // The Remove button unmounts with its row: move to the next row's Remove,
+    // else (bottom row) the batch list, else (batch now empty) the dropzone
+    // that replaces the list.
+    const next = items[idx + 1];
+    requestFocus(() =>
+      next
+        ? removeRefs.current.get(next.id)
+        : items.length > 1
+          ? listRef.current
+          : dropzoneRef.current
+    );
   };
 
   const clearAll = () => {
     items.forEach(markRemoved);
     setItems([]);
+    requestFocus(() => dropzoneRef.current);
   };
 
   const retry = (id: string) => {
     setItems((prev) =>
       prev.map((i) => (i.id === id ? { ...i, status: "queued", error: undefined } : i))
     );
+    // The row's Retry button unmounts once the item is re-queued.
+    requestFocus(() => removeRefs.current.get(id));
   };
 
   const doneItems = items.filter((i) => i.status === "done" && i.png);
@@ -524,10 +593,9 @@ function BulkMode({ api }: { api: Engine }) {
     setZipping(true);
     try {
       const { buildResultsZip, zipArchiveName } = await import("@/lib/background-remover/zip");
-      const names = dedupeFileNames(doneItems.map((i) => outputNameFor(i.file.name)));
       const entries = await Promise.all(
-        doneItems.map(async (it, idx) => ({
-          name: names[idx],
+        doneItems.map(async (it) => ({
+          name: outputNames.get(it.id) ?? outputNameFor(it.file.name),
           data: new Uint8Array(await it.png!.arrayBuffer()),
         }))
       );
@@ -547,6 +615,7 @@ function BulkMode({ api }: { api: Engine }) {
   if (total === 0) {
     return (
       <Dropzone
+        focusRef={dropzoneRef}
         multiple
         label={`Choose up to ${MAX_FILES} images or drop them here`}
         title={`Choose up to ${MAX_FILES} images or drag & drop them here`}
@@ -609,9 +678,12 @@ function BulkMode({ api }: { api: Engine }) {
             </Button>
             <Button
               size="sm"
-              disabled={doneItems.length === 0 || zipping}
+              // aria-disabled (not disabled) while zipping keeps focus on the button;
+              // downloadZip already ignores clicks during packaging.
+              disabled={doneItems.length === 0}
+              aria-disabled={zipping || undefined}
               onClick={downloadZip}
-              className="h-[34px] rounded-[4px] px-4 text-xs font-medium shadow-none"
+              className="h-[34px] rounded-[4px] px-4 text-xs font-medium shadow-none aria-disabled:cursor-progress aria-disabled:opacity-50"
             >
               {zipping ? (
                 <>
@@ -634,10 +706,15 @@ function BulkMode({ api }: { api: Engine }) {
         />
       </div>
 
-      <ul aria-label="Images in this batch" className="space-y-2.5">
+      <ul
+        ref={listRef}
+        tabIndex={-1}
+        aria-label="Images in this batch"
+        className="focus-ring space-y-2.5 rounded-lg"
+      >
         {items.map((item) => {
           const name = item.file.name;
-          const outputName = outputNameFor(name);
+          const outputName = outputNames.get(item.id) ?? outputNameFor(name);
           const done = item.status === "done" && item.resultUrl;
           return (
             <li
@@ -713,6 +790,10 @@ function BulkMode({ api }: { api: Engine }) {
                   </Button>
                 )}
                 <button
+                  ref={(el) => {
+                    if (el) removeRefs.current.set(item.id, el);
+                    else removeRefs.current.delete(item.id);
+                  }}
                   type="button"
                   onClick={() => remove(item.id)}
                   aria-label={`Remove ${name}`}
@@ -732,6 +813,8 @@ function BulkMode({ api }: { api: Engine }) {
 export function BackgroundRemoverHero() {
   const api = useBackgroundRemoval();
   const [mode, setMode] = useState("single");
+  const requestFocus = usePendingFocus();
+  const engineRef = useRef<HTMLDivElement>(null);
 
   if (!api.supported) {
     return (
@@ -757,7 +840,15 @@ export function BackgroundRemoverHero() {
           </TabsList>
         </div>
 
-        <EngineStatus engine={api.engine} onRetry={() => void api.ensureReady()} />
+        <EngineStatus
+          engine={api.engine}
+          containerRef={engineRef}
+          onRetry={() => {
+            // "Retry loading model" unmounts as soon as the phase leaves "error".
+            requestFocus(() => engineRef.current);
+            void api.ensureReady();
+          }}
+        />
 
         {/* forceMount keeps each mode's work alive while the other tab is open. */}
         <TabsContent value="single" forceMount className="mt-0 data-[state=inactive]:hidden">

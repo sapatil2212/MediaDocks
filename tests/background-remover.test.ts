@@ -10,13 +10,20 @@ import {
   rejectionMessage,
   overflowMessage,
   outputNameFor,
+  outputNamesFor,
   dedupeFileNames,
   fitWithinPixelBudget,
   formatBytes,
 } from "@/src/lib/background-remover/rules";
 import { toModelInput, maskToUint8, maskToRgba } from "@/src/lib/background-remover/tensor";
 import { buildResultsZip, zipArchiveName } from "@/src/lib/background-remover/zip";
-import { MODEL, ORT_VERSION, ORT_WASM_BASE } from "@/src/lib/background-remover/protocol";
+import { MODEL, ORT_VERSION } from "@/src/lib/background-remover/protocol";
+import {
+  engineAnnouncement,
+  engineProgressPercent,
+  engineProgressText,
+  type EngineState,
+} from "@/src/lib/background-remover/status";
 
 const file = (name: string, type: string, size = 1000) => ({ name, type, size });
 
@@ -154,6 +161,71 @@ describe("dedupeFileNames", () => {
   });
 });
 
+describe("outputNamesFor", () => {
+  it("derives and dedupes names across the whole list", () => {
+    expect(outputNamesFor(["photo.jpg", "photo.jpg", "PHOTO.png"])).toEqual([
+      "photo-no-bg.png",
+      "photo-no-bg-2.png",
+      "PHOTO-no-bg-3.png",
+    ]);
+  });
+
+  it("preserves order and matches outputNameFor for unique input", () => {
+    const originals = ["b.webp", "a.jpg", "c.png"];
+    expect(outputNamesFor(originals)).toEqual(originals.map(outputNameFor));
+  });
+
+  it("returns an empty list for no input", () => {
+    expect(outputNamesFor([])).toEqual([]);
+  });
+
+  it("gives finished items the same names in the ZIP as on their rows", () => {
+    // Rows in display order; only rows 1 and 2 are done. The hero names ZIP
+    // entries by looking up each done item in the all-rows map.
+    const rows = ["photo.jpg", "photo.jpg", "cat.png"];
+    const all = outputNamesFor(rows);
+    const zipNames = [1, 2].map((i) => all[i]);
+    expect(zipNames).toEqual(["photo-no-bg-2.png", "cat-no-bg.png"]);
+  });
+});
+
+describe("engine status text", () => {
+  const state = (phase: EngineState["phase"], loaded = 0, total = 44_300_000, message?: string) => ({
+    phase,
+    loaded,
+    total,
+    message,
+  });
+
+  it("announces downloading without progress numbers", () => {
+    const texts = [0, 1e6, 44e6].map((loaded) => engineAnnouncement(state("downloading", loaded)));
+    expect(new Set(texts).size).toBe(1);
+    expect(texts[0]).toMatch(/^[^0-9%]*$/);
+  });
+
+  it("announces each phase once", () => {
+    expect(engineAnnouncement(state("idle"))).toBe("");
+    expect(engineAnnouncement(state("downloading"))).toBe("Downloading AI model…");
+    expect(engineAnnouncement(state("starting"))).toBe("Starting the on-device engine…");
+    expect(engineAnnouncement(state("ready"))).toBe("AI model ready.");
+    expect(engineAnnouncement(state("error", 0, 0, "Network down."))).toBe("Network down.");
+    expect(engineAnnouncement(state("error"))).toBe("The AI model couldn't be loaded.");
+  });
+
+  it("keeps the detailed progress in the visual text", () => {
+    const text = engineProgressText(state("downloading", 18_600_000, 44_300_000));
+    expect(text).toContain("42%");
+    expect(text).toContain("18.6 of 44.3 MB");
+  });
+
+  it("computes the progress percentage", () => {
+    expect(engineProgressPercent(state("downloading", 50, 40))).toBe(100);
+    expect(engineProgressPercent(state("downloading", 10, 0))).toBe(0);
+    expect(engineProgressPercent(state("starting", 0, 0))).toBe(100);
+    expect(engineProgressPercent(state("downloading", 18_600_000, 44_300_000))).toBe(42);
+  });
+});
+
 describe("fitWithinPixelBudget", () => {
   it("leaves images within the budget unchanged", () => {
     expect(fitWithinPixelBudget(4000, 3000)).toEqual({ width: 4000, height: 3000, resized: false });
@@ -229,10 +301,23 @@ describe("buildResultsZip", () => {
 });
 
 describe("engine pins", () => {
-  it("keeps the CDN wasm version in lockstep with the npm dependency", () => {
+  it("pins the bundled runtime to the exact npm version", () => {
     const pkg = JSON.parse(fs.readFileSync(path.resolve(__dirname, "../package.json"), "utf8"));
     expect(pkg.dependencies["onnxruntime-web"]).toBe(ORT_VERSION);
-    expect(ORT_WASM_BASE).toContain(`onnxruntime-web@${ORT_VERSION}/`);
+    expect(pkg.dependencies["onnxruntime-web"]).not.toMatch(/^[\^~]/);
+    const installed = JSON.parse(
+      fs.readFileSync(path.resolve(__dirname, "../node_modules/onnxruntime-web/package.json"), "utf8")
+    );
+    expect(installed.version).toBe(ORT_VERSION);
+  });
+
+  it("loads the wasm runtime from the bundle, not a CDN", () => {
+    const worker = fs.readFileSync(
+      path.resolve(__dirname, "../src/lib/background-remover/worker.ts"),
+      "utf8"
+    );
+    expect(worker).toContain("onnxruntime-web/ort-wasm-simd-threaded.wasm");
+    expect(worker).not.toMatch(/jsdelivr|https?:\/\//i);
   });
 
   it("pins the model to an exact revision", () => {

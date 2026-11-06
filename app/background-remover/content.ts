@@ -97,7 +97,7 @@ export const content: ConverterContent = {
   useCasesTitle: "Where a clean cutout helps",
   privacyTitle: "Your photos never leave this tab",
   privacyNote:
-    "Every image you add is decoded and processed by a background thread on your own device; the picture is never transmitted to MediaDocks or to anyone else. The only network traffic this tool creates is a one-time download of the AI model from Hugging Face and of the inference runtime from jsDelivr. Your browser stores those two files in its cache so later visits start faster — that cache holds the model, never your images. Cutouts exist only inside this tab until you download them or close the page.",
+    "Every image you add is decoded and processed by a background thread on your own device; the picture is never transmitted to MediaDocks or to anyone else. The only network traffic this tool creates is a one-time download of the AI model from Hugging Face and of the inference runtime, which MediaDocks serves from its own domain. Your browser stores those two files in its cache so later visits start faster — that cache holds the model, never your images. Cutouts exist only inside this tab until you download them or close the page.",
   faqs: [
     {
       q: "Is my photo uploaded anywhere?",
@@ -124,7 +124,7 @@ export const content: ConverterContent = {
     { slug: "optimizing-media-for-web-and-social", label: "Optimizing media for web and social" },
     {
       slug: "how-video-compression-affects-quality",
-      label: "Lossy vs lossless: why cutouts are saved as PNG",
+      label: "How video compression works: lossy vs lossless",
     },
   ],
   relatedTools: [

@@ -149,6 +149,16 @@ export function dedupeFileNames(names: string[]): string[] {
   });
 }
 
+/**
+ * Output names for a list of originals, in the same order: `outputNameFor` on
+ * each, then `dedupeFileNames` across the whole list. This is the single source
+ * of names for row downloads, their button labels and ZIP entries, so all
+ * three always agree.
+ */
+export function outputNamesFor(originalNames: readonly string[]): string[] {
+  return dedupeFileNames(originalNames.map(outputNameFor));
+}
+
 /** Proportionally shrink `width × height` so it fits within `maxPixels`. */
 export function fitWithinPixelBudget(
   width: number,

@@ -8,15 +8,9 @@ import {
   type RemovalResult,
 } from "@/lib/background-remover/client";
 import { MODEL } from "@/lib/background-remover/protocol";
+import type { EnginePhase, EngineState } from "@/lib/background-remover/status";
 
-export type EnginePhase = "idle" | "downloading" | "starting" | "ready" | "error";
-
-export interface EngineState {
-  phase: EnginePhase;
-  loaded: number;
-  total: number;
-  message?: string;
-}
+export type { EnginePhase, EngineState };
 
 /**
  * Owns one background-removal client per mounted hero. Nothing heavy is
