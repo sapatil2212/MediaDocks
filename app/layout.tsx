@@ -4,11 +4,12 @@ import { Plus_Jakarta_Sans, Inter, JetBrains_Mono } from "next/font/google";
 import { ThemeProvider } from "@/hooks/use-theme";
 import { SiteChrome } from "@/components/SiteChrome";
 import { PageViewTracker } from "@/components/PageViewTracker";
+import { AdRuntime } from "@/components/ads/AdRuntime";
+import { ADSENSE_CLIENT_ID } from "@/lib/ads/config";
 import { JsonLd } from "@/components/JsonLd";
 import { Toaster } from "@/components/ui/sonner";
 import {
   absoluteUrl,
-  GLOBAL_KEYWORDS,
   organizationJsonLd,
   SITE,
   webSiteJsonLd,
@@ -45,12 +46,12 @@ export const metadata: Metadata = {
   },
   description: SITE.description,
   applicationName: SITE.name,
-  keywords: GLOBAL_KEYWORDS,
   authors: [{ name: SITE.name }],
   creator: SITE.name,
   publisher: SITE.name,
   category: "technology",
-  alternates: { canonical: absoluteUrl("/") },
+  // Account verification tag. Present on every page; it loads nothing.
+  other: { "google-adsense-account": ADSENSE_CLIENT_ID },
   openGraph: {
     title: "MediaDocks — AI Transcription, Subtitles & Media Tools",
     description: SITE.description,
@@ -93,18 +94,13 @@ export default function RootLayout({
       className={`${displayFont.variable} ${sansFont.variable} ${monoFont.variable}`}
       suppressHydrationWarning
     >
-      <head>
-        <script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9958631141158615"
-          crossOrigin="anonymous"
-        />
-      </head>
       <body className="flex min-h-screen flex-col bg-background font-sans antialiased">
         <JsonLd data={[organizationJsonLd(), webSiteJsonLd()]} />
         <Suspense fallback={null}>
           <PageViewTracker />
         </Suspense>
+        {/* The only place an ad script can be created, and only on eligible routes. */}
+        <AdRuntime />
         <ThemeProvider>
           <SiteChrome>{children}</SiteChrome>
           <Toaster position="bottom-right" />

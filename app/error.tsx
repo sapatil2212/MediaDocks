@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import Link from "next/link";
 import { AlertTriangle, Home, Mail, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { AdDenyMarker } from "@/components/ads/AdDenyMarker";
 
 export default function GlobalError({
   error,
@@ -19,6 +20,8 @@ export default function GlobalError({
 
   return (
     <section className="flex min-h-[70vh] items-center justify-center py-20">
+      <AdDenyMarker />
+      <meta name="robots" content="noindex,nofollow" />
       <div className="section-shell max-w-lg text-center">
         <div className="mx-auto grid h-16 w-16 place-items-center rounded-3xl border border-destructive/30 bg-destructive/10 text-destructive shadow-soft">
           <AlertTriangle className="h-8 w-8" />

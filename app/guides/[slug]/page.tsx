@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Fragment } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
@@ -22,6 +23,8 @@ import { InteractiveBackground } from "@/components/InteractiveBackground";
 import { JsonLd } from "@/components/JsonLd";
 import { Reveal } from "@/components/Reveal";
 import { CTASection } from "@/components/sections/CTASection";
+import { ArticleAd } from "@/components/ads/ArticleAd";
+import { placeSlots } from "@/lib/ads/placement";
 import {
   getAllGuideSlugs,
   getGuideArticle,
@@ -52,7 +55,8 @@ export async function generateMetadata({
 
   if (!article) {
     return {
-      title: "Guide Not Found — MediaDocks",
+      title: "Guide not found",
+      robots: { index: false, follow: false },
     };
   }
 
@@ -60,7 +64,6 @@ export async function generateMetadata({
     title: article.metaTitle,
     description: article.metaDescription,
     path: `/guides/${article.slug}`,
-    keywords: article.keywords,
   });
 }
 
@@ -72,6 +75,7 @@ export default async function GuideArticlePage({ params }: GuidePageProps) {
     notFound();
   }
 
+  const adSlots = placeSlots(article.sections);
   const relatedArticles = GUIDE_ARTICLES.filter((g) => g.slug !== article.slug).slice(
     0,
     3,
@@ -201,7 +205,7 @@ export default async function GuideArticlePage({ params }: GuidePageProps) {
 
           {/* Article Main Body */}
           <div className="mt-12 space-y-12">
-            {article.sections.map((section) => (
+            {article.sections.map((section, sIndex) => (
               <section
                 key={section.id}
                 id={section.id}
@@ -218,12 +222,14 @@ export default async function GuideArticlePage({ params }: GuidePageProps) {
                 ) : null}
 
                 {section.paragraphs.map((p, pIndex) => (
-                  <p
-                    key={pIndex}
-                    className="text-sm leading-relaxed text-muted-foreground sm:text-base"
-                  >
-                    {p}
-                  </p>
+                  <Fragment key={pIndex}>
+                    <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
+                      {p}
+                    </p>
+                    {adSlots.some((s) => s.section === sIndex && s.paragraph === pIndex) ? (
+                      <ArticleAd />
+                    ) : null}
+                  </Fragment>
                 ))}
 
                 {/* Callout Box if present */}
