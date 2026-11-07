@@ -80,7 +80,7 @@ export default function VideoToTextPage() {
               "Automatic spoken-language detection",
               "Editable plain-text transcript preview",
               "Copy text or download a clean TXT file",
-              "Zero permanent storage and 100% ephemeral privacy",
+              "No media library: uploads are handled temporarily for the request",
             ],
           }),
           howToJsonLd({

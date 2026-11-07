@@ -1,20 +1,60 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Shield, Lock, Eye, Database, FileText, CheckCircle2, Globe, Server } from "lucide-react";
+import { Shield } from "lucide-react";
 import { InteractiveBackground } from "@/components/InteractiveBackground";
 import { JsonLd } from "@/components/JsonLd";
 import { Reveal } from "@/components/Reveal";
 import { CTASection } from "@/components/sections/CTASection";
+import { adStateCopy, getAdState } from "@/lib/ads/ad-state";
 import { breadcrumbJsonLd, buildMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = buildMetadata({
   title: "Privacy Policy",
   description:
-    "Review the MediaDocks privacy policy: zero permanent file storage, ephemeral streaming pipelines, local storage usage, advertising cookies, and analytics disclosures.",
+    "What MediaDocks processes, which cookies and storage it uses, how Google may use advertising cookies and web beacons, how to change your ad choices, and how to contact us.",
   path: "/privacy",
 });
 
+/** Plain external link used throughout the policy. */
+function Ext({ href, children }: { href: string; children: React.ReactNode }) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="font-semibold text-primary underline underline-offset-4"
+    >
+      {children}
+    </a>
+  );
+}
+
+function Section({
+  id,
+  title,
+  delay,
+  children,
+}: {
+  id?: string;
+  title: string;
+  delay?: number;
+  children: React.ReactNode;
+}) {
+  return (
+    <Reveal delay={delay}>
+      <div id={id} className="panel scroll-mt-24 space-y-4 p-6 sm:p-8">
+        <h2 className="text-xl font-bold text-foreground">{title}</h2>
+        <div className="space-y-3 text-xs leading-relaxed text-muted-foreground sm:text-sm">
+          {children}
+        </div>
+      </div>
+    </Reveal>
+  );
+}
+
 export default function PrivacyPage() {
+  const ads = adStateCopy(getAdState());
+
   return (
     <>
       <JsonLd
@@ -26,260 +66,234 @@ export default function PrivacyPage() {
         ]}
       />
 
-      {/* Hero Header */}
       <section className="relative overflow-hidden pt-12 pb-16 sm:pt-16 lg:pt-20">
         <InteractiveBackground />
         <div
           className="grid-fade pointer-events-none absolute inset-x-0 top-0 h-[34rem] opacity-40"
           aria-hidden="true"
         />
-
         <div className="section-shell relative z-10">
           <div className="mx-auto max-w-3xl text-center">
             <Reveal>
               <div className="inline-flex items-center gap-2 rounded-full border border-border/80 bg-surface/70 px-3.5 py-1 text-xs font-medium text-foreground/80 shadow-soft backdrop-blur-md">
                 <Shield className="h-3.5 w-3.5 text-primary" />
-                <span className="font-mono text-[0.7rem] uppercase tracking-wider font-semibold text-foreground">
-                  Privacy & Data Protection
+                <span className="font-mono text-[0.7rem] font-semibold uppercase tracking-wider text-foreground">
+                  Privacy
                 </span>
-                <span className="text-border" aria-hidden="true">|</span>
-                <span className="text-muted-foreground">Transparent Standards</span>
               </div>
             </Reveal>
-
             <Reveal delay={60}>
               <h1 className="hero-title mt-6 text-balance font-display tracking-tight text-foreground">
                 Privacy Policy
               </h1>
             </Reveal>
-
             <Reveal delay={120}>
               <p className="mx-auto mt-4 max-w-2xl text-base text-muted-foreground sm:text-lg">
-                At MediaDocks, operated by SAP DigiTech Solutions, we believe the best way to protect
-                your personal data is simply not to collect or store it in the first place.
+                This policy describes what MediaDocks processes when you use the site, and how
+                advertising and analytics work.
               </p>
-              <p className="mt-3 text-xs text-muted-foreground">
-                Effective Date: March 2026 · Version 2.0
-              </p>
+              <p className="mt-3 text-xs text-muted-foreground">Effective date: 7 November 2026</p>
             </Reveal>
           </div>
         </div>
       </section>
 
-      {/* Main Privacy Sections */}
       <section className="border-t border-border py-16 sm:py-20">
-        <div className="section-shell max-w-4xl space-y-12">
-          {/* Executive Summary Card */}
-          <Reveal>
-            <div className="rounded-2xl border border-primary/30 bg-primary/5 p-6 shadow-soft sm:p-8">
-              <h2 className="text-lg font-bold text-foreground sm:text-xl">
-                Privacy at a Glance
-              </h2>
-              <ul className="mt-4 space-y-2.5 text-xs text-muted-foreground sm:text-sm">
-                <li className="flex items-start gap-2.5">
-                  <CheckCircle2 className="h-4 w-4 shrink-0 text-primary mt-0.5" />
-                  <span>
-                    <strong>Zero Permanent Media Storage:</strong> Downloaded or converted media files are never saved permanently on our servers. Streams are piped directly to your client.
-                  </span>
-                </li>
-                <li className="flex items-start gap-2.5">
-                  <CheckCircle2 className="h-4 w-4 shrink-0 text-primary mt-0.5" />
-                  <span>
-                    <strong>No User Accounts:</strong> You do not need to register, provide an email address, or create a password to use any MediaDocks tool.
-                  </span>
-                </li>
-                <li className="flex items-start gap-2.5">
-                  <CheckCircle2 className="h-4 w-4 shrink-0 text-primary mt-0.5" />
-                  <span>
-                    <strong>No Personal IP Tracking:</strong> Internal analytics use daily-rotating one-way salted digests that cannot be reversed or correlated across calendar days.
-                  </span>
-                </li>
-                <li className="flex items-start gap-2.5">
-                  <CheckCircle2 className="h-4 w-4 shrink-0 text-primary mt-0.5" />
-                  <span>
-                    <strong>Client-Side Recent Links:</strong> Your history of recently pasted links lives entirely in your own browser&apos;s local storage and can be wiped with one click.
-                  </span>
-                </li>
-              </ul>
-            </div>
-          </Reveal>
+        <div className="section-shell max-w-4xl space-y-8">
+          <Section title="1. Summary" delay={0}>
+            <ul className="list-disc space-y-2 pl-5">
+              <li>MediaDocks has no user accounts. You do not give us a name or password to use a tool.</li>
+              <li>
+                Files that must be processed on the server are handled in a temporary location for
+                the request. Many tools process files in your browser and never upload them.
+              </li>
+              <li>
+                Like any web server, ours sees your IP address and browser details while it answers
+                a request. Usage statistics use a one-way daily digest instead of storing the address.
+              </li>
+              <li>
+                Advertising, when enabled, is provided by Google and uses cookies and similar
+                technologies. See sections 3 and 4.
+              </li>
+            </ul>
+          </Section>
 
-          {/* Section 1: Information We Process */}
-          <Reveal delay={50}>
-            <div className="panel space-y-4 p-6 sm:p-8">
-              <h2 className="text-xl font-bold text-foreground">
-                1. Information We Process
-              </h2>
-              <p className="text-sm leading-relaxed text-muted-foreground">
-                When you interact with MediaDocks, we process minimal technical data necessary to execute your requested media actions:
-              </p>
-              <div className="space-y-3 pt-2 text-xs sm:text-sm text-muted-foreground">
-                <p>
-                  <strong>• Source Link URLs:</strong> When you paste a URL into our downloader or transcription tools, our server inspects the public platform metadata to resolve available resolutions and formats. To prevent duplicate remote requests, our database stores only an irreversible SHA-256 cryptographic hash of the normalized URL alongside a short-lived expiration timestamp (30 minutes TTL). The full raw URL is not permanently archived in our database.
-                </p>
-                <p>
-                  <strong>• Transient Media Chunks:</strong> During multi-rung video multiplexing (such as combining adaptive 1080p video and audio tracks via FFmpeg), data packets are buffered temporarily in server memory or ephemeral storage. As soon as the finished stream is transferred to your device, the temporary buffer is immediately unlinked and deleted.
-                </p>
-                <p>
-                  <strong>• Uploaded Media Files:</strong> When you upload a video or audio file for AI transcription, summarization, or subtitling, the audio track is held ephemerally for the duration of the transcription API request and destroyed immediately upon generation of the transcript.
-                </p>
-              </div>
-            </div>
-          </Reveal>
+          <Section title="2. Information we process" delay={30}>
+            <p>
+              <strong className="text-foreground">Uploaded files.</strong> The AI transcription,
+              subtitle and summary tools send the audio from a file you upload to Google&apos;s
+              Gemini API to produce your result. Video to Audio uploads the video to our server so
+              the audio can be extracted and returned. Server-side copies are temporary and tied to
+              the request; MediaDocks does not keep a library of uploads.
+            </p>
+            <p>
+              <strong className="text-foreground">Browser-only tools.</strong> The image converter,
+              image resizer, PDF to image, image to PDF, SVG to PNG, Base64 and QR code tools run in
+              your browser, and so does the Background Remover. The Background Remover downloads an
+              image model from Hugging Face (huggingface.co) when you first use it; your images are
+              not sent there.
+            </p>
+            <p>
+              <strong className="text-foreground">Short links.</strong> The URL shortener stores the
+              destination address you submit, the short code, a creation time and a click count so
+              the link can redirect. Do not shorten addresses that contain secrets.
+            </p>
+            <p>
+              <strong className="text-foreground">Link tools reachable by direct link.</strong> If
+              you paste a public media link into one of the link tools that are reachable by direct
+              address, our server requests public metadata for that link. To avoid repeating
+              requests we store a one-way hash of the address with a short expiry (30 minutes by
+              default), not the address itself.
+            </p>
+            <p>
+              <strong className="text-foreground">Server logs.</strong> Our server records request
+              details such as the time, the endpoint and an outcome code to operate the service and
+              investigate problems. These logs are not used to build profiles. Rate limiting keeps a short-lived hash of the IP
+              address in the server&apos;s memory to slow abusive request bursts.
+            </p>
+          </Section>
 
-          {/* Section 2: Browser Storage & Cookies */}
-          <Reveal delay={100}>
-            <div className="panel space-y-4 p-6 sm:p-8">
-              <h2 className="text-xl font-bold text-foreground">
-                2. Cookies and Local Storage
-              </h2>
-              <p className="text-sm leading-relaxed text-muted-foreground">
-                MediaDocks prioritizes client-side privacy in its technical architecture:
-              </p>
-              <div className="space-y-3 pt-2 text-xs sm:text-sm text-muted-foreground">
-                <p>
-                  <strong>• Browser Local Storage (Recent Links):</strong> Our web application offers an optional convenience feature that remembers your recent downloads. This list is saved exclusively on your local device using standard HTML5 <code className="rounded bg-surface-strong px-1.5 py-0.5 text-foreground font-mono">localStorage</code>. This data never leaves your browser, is not transmitted to our servers, and can be purged instantly by clicking &quot;Clear all&quot; in the downloader interface or clearing your browser cache.
-                </p>
-                <p>
-                  <strong>• Functional Cookies:</strong> We do not use session or authentication cookies for public users.
-                </p>
-              </div>
-            </div>
-          </Reveal>
+          <Section title="3. Cookies and local storage" delay={60}>
+            <p>
+              <strong className="text-foreground">Set by MediaDocks.</strong> MediaDocks sets no
+              cookie for visitor measurement and no cookie for public visitors to sign in. Two
+              cookies exist for the site operator&apos;s admin area: a signed session cookie while
+              the operator is signed in, and a cookie named{" "}
+              <code className="rounded bg-surface-strong px-1.5 py-0.5 font-mono text-foreground">
+                sidebar_state
+              </code>{" "}
+              that remembers whether the admin sidebar is open.
+            </p>
+            <p>
+              <strong className="text-foreground">Local storage in your browser.</strong> The site
+              keeps your theme choice, a short list of recent items, and a list of links you created
+              with the URL shortener in your browser&apos;s local storage. This data stays on your
+              device and you can clear it in your browser settings.
+            </p>
+            <p>
+              <strong className="text-foreground">Set by Google.</strong> If advertising is enabled
+              and you are shown ads, Google and its partners may set or read cookies and similar
+              identifiers on your device, as described in the next section.
+            </p>
+          </Section>
 
-          {/* Section 3: Third-Party Advertising (Google AdSense) */}
-          <Reveal delay={150}>
-            <div className="panel space-y-4 p-6 sm:p-8">
-              <h2 className="text-xl font-bold text-foreground">
-                3. Third-Party Advertising & Google AdSense
-              </h2>
-              <p className="text-sm leading-relaxed text-muted-foreground">
-                To support free access to our high-performance infrastructure without charging subscription fees, MediaDocks displays advertisements served by Google AdSense:
-              </p>
-              <div className="space-y-3 pt-2 text-xs sm:text-sm text-muted-foreground">
-                <p>
-                  • Google, as a third-party vendor, uses cookies (including the DoubleClick cookie) to serve ads on MediaDocks.
-                </p>
-                <p>
-                  • Google&apos;s use of advertising cookies enables it and its partners to serve personalized or contextual advertisements to our visitors based on their visits to this site and other sites on the Internet.
-                </p>
-                <p>
-                  • You may opt out of personalized advertising by visiting{" "}
-                  <a
-                    href="https://www.google.com/settings/ads"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-semibold text-primary underline underline-offset-4"
-                  >
-                    Google Ads Settings
-                  </a>
-                  . Alternatively, you can opt out of third-party vendor cookies for personalized advertising by visiting{" "}
-                  <a
-                    href="https://www.aboutads.info/choices/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-semibold text-primary underline underline-offset-4"
-                  >
-                    www.aboutads.info
-                  </a>
-                  .
-                </p>
-              </div>
-            </div>
-          </Reveal>
+          <Section title="4. Advertising and Google" delay={90}>
+            <p>{ads.summary}</p>
+            <p>
+              MediaDocks does not place ads on tool screens, downloader pages, short links or
+              legal pages. If ads are enabled, they appear only on long-form guide pages.
+            </p>
+            <p>If ads are enabled, the following applies:</p>
+            <ul className="list-disc space-y-2 pl-5">
+              <li>
+                Google, as a third-party vendor, uses cookies, including the DoubleClick cookie, to
+                serve ads on this site. Other third-party vendors may also set cookies.
+              </li>
+              <li>
+                Google and its partners may use <strong className="text-foreground">web beacons</strong>{" "}
+                (small image requests that report that a page or ad was viewed) and similar
+                technologies to measure and serve ads.
+              </li>
+              <li>
+                When an ad is requested, Google receives your{" "}
+                <strong className="text-foreground">IP address</strong>, your browser and device
+                details, the page being viewed, and identifiers stored in its cookies.
+              </li>
+              <li>
+                Ads can be <strong className="text-foreground">personalized</strong>, based on your
+                visits to this and other sites, or{" "}
+                <strong className="text-foreground">non-personalized</strong>, based on the content of
+                the page and general information such as your approximate location. Which kind you
+                see depends on your Google settings and on the consent you give where consent is
+                required.
+              </li>
+              <li>
+                Where the law requires consent, for example in the European Economic Area, the United
+                Kingdom and Switzerland, ads are requested only after a consent tool reports your
+                choice.
+              </li>
+            </ul>
+            <p>
+              To learn how Google uses data when you use sites that use its services, see{" "}
+              <Ext href="https://policies.google.com/technologies/partner-sites">
+                How Google uses information from sites or apps that use our services
+              </Ext>
+              .
+            </p>
+          </Section>
 
-          {/* Section 4: AI Processing (Google Gemini API) */}
-          <Reveal delay={200}>
-            <div className="panel space-y-4 p-6 sm:p-8">
-              <h2 className="text-xl font-bold text-foreground">
-                4. AI Speech-to-Text & Transcription Processing
-              </h2>
-              <p className="text-sm leading-relaxed text-muted-foreground">
-                Our Video-to-Text, Audio-to-Text, Audio Summarizer, and Subtitle Studio tools process spoken audio tracks through secure, enterprise-grade AI models (Google Gemini API):
-              </p>
-              <ul className="space-y-2 pt-2 text-xs sm:text-sm text-muted-foreground">
-                <li className="flex items-start gap-2.5">
-                  <CheckCircle2 className="h-4 w-4 shrink-0 text-primary mt-0.5" />
-                  <span>
-                    Audio inputs are transmitted over encrypted TLS connections directly to the API endpoint.
-                  </span>
-                </li>
-                <li className="flex items-start gap-2.5">
-                  <CheckCircle2 className="h-4 w-4 shrink-0 text-primary mt-0.5" />
-                  <span>
-                    MediaDocks does not use your audio files or resulting transcripts to train proprietary machine learning models.
-                  </span>
-                </li>
-                <li className="flex items-start gap-2.5">
-                  <CheckCircle2 className="h-4 w-4 shrink-0 text-primary mt-0.5" />
-                  <span>
-                    Transcripts are delivered directly back to your active browser window for preview and editing.
-                  </span>
-                </li>
-              </ul>
-            </div>
-          </Reveal>
+          <Section id="ad-choices" title="5. Your ad choices" delay={120}>
+            <p>{ads.choices}</p>
+            <ul className="list-disc space-y-2 pl-5">
+              <li>
+                Manage Google ad personalization in{" "}
+                <Ext href="https://adssettings.google.com">Google Ads Settings</Ext>.
+              </li>
+              <li>
+                Opt out of personalized advertising from participating vendors at{" "}
+                <Ext href="https://www.aboutads.info/choices/">aboutads.info</Ext>.
+              </li>
+              <li>
+                If you are in the European Economic Area, use{" "}
+                <Ext href="https://www.youronlinechoices.com/">Your Online Choices</Ext>.
+              </li>
+              <li>You can also block or delete cookies in your browser settings.</li>
+            </ul>
+            <p>
+              See the guides library at{" "}
+              <Link href="/guides" className="font-semibold text-primary underline underline-offset-4">
+                /guides
+              </Link>{" "}
+              for the pages on which a consent control, when installed, is available.
+            </p>
+          </Section>
 
-          {/* Section 5: Aggregate Anonymous Analytics */}
-          <Reveal delay={250}>
-            <div className="panel space-y-4 p-6 sm:p-8">
-              <h2 className="text-xl font-bold text-foreground">
-                5. Privacy-Preserving Aggregate Measurement
-              </h2>
-              <p className="text-sm leading-relaxed text-muted-foreground">
-                MediaDocks monitors aggregate service health and feature usage (e.g. total video resolves, average processing latency, server errors) through an anonymous internal system:
-              </p>
-              <div className="space-y-2 pt-2 text-xs sm:text-sm text-muted-foreground">
-                <p>
-                  • We do not log IP addresses in analytics tables. Instead, each incoming request calculates a one-way cryptographic hash combining the client IP with a secret server salt and the current calendar date. This hash changes every 24 hours and cannot be reversed or correlated across days.
-                </p>
-                <p>
-                  • We record coarse device categories (&quot;desktop&quot;, &quot;mobile&quot;) and referring domain hosts, never full query strings or pasted personal URLs.
-                </p>
-                <p>
-                  • Aggregate records older than 90 days are automatically deleted by routine database cleanup scripts.
-                </p>
-              </div>
-            </div>
-          </Reveal>
+          <Section title="6. AI processing (Google Gemini API)" delay={150}>
+            <p>
+              The Video to Text, Audio to Text, Audio Summarizer and Subtitle tools send audio to
+              Google&apos;s Gemini API over an encrypted connection to produce transcripts, subtitles
+              and summaries. MediaDocks does not use your files or results to train its own models.
+              Google processes the data under its own terms and privacy notices, which we do not
+              control.
+            </p>
+          </Section>
 
-          {/* Section 6: User Rights & Contact */}
-          <Reveal delay={300}>
-            <div className="panel space-y-4 p-6 sm:p-8">
-              <h2 className="text-xl font-bold text-foreground">
-                6. Your Privacy Rights (GDPR & CCPA)
-              </h2>
-              <p className="text-sm leading-relaxed text-muted-foreground">
-                Under data protection frameworks including the General Data Protection Regulation (GDPR) and the California Consumer Privacy Act (CCPA), you have the right to request access to, correction of, or deletion of any personal data held about you.
-              </p>
-              <p className="text-sm leading-relaxed text-muted-foreground">
-                Because MediaDocks does not collect user accounts, names, or persistent media files, we generally do not hold identifiable personal data. However, if you have questions or inquiries regarding our data practices, please contact our Data Protection Team:
-              </p>
-              <div className="rounded-xl border border-border bg-surface p-4 text-xs sm:text-sm">
-                <p className="font-semibold text-foreground">SAP DigiTech Solutions — Privacy Officer</p>
-                <p className="text-muted-foreground">
-                  Email:{" "}
-                  <a
-                    href="mailto:sapdigitechsolutions@gmail.com?subject=Privacy%20Inquiry"
-                    className="font-semibold text-primary underline underline-offset-4"
-                  >
-                    sapdigitechsolutions@gmail.com
-                  </a>
-                </p>
-                <p className="text-muted-foreground">
-                  Official Website:{" "}
-                  <a
-                    href="https://www.sapdigitechsolutions.in"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-foreground hover:underline"
-                  >
-                    https://www.sapdigitechsolutions.in
-                  </a>
-                </p>
-              </div>
-            </div>
-          </Reveal>
+          <Section title="7. Usage statistics" delay={180}>
+            <p>
+              MediaDocks records anonymous usage events to see which pages and tools are used and
+              whether they fail. For a page view or tool request we store the page path, a device
+              class (such as mobile or desktop), the referring host (not the full referring address),
+              an outcome and, for link tools, the platform name.
+            </p>
+            <p>
+              To count distinct visitors without storing IP addresses, the server computes a one-way
+              SHA-256 digest of the IP address, the browser string, a secret salt and the calendar
+              date, and keeps the first part of it. The value changes every day, cannot be turned
+              back into an address, and cannot be linked across days. Events are deleted after 90
+              days by default. Known crawlers are not counted.
+            </p>
+          </Section>
+
+          <Section title="8. Your rights and contact" delay={210}>
+            <p>
+              Depending on where you live, you may have rights to access, correct or delete personal
+              data, to object to processing, and to withdraw consent. MediaDocks has no accounts and
+              generally holds no data that identifies you, but if you think we hold data about you,
+              email{" "}
+              <a
+                href="mailto:sapdigitechsolutions@gmail.com?subject=Privacy%20request"
+                className="font-semibold text-primary underline underline-offset-4"
+              >
+                sapdigitechsolutions@gmail.com
+              </a>{" "}
+              and describe the request. For data that Google holds through advertising, use the links
+              in section 5.
+            </p>
+            <p>
+              We may update this policy when the site changes. The effective date at the top shows
+              when the text last changed in a way that matters.
+            </p>
+          </Section>
         </div>
       </section>
 

@@ -8,7 +8,7 @@ const KEY_BENEFITS = [
   "Timed SRT and WebVTT cues for editors, platforms and HTML5 players",
   "Summaries that surface key points and action items from long recordings",
   "No registration, user accounts, paywalls, or client software installs",
-  "Zero permanent media storage — strictly ephemeral request-scoped processing",
+  "No media library: server-side processing is temporary and tied to the request",
 ];
 
 export function WhatIsMediaDocks() {

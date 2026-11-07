@@ -10,98 +10,91 @@ import { breadcrumbJsonLd, buildMetadata } from "@/lib/seo";
 export const metadata: Metadata = buildMetadata({
   title: "Terms of Service and Acceptable Use",
   description:
-    "Review MediaDocks Terms of Service: user responsibilities, lawful acceptable use, intellectual property notice, service limitations, and legal disclaimers.",
+    "The rules for using MediaDocks: acceptable use, user responsibilities, service limits, disclaimers and how to contact us.",
   path: "/terms",
 });
+
+const BULLET = "\u2022";
 
 const SECTIONS = [
   {
     id: "acceptance",
-    title: "1. Acceptance of Terms",
+    title: "1. Acceptance of terms",
     content: [
-      "By accessing or using MediaDocks (accessible at https://mediadocks.online, operated by SAP DigiTech Solutions), you agree to be bound by these Terms of Service, our Privacy Policy, and our Copyright & DMCA Policy.",
-      "If you do not agree with any portion of these terms, you are prohibited from accessing or using our services. Your continued use of the website constitutes acceptance of any subsequent revisions to these terms.",
+      "By using MediaDocks (https://mediadocks.online) you agree to these Terms of Service, the Privacy Policy and the Copyright and DMCA Policy.",
+      "If you do not agree, do not use the service. Continued use after the terms change means you accept the changed terms.",
     ],
   },
   {
     id: "service-nature",
-    title: "2. Nature of Service & Ephemeral Architecture",
+    title: "2. What the service is",
     content: [
-      "MediaDocks provides browser-based multimedia processing utilities, including public media stream extraction, format multiplexing, audio conversion, AI speech-to-text transcription, and subtitle editing.",
-      "You acknowledge and understand that MediaDocks operates as an ephemeral stream pipeline. We do not host, store, index, or archive any media files on our servers. All media data is streamed transiently and piped directly to your client application.",
+      "MediaDocks provides browser-based tools: AI speech-to-text transcription, subtitle creation and editing, audio summaries, audio extraction, image and PDF conversion, background removal, QR codes and a URL shortener, together with a library of guides.",
+      "MediaDocks does not run a media library. Files that are processed on the server are handled in a temporary location for the request, and many tools process files in your browser. See the Privacy Policy for the details.",
     ],
   },
   {
     id: "acceptable-use",
-    title: "3. Lawful & Acceptable Use",
+    title: "3. Lawful and acceptable use",
     content: [
-      "You agree to use MediaDocks exclusively for lawful purposes and in full compliance with all applicable local, national, and international laws, regulations, and third-party terms of service.",
-      "You represent and warrant that:",
-      "• You possess the legal right, copyright ownership, or explicit permission from the copyright owner to download, convert, transcribe, or process any media content submitted to the service.",
-      "• Your use of MediaDocks is for personal, non-commercial, archival, educational, or fair-use purposes.",
-      "• You will not use the service to commit, facilitate, or encourage copyright infringement or unlawful distribution of proprietary digital assets.",
+      "You agree to use MediaDocks only for lawful purposes and in line with the laws and third-party terms that apply to you.",
+      "You confirm that:",
+      `${BULLET} You own, or have the legal right or the permission of the rights holder, to process any file you submit.`,
+      `${BULLET} You will not use the service to infringe copyright or to distribute material you have no right to distribute.`,
     ],
   },
   {
     id: "prohibited-activities",
-    title: "4. Prohibited Activities",
+    title: "4. Prohibited activities",
     content: [
-      "When using MediaDocks, you are strictly prohibited from:",
-      "• Submitting URLs to content protected by access control technologies, DRM (Digital Rights Management), private paywalls, or restricted friend-only permissions.",
-      "• Attempting to circumvent, disable, or tamper with security-related features, rate limiters, or token expiration controls.",
-      "• Utilizing automated scrapers, bots, crawlers, or high-volume scripts that disrupt server stability or degrade responsiveness for other users.",
-      "• Processing media containing illegal, defamatory, harmful, hateful, or abusive material.",
-      "• Reselling, leasing, white-labeling, or commercially exploiting MediaDocks APIs without express written consent from SAP DigiTech Solutions.",
+      "You may not:",
+      `${BULLET} Submit material protected by access controls, DRM or paywalls that you are not permitted to process.`,
+      `${BULLET} Try to circumvent, disable or tamper with security features or rate limits.`,
+      `${BULLET} Use bots, scrapers or high-volume scripts that degrade the service for others.`,
+      `${BULLET} Process or share unlawful, defamatory, hateful or abusive material, or use the URL shortener to link to it.`,
+      `${BULLET} Resell or white-label MediaDocks interfaces without written permission.`,
     ],
   },
   {
     id: "trademarks-disclaimer",
-    title: "5. Third-Party Trademarks & Disclaimer of Affiliation",
+    title: "5. Third-party names",
     content: [
-      "MediaDocks is an independent software application and is NOT affiliated, associated, authorized, endorsed by, or in any way officially connected with YouTube™, Instagram™, X (Twitter)™, Pinterest™, Facebook™, Meta™, Google™, or any of their subsidiaries or affiliates.",
-      "All platform names, logos, trademarks, and registered marks displayed on this website are the intellectual property of their respective owners. Their mention on this site is purely for technical compatibility and descriptive identification purposes under nominative fair use.",
+      "MediaDocks is independent and is not affiliated with, endorsed by or sponsored by YouTube, Instagram, X, Pinterest, Facebook, Meta or Google. Names and marks belong to their owners and are mentioned only to describe compatibility.",
     ],
   },
   {
     id: "service-limits",
-    title: "6. Service Limitations & Rate Limits",
+    title: "6. Limits and changes",
     content: [
-      "To maintain high service availability and prevent resource exhaustion:",
-      "• Single download payloads are capped at 500 MB. Streams exceeding this ceiling will not be served at high resolutions.",
-      "• Automated rate limiting applies to incoming resolve and download requests.",
-      "• Resolved media references and stream tokens expire automatically after 30 minutes.",
-      "MediaDocks reserves the right to modify, throttle, or discontinue any feature at any time without prior notice.",
+      "Tools have size, duration and rate limits, which are shown on each tool page and may change.",
+      "MediaDocks may change, limit or discontinue any feature at any time.",
     ],
   },
   {
     id: "warranty-disclaimer",
-    title: "7. Disclaimer of Warranties",
+    title: "7. Disclaimer of warranties",
     content: [
-      "MediaDocks is provided strictly on an 'AS IS' and 'AS AVAILABLE' basis, without warranties of any kind, whether express, implied, statutory, or otherwise.",
-      "SAP DigiTech Solutions explicitly disclaims all implied warranties of merchantability, fitness for a particular purpose, non-infringement, and uninterrupted or error-free operation. We make no guarantee that third-party public streams will remain available or accessible.",
+      "MediaDocks is provided \"as is\" and \"as available\" without warranties of any kind, express or implied, including merchantability, fitness for a particular purpose, non-infringement, and uninterrupted or error-free operation.",
+      "AI output, such as transcripts and summaries, can contain mistakes. Check it before you rely on it.",
     ],
   },
   {
     id: "liability-limitation",
-    title: "8. Limitation of Liability",
+    title: "8. Limitation of liability",
     content: [
-      "To the fullest extent permitted by applicable law, SAP DigiTech Solutions, its directors, employees, and affiliates shall not be liable for any indirect, incidental, special, consequential, or punitive damages, including loss of data, profits, goodwill, or device malfunction, arising from your use of or inability to use MediaDocks.",
-      "You assume total legal responsibility for the manner in which you access, download, store, and utilize any media file processed through this application.",
+      "To the fullest extent permitted by law, MediaDocks and its operators are not liable for indirect, incidental, special, consequential or punitive damages, including loss of data, profits or goodwill, arising from your use of or inability to use the service.",
+      "You are responsible for how you use any file you process with the service.",
     ],
   },
   {
     id: "governing-law",
-    title: "9. Governing Law & Contact",
+    title: "9. Governing law and contact",
     content: [
-      "These Terms shall be governed by and construed in accordance with applicable laws, without regard to conflict of law principles.",
-      "If you have questions, feedback, or legal inquiries regarding these Terms of Service, please contact:",
-      "SAP DigiTech Solutions — Legal Department",
-      "Email: sapdigitechsolutions@gmail.com",
-      "Official Domain: https://www.sapdigitechsolutions.in",
+      "These terms are governed by the laws that apply to the service operator, without regard to conflict-of-law rules. This page does not name a governing jurisdiction; that detail is not published on this site.",
+      "Questions about these terms can be sent to sapdigitechsolutions@gmail.com.",
     ],
   },
 ];
-
 export default function TermsPage() {
   return (
     <>
@@ -143,12 +136,10 @@ export default function TermsPage() {
 
             <Reveal delay={120}>
               <p className="mx-auto mt-4 max-w-2xl text-base text-muted-foreground sm:text-lg">
-                Please read these terms carefully before utilizing MediaDocks. They govern your
-                permitted use of our software utilities, intellectual property, and service
-                limitations.
+                Please read these terms before using MediaDocks. They set out what you may do with the service and what we do not promise.
               </p>
               <p className="mt-3 text-xs text-muted-foreground">
-                Last Updated: March 2026 · Operator: SAP DigiTech Solutions
+                Last updated: 7 November 2026
               </p>
             </Reveal>
           </div>
@@ -188,14 +179,14 @@ export default function TermsPage() {
                 href="/copyright"
                 className="font-medium text-primary hover:underline underline-offset-4"
               >
-                DMCA & Copyright Notice
+                Copyright policy
               </Link>
               <span>•</span>
               <Link
                 href="/contact"
                 className="font-medium text-primary hover:underline underline-offset-4"
               >
-                Contact Legal Department
+                Contact
               </Link>
             </div>
           </div>

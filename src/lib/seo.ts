@@ -28,7 +28,7 @@ export const SITE = {
   url: rawSiteUrl,
   tagline: "Transcribe it. Caption it. Keep it.",
   description:
-    "Free AI media toolkit: transcribe video and audio to editable text, generate timed SRT and VTT subtitles, summarize long recordings into key points, and convert public media links to MP4 or MP3. No account, and nothing is stored after it reaches you.",
+    "Free AI media toolkit: transcribe video and audio to editable text, generate timed SRT and VTT subtitles, summarize long recordings into key points, and convert images and documents. No account needed.",
   locale: "en_US",
   twitter: "@mediadocks",
 } as const;
@@ -259,7 +259,7 @@ export function aboutPageJsonLd(): JsonLdObject {
     "@type": "AboutPage",
     name: "About MediaDocks",
     description:
-      "MediaDocks is a privacy-first universal media utility engineered for high-resolution video extraction, audio conversion, and AI speech-to-text processing.",
+      "MediaDocks is a set of browser-based tools for transcription, subtitles, audio extraction and image and document conversion, with a library of guides.",
     url: absoluteUrl("/about"),
     publisher: {
       "@type": "Organization",
@@ -273,9 +273,9 @@ export function contactPageJsonLd(): JsonLdObject {
   return {
     "@context": "https://schema.org",
     "@type": "ContactPage",
-    name: "Contact MediaDocks Support",
+    name: "Contact MediaDocks",
     description:
-      "Get in touch with the MediaDocks team for technical support, feedback, bug reports, and DMCA inquiries.",
+      "Contact MediaDocks by email about bugs, feedback, privacy requests and copyright concerns.",
     url: absoluteUrl("/contact"),
     publisher: {
       "@type": "Organization",

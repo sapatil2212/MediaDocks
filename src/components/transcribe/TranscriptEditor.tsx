@@ -365,7 +365,7 @@ export function TranscriptEditor({
           {/* Card Footer */}
           <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border/70 bg-surface-strong/40 px-5 py-3 text-xs text-muted-foreground">
             <span>Clean plain text formatted for documents, notes, and sharing.</span>
-            <span className="font-mono text-[11px]">Zero permanent storage</span>
+            <span className="font-mono text-[11px]">No media library</span>
           </div>
         </div>
 

@@ -1,4 +1,4 @@
-﻿import { config } from "@/lib/config";
+import { config } from "@/lib/config";
 import { debugLog } from "@/lib/debug";
 import { assertSafeUrl, isAllowedMediaHost } from "@/lib/download/security";
 import { MediaFlowError } from "@/lib/errors";
@@ -292,7 +292,7 @@ export function decodeEmbeddedUrl(raw: string): string {
 /**
  * Platform CDNs serve resized derivatives from paths like `/736x/` or with
  * `stp=` transform parameters. We can tell that such a URL is not the original,
- * but we cannot prove that any other URL is â€” so the label stays conservative.
+ * but we cannot prove that any other URL is — so the label stays conservative.
  */
 export function describeImageQuality(mediaUrl: string): "Original" | "Preview" {
   try {

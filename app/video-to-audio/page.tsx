@@ -126,7 +126,7 @@ export default function VideoToAudioPage() {
               "Custom audio trimming (start & end time clipping)",
               "Volume booster and EBU R128 audio normalization",
               "Interactive in-browser audio preview player",
-              "100% ephemeral privacy with zero permanent file storage",
+              "Uploads are handled temporarily for the request and are not kept in a library",
             ],
           }),
           howToJsonLd({

@@ -1,13 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import {
-  Clock,
   HelpCircle,
   Mail,
-  MapPin,
   MessageSquare,
   ShieldAlert,
-  ShieldCheck,
 } from "lucide-react";
 import { ContactForm } from "@/src/components/contact/ContactForm";
 import { InteractiveBackground } from "@/components/InteractiveBackground";
@@ -19,52 +16,43 @@ import { breadcrumbJsonLd, buildMetadata, contactPageJsonLd } from "@/lib/seo";
 export const metadata: Metadata = buildMetadata({
   title: "Contact MediaDocks: Support and Feedback",
   description:
-    "Get in touch with the MediaDocks team for technical assistance, bug reports, feature requests, and DMCA copyright inquiries. Fast support via email.",
+    "Contact MediaDocks about a bug, a feature idea, a privacy question or a copyright concern. Email is the only channel.",
   path: "/contact",
 });
 
 const SUPPORT_CHANNELS = [
   {
     icon: Mail,
-    title: "Direct Support Email",
-    desc: "For general questions, bug reports, and assistance.",
+    title: "Email",
+    desc: "For questions, bug reports, feedback and privacy requests.",
     value: "sapdigitechsolutions@gmail.com",
     href: "mailto:sapdigitechsolutions@gmail.com",
     label: "Send an email",
   },
   {
     icon: ShieldAlert,
-    title: "DMCA & Copyright Inquiries",
-    desc: "Dedicated channel for copyright notices and content removal requests.",
+    title: "Copyright concerns",
+    desc: "Send copyright notices to the same address. The copyright page lists what to include.",
     value: "sapdigitechsolutions@gmail.com",
-    href: "mailto:sapdigitechsolutions@gmail.com?subject=DMCA%20Notice",
-    label: "Submit DMCA Notice",
-  },
-  {
-    icon: Clock,
-    title: "Response Window",
-    desc: "Our engineering team reviews all incoming requests promptly.",
-    value: "Monday – Friday (24 to 48 Hours)",
-    href: null,
-    label: null,
+    href: "mailto:sapdigitechsolutions@gmail.com?subject=Copyright%20notice",
+    label: "Email a copyright notice",
   },
 ];
 
 const COMMON_QUESTIONS = [
   {
-    q: "Why did my video link report 'unavailable'?",
-    a: "If the link is from Instagram or Facebook, it is often login-walled or restricted to friends. MediaDocks operates strictly on public links without using accounts or cookies.",
+    q: "Where can I see what happens to my files?",
+    a: "The how-it-works page explains which tools run in your browser and which use the server, and the privacy policy lists what data is processed.",
   },
   {
-    q: "Why is a 1080p download taking longer to start?",
-    a: "High resolutions arrive as separate video and audio streams that must be multiplexed with FFmpeg before the file is delivered. A 10-minute 1080p video takes approximately two minutes.",
+    q: "What should I include in a bug report?",
+    a: "Say which tool you used, the type and rough size of the file, your browser, and the exact message you saw. You do not need to attach the file itself.",
   },
   {
-    q: "What is the maximum file size limit?",
-    a: "Single downloads are capped at 500 MB to ensure server responsiveness and prevent memory exhaustion. For long videos, choose a lower resolution or select the audio-only MP3/M4A option.",
+    q: "Is there a limit for transcription uploads?",
+    a: "By default uploads for AI transcription can be up to 100 MB and two hours. Each tool page lists the limits that apply to it.",
   },
 ];
-
 export default function ContactPage() {
   return (
     <>
@@ -95,7 +83,7 @@ export default function ContactPage() {
                   Support & Help
                 </span>
                 <span className="text-border" aria-hidden="true">|</span>
-                <span className="text-muted-foreground">Direct Engineering Contact</span>
+                <span className="text-muted-foreground">By email</span>
               </div>
             </Reveal>
 
@@ -107,8 +95,7 @@ export default function ContactPage() {
 
             <Reveal delay={120}>
               <p className="mx-auto mt-4 max-w-2xl text-base text-muted-foreground sm:text-lg">
-                Have a question about a video resolution, a bug to report, or an inquiry regarding
-                our service? Reach out to the team at SAP DigiTech Solutions.
+                Have a question, a bug to report, or a privacy or copyright concern? Email MediaDocks.
               </p>
             </Reveal>
           </div>
@@ -125,8 +112,7 @@ export default function ContactPage() {
                 <p className="eyebrow">Direct Channels</p>
                 <h2 className="section-title mt-2">Contact details</h2>
                 <p className="mt-3 text-sm text-muted-foreground">
-                  Choose the channel that best suits your inquiry. We do not use automated bot
-                  replies; real software engineers respond to your messages.
+                  Email is the only way to reach us. The form below prepares a message in your own email app.
                 </p>
               </Reveal>
 
@@ -192,7 +178,7 @@ export default function ContactPage() {
                       href="/copyright"
                       className="font-medium text-primary hover:underline underline-offset-4"
                     >
-                      DMCA Guidelines
+                      Copyright policy
                     </Link>
                   </div>
                 </div>
@@ -204,10 +190,10 @@ export default function ContactPage() {
               <Reveal delay={90}>
                 <div className="panel p-6 sm:p-8">
                   <h2 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
-                    Send a Message
+                    Write a message
                   </h2>
                   <p className="mt-1.5 text-xs text-muted-foreground sm:text-sm">
-                    Fill out the form below and our team will get back to you via email.
+                    Fill in the form to open a ready-to-send email in your mail app.
                   </p>
                   <div className="mt-6">
                     <ContactForm />
