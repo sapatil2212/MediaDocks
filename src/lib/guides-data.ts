@@ -62,7 +62,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
       "A technical comparison between MP4 and WebM containers: compatibility across Apple, Windows, and Android ecosystems, compression ratios, and which to choose for web publishing or archiving.",
     category: "Video Formats",
     publishedAt: "2026-01-15T09:00:00Z",
-    updatedAt: "2026-03-20T10:00:00Z",
+    updatedAt: "2026-11-07T00:00:00Z",
     relatedGuides: ["understanding-video-codecs-h264-hevc-vp9-av1", "how-video-compression-affects-quality", "optimizing-media-for-web-and-social"],
     author: "MediaDocks Engineering Team",
     keywords: [
@@ -116,7 +116,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
           rows: [
             ["Default Video Codecs", "H.264 (AVC), H.265 (HEVC), AV1", "VP8, VP9, AV1"],
             ["Default Audio Codecs", "AAC, ALAC, MP3, AC-3", "Opus, Vorbis"],
-            ["Licensing & Patents", "MPEG LA royalty pools (H.264/HEVC)", "100% Royalty-free open source"],
+            ["Licensing & Patents", "MPEG LA royalty pools (H.264/HEVC)", "Royalty-free, open specifications"],
             ["Hardware Acceleration", "Universal (Intel, Apple Silicon, NVidia, Qualcomm)", "High in modern GPUs; mixed on legacy mobile"],
             ["Editing Suite Support", "Full native support (Premiere, Final Cut, DaVinci)", "Requires plugins or transcode in older suites"],
           ],
@@ -220,7 +220,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     faqs: [
       {
         q: "Why is MP4 the safest default when sharing video?",
-        a: "MP4 with AAC audio offers 99.9% playback compatibility across all operating systems, mobile devices, and media players without requiring third-party codec packs.",
+        a: "MP4 with H.264 video and AAC audio plays on almost every current operating system, phone and media player without extra codec packs, which makes it the lowest-risk format to send to someone else.",
       },
       {
         q: "Is MP4 higher quality than WebM?",
@@ -254,7 +254,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
       "A complete guide to video resolutions: understanding pixel dimensions, aspect ratios, bitrate requirements, and how to choose the right resolution for your device and bandwidth.",
     category: "Video Formats",
     publishedAt: "2026-01-20T09:00:00Z",
-    updatedAt: "2026-03-22T10:00:00Z",
+    updatedAt: "2026-11-07T00:00:00Z",
     relatedGuides: ["mp4-vs-webm-video-format-comparison", "how-video-compression-affects-quality", "optimizing-media-for-web-and-social"],
     author: "MediaDocks Engineering Team",
     keywords: [
@@ -405,7 +405,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
       "Explore the technology behind digital video compression: why H.264 remains universal, how VP9 powers YouTube, why HEVC faced licensing hurdles, and how AV1 shapes the future of streaming.",
     category: "Video Formats",
     publishedAt: "2026-02-01T09:00:00Z",
-    updatedAt: "2026-03-24T10:00:00Z",
+    updatedAt: "2026-11-07T00:00:00Z",
     relatedGuides: ["mp4-vs-webm-video-format-comparison", "video-resolution-guide-720p-1080p-4k", "troubleshooting-common-media-playback-errors"],
     author: "MediaDocks Engineering Team",
     keywords: [
@@ -483,7 +483,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
         table: {
           headers: ["Codec", "Release Year", "Compression vs H.264", "Licensing", "Hardware Support"],
           rows: [
-            ["H.264 (AVC)", "2003", "Baseline (1.0x)", "Royalty (MPEG LA)", "Universal (100% of devices)"],
+            ["H.264 (AVC)", "2003", "Baseline (1.0x)", "Royalty (MPEG LA)", "Near-universal"],
             ["H.265 (HEVC)", "2013", "~50% smaller", "Multiple Royalty Pools", "Universal on Mobile/TVs; spotty in web browsers"],
             ["VP9", "2013", "~45% smaller", "Royalty-free (Google)", "All modern web browsers, Android, PC, Mac"],
             ["AV1", "2018", "~65% smaller", "Royalty-free (AOMedia)", "Recent GPUs (RTX 3000+, Apple M3+, modern phones)"],
@@ -566,7 +566,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
       "A pragmatic look at digital audio quality: how lossy encoding works, what bitrate you actually need for podcasts versus music, and why 320 kbps is often redundant.",
     category: "Audio Processing",
     publishedAt: "2026-02-08T09:00:00Z",
-    updatedAt: "2026-03-22T10:00:00Z",
+    updatedAt: "2026-11-07T00:00:00Z",
     relatedGuides: ["how-to-extract-audio-from-video-cleanly", "understanding-video-codecs-h264-hevc-vp9-av1", "troubleshooting-common-media-playback-errors"],
     author: "MediaDocks Engineering Team",
     keywords: [
@@ -629,12 +629,12 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
         heading: "MP3 vs. Modern AAC (M4A)",
         paragraphs: [
           "While MP3 remains the most recognized audio extension, the Advanced Audio Coding (AAC) format—commonly wrapped in an .m4a container—is technically superior.",
-          "A 128 kbps AAC stream typically delivers sound fidelity equal to or better than a 192 kbps MP3 because AAC uses more sophisticated filter banks and transient processing. Most video platforms (including YouTube and Instagram) deliver audio natively in AAC. Downloading the original M4A track avoids a second lossy transcode entirely.",
+          "A 128 kbps AAC stream typically delivers sound fidelity equal to or better than a 192 kbps MP3 because AAC uses more sophisticated filter banks and transient processing. Most video platforms (including YouTube and Instagram) deliver audio natively in AAC. Keeping the original AAC track avoids a second lossy transcode entirely.",
         ],
         callout: {
           type: "tip",
           title: "Pro Audio Tip",
-          body: "If your playback software supports M4A, always choose 'Original M4A' instead of MP3. It preserves the exact audio stream without re-encoding generation loss.",
+          body: "If a tool offers the original audio track (usually AAC in an M4A container) and your player supports it, keep that track instead of converting to MP3. It avoids a second round of lossy compression.",
         },
       },
       {
@@ -720,7 +720,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
       "A step-by-step technical guide to extracting pristine audio from video files: stream copying, container extraction, handling multi-channel sound, and avoiding double compression.",
     category: "Audio Processing",
     publishedAt: "2026-02-14T09:00:00Z",
-    updatedAt: "2026-03-20T10:00:00Z",
+    updatedAt: "2026-11-07T00:00:00Z",
     relatedGuides: ["audio-bitrates-explained-128-192-320-kbps", "troubleshooting-common-media-playback-errors", "transcribing-interviews-and-meetings-workflow"],
     author: "MediaDocks Engineering Team",
     keywords: [
@@ -838,7 +838,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
         heading: "Step-by-Step Clean Extraction Workflow",
         paragraphs: [
           "1. Open Video to Audio and choose the video file you want to work with.",
-          "2. Pick the output format. If you want the cleanest possible result and your player supports it, choose a lossless or untouched format; otherwise choose MP3 for the widest compatibility.",
+          "2. Pick the output format. Video to Audio re-encodes into the format you choose, so it cannot return the original track bit for bit. WAV and FLAC add no further loss; M4A and MP3 are smaller, with MP3 the most widely supported.",
           "3. Start the extraction and wait for the file to be prepared on the server.",
           "4. Download the finished audio file and listen to the start, middle and end before you delete the source video.",
         ],
@@ -936,7 +936,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
             ["HTML5 `<track>` Support", "Requires JS parsing library", "Native browser support in all engines"],
             ["Custom CSS Styling", "Very limited / non-standard", "Full CSS styling support via `::cue` pseudo-element"],
             ["Positioning & Alignment", "No standardized positioning", "Built-in cue positioning settings"],
-            ["Desktop Players (VLC, etc.)", "100% universal support", "Excellent in modern players"],
+            ["Desktop Players (VLC, etc.)", "Broad support", "Excellent in modern players"],
           ],
         },
       },
@@ -1028,7 +1028,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
       "An insider look at how modern neural networks convert spoken human voices into structured, accurate text: audio preprocessing, acoustic features, and punctuation restoration.",
     category: "Subtitles & Text",
     publishedAt: "2026-02-22T09:00:00Z",
-    updatedAt: "2026-03-24T10:00:00Z",
+    updatedAt: "2026-11-07T00:00:00Z",
     relatedGuides: ["complete-guide-to-srt-vtt-subtitles", "video-accessibility-captions-transcripts-wcag", "transcribing-interviews-and-meetings-workflow"],
     author: "MediaDocks Engineering Team",
     keywords: [
@@ -1195,7 +1195,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
       "Learn the mechanics of video compression: how algorithms discard invisible data, what causes compression artifacts, and how to preserve maximum visual fidelity.",
     category: "Media Optimization",
     publishedAt: "2026-02-28T09:00:00Z",
-    updatedAt: "2026-03-24T10:00:00Z",
+    updatedAt: "2026-11-07T00:00:00Z",
     relatedGuides: ["mp4-vs-webm-video-format-comparison", "video-resolution-guide-720p-1080p-4k", "understanding-video-codecs-h264-hevc-vp9-av1"],
     author: "MediaDocks Engineering Team",
     keywords: [
@@ -1345,7 +1345,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
       "A developer and creator guide to video optimization: how to configure container flags for instant web playback, choose the right aspect ratios, and prevent buffering.",
     category: "Media Optimization",
     publishedAt: "2026-03-05T09:00:00Z",
-    updatedAt: "2026-03-24T10:00:00Z",
+    updatedAt: "2026-11-07T00:00:00Z",
     relatedGuides: ["video-resolution-guide-720p-1080p-4k", "audio-bitrates-explained-128-192-320-kbps", "how-video-compression-affects-quality"],
     author: "MediaDocks Engineering Team",
     keywords: [
@@ -1487,7 +1487,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
       "A comprehensive troubleshooting manual for resolving common video playback failures, unsupported format alerts, audio desync, and stream extraction errors.",
     category: "Media Optimization",
     publishedAt: "2026-03-10T09:00:00Z",
-    updatedAt: "2026-03-24T10:00:00Z",
+    updatedAt: "2026-11-07T00:00:00Z",
     relatedGuides: ["audio-bitrates-explained-128-192-320-kbps", "how-to-extract-audio-from-video-cleanly", "complete-guide-to-srt-vtt-subtitles"],
     author: "MediaDocks Engineering Team",
     keywords: [
