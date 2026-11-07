@@ -24,10 +24,16 @@ describe("getAdState", () => {
     vi.stubEnv("NEXT_PUBLIC_ADS_ENABLED", "true");
     expect(getAdState()).toBe("off");
   });
-  it("is enabled-no-cmp with flag and slot but no shipped adapter", () => {
+  it("stays off with a slot but the flag not exactly \"true\"", () => {
+    vi.stubEnv("NEXT_PUBLIC_ADSENSE_ARTICLE_SLOT", "1234567890");
+    expect(getAdState()).toBe("off");
+    vi.stubEnv("NEXT_PUBLIC_ADS_ENABLED", "TRUE");
+    expect(getAdState()).toBe("off");
+  });
+  it("is enabled-with-cmp with flag and slot, since the Google consent tool adapter ships", () => {
     vi.stubEnv("NEXT_PUBLIC_ADS_ENABLED", "true");
     vi.stubEnv("NEXT_PUBLIC_ADSENSE_ARTICLE_SLOT", "1234567890");
-    expect(getAdState()).toBe("enabled-no-cmp");
+    expect(getAdState()).toBe("enabled-with-cmp");
   });
 });
 

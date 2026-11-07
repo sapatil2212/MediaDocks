@@ -8,8 +8,12 @@ export type ConsentState = "unknown" | "granted" | "denied" | "not-required";
 export interface ConsentAdapter {
   /** Must call `report` on every page load, including for returning visitors. */
   install(report: (state: ConsentState) => void): void;
-  /** Shows the consent tool's change/withdraw UI. */
-  reopen(): void;
+  /**
+   * Shows the consent tool's change/withdraw UI. Returns false when the tool has
+   * no such UI to show for this visitor (not loaded, or no consent applies), so
+   * the caller can fall back to the privacy page.
+   */
+  reopen(): boolean;
 }
 
 const VALID: readonly ConsentState[] = ["unknown", "granted", "denied", "not-required"];
@@ -64,12 +68,14 @@ export function registerAdapter(adapter: ConsentAdapter): void {
   setHasAdapter();
 }
 
-/** Opens the consent tool's change/withdraw UI. Returns false if none is installed. */
+/**
+ * Opens the consent tool's change/withdraw UI. Returns false if none is
+ * installed, the tool has nothing to show, or it throws.
+ */
 export function reopenConsent(): boolean {
   if (!installedAdapter) return false;
   try {
-    installedAdapter.reopen();
-    return true;
+    return installedAdapter.reopen() === true;
   } catch {
     return false;
   }

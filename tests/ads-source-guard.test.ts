@@ -99,6 +99,22 @@ describe("ads source guard", () => {
     }
   });
 
+  it("the consent adapter loads only Google's consent tool tag, never the ad script, and only with the flag on", () => {
+    const src = read("src/lib/ads/adapter.ts");
+    expect(src).toContain("FUNDING_CHOICES_SCRIPT_URL");
+    expect(src).not.toMatch(/ADSENSE_SCRIPT_URL|googlesyndication|adsbygoogle/);
+    expect(src).toMatch(/if \(!adsEnabled\(\)\) return null;/);
+    expect(src).not.toMatch(/ca-pub-|pub-\d/);
+    const config = read("src/lib/ads/config.ts");
+    expect(config).toMatch(/FUNDING_CHOICES_SCRIPT_URL = `https:\/\/fundingchoicesmessages\.google\.com\/i\/\$\{ADSENSE_PUBLISHER_ID\}\?ers=1`/);
+  });
+
+  it("the consent tool origin appears only in the ads config", () => {
+    const files = [...walk("app"), ...walk("src"), ...walk("lib")];
+    const offenders = files.filter((f) => f !== "src/lib/ads/config.ts" && /fundingchoicesmessages/i.test(read(f)));
+    expect(offenders).toEqual([]);
+  });
+
   it("the privacy page does not import ad components", () => {
     const files = walk("app/privacy");
     for (const f of files) expect(read(f), f).not.toMatch(/components\/ads/);

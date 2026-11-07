@@ -1,7 +1,7 @@
 import { readFileSync, readdirSync, statSync } from "fs";
 import path from "path";
-import { describe, expect, it } from "vitest";
-import { adStateCopy } from "@/src/lib/ads/ad-state";
+import { describe, expect, it, vi } from "vitest";
+import { adStateCopy, getAdState } from "@/src/lib/ads/ad-state";
 import { ALL_FAQ_ITEMS } from "@/src/lib/faq-data";
 import { FAQ_ITEMS } from "@/src/components/sections/FAQSection";
 
@@ -63,6 +63,36 @@ describe("privacy policy contract", () => {
 
   it("does not claim ads appear anywhere but guide pages", () => {
     expect(privacy).toMatch(/only on long-form guide pages/);
+  });
+
+  it("words the three build states (off, no consent tool, with consent tool) distinctly", () => {
+    const off = adStateCopy("off");
+    const noCmp = adStateCopy("enabled-no-cmp");
+    const withCmp = adStateCopy("enabled-with-cmp");
+    expect(off.summary).toMatch(/does not request any ads/);
+    expect(off.choices).toMatch(/no ad consent control/);
+    expect(noCmp.summary).toMatch(/no consent tool is installed/);
+    expect(noCmp.choices).toMatch(/nothing to withdraw/);
+    expect(withCmp.summary).toMatch(/only on long-form guide pages, and only after the consent tool reports your choice/);
+    expect(withCmp.choices).toMatch(/accept, decline or change your choice/);
+    expect(withCmp.choices).toMatch(/withdrawing consent/);
+    expect(withCmp.choices).toContain("Privacy choices");
+    expect(new Set([off.summary, noCmp.summary, withCmp.summary]).size).toBe(3);
+    expect(new Set([off.choices, noCmp.choices, withCmp.choices]).size).toBe(3);
+  });
+
+  it("the build state comes from the flag, the slot and the shipped consent adapter", () => {
+    try {
+      expect(getAdState()).toBe("off");
+      vi.stubEnv("NEXT_PUBLIC_ADSENSE_ARTICLE_SLOT", "1234567890");
+      expect(getAdState()).toBe("off");
+      vi.stubEnv("NEXT_PUBLIC_ADS_ENABLED", "true");
+      expect(getAdState()).toBe("enabled-with-cmp");
+      vi.stubEnv("NEXT_PUBLIC_ADSENSE_ARTICLE_SLOT", "abc");
+      expect(getAdState()).toBe("off");
+    } finally {
+      vi.unstubAllEnvs();
+    }
   });
 
   it("each ad state keeps the unconditional disclosures out of the state text", () => {
@@ -136,6 +166,10 @@ describe("trust pages and footer", () => {
     expect(footer).toContain('href="/privacy#ad-choices"');
     expect(footer).toContain("reopenConsent()");
     expect(footer).toContain("useEffect(");
+  });
+
+  it("the reopen button falls back to the ad-choices section when the consent tool has nothing to show", () => {
+    expect(footer).toMatch(/if \(!reopenConsent\(\)\) window\.location\.assign\("\/privacy#ad-choices"\)/);
   });
 
   it("the contact form does not pretend to send a message", () => {

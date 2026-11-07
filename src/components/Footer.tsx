@@ -9,8 +9,11 @@ import { hasAdapter, reopenConsent, subscribe } from "@/lib/ads/consent";
 /**
  * "Privacy choices" is a link to the ad-choices section of the privacy page
  * everywhere. Once a consent tool is installed (only on guide pages, only when ads
- * are enabled) it becomes a button that reopens the tool. The swap happens in an
- * effect, never during render, so server and first client render match.
+ * are enabled) it becomes a button that reopens the tool (Google's
+ * showRevocationMessage). If the tool has nothing to show, for example because
+ * it did not load or no consent applies to the visitor, the button opens the
+ * same privacy section. The swap happens in an effect, never during render, so
+ * server and first client render match.
  */
 function PrivacyChoices({ className }: { className: string }) {
   const [installed, setInstalled] = useState(false);
@@ -22,7 +25,13 @@ function PrivacyChoices({ className }: { className: string }) {
 
   if (installed) {
     return (
-      <button type="button" onClick={() => reopenConsent()} className={className}>
+      <button
+        type="button"
+        onClick={() => {
+          if (!reopenConsent()) window.location.assign("/privacy#ad-choices");
+        }}
+        className={className}
+      >
         Privacy choices
       </button>
     );
