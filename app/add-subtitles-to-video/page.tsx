@@ -20,6 +20,7 @@ import { InteractiveBackground } from "@/components/InteractiveBackground";
 import { JsonLd } from "@/components/JsonLd";
 import { Reveal } from "@/components/Reveal";
 import { CTASection } from "@/components/sections/CTASection";
+import { ToolGuides } from "@/components/sections/ToolGuides";
 import {
   breadcrumbJsonLd,
   buildMetadata,
@@ -29,24 +30,10 @@ import {
 } from "@/lib/seo";
 
 export const metadata: Metadata = buildMetadata({
-  title: "Add Subtitles to Video — Free Online Subtitle & Caption Generator",
+  title: "Add Subtitles to Video: Free Caption Generator",
   description:
     "Add subtitles and captions to your video online. Generate timed cues with AI or import your own SRT or VTT, edit the text and timings in the browser, then export SRT, VTT or TXT.",
   path: "/add-subtitles-to-video",
-  keywords: [
-    "add subtitles to video",
-    "subtitle generator",
-    "caption generator",
-    "add captions to video",
-    "srt generator",
-    "vtt generator",
-    "subtitle editor online",
-    "auto subtitles",
-    "video captions",
-    "generate srt from video",
-    "free subtitle tool",
-    "subtitle timing editor",
-  ],
 });
 
 const STEPS = [
@@ -474,6 +461,7 @@ export default function AddSubtitlesToVideoPage() {
       </div>
 
       <div className="mt-28">
+        <ToolGuides toolPath="/add-subtitles-to-video" />
         <CTASection />
       </div>
     </>

@@ -18,20 +18,10 @@ const TOOL_NAME = "Image to PDF";
 const PATH = "/image-to-pdf";
 
 export const metadata = buildMetadata({
-  title: "Free Image to PDF Converter — Merge Photos into One PDF | MediaDocks",
+  title: "Image to PDF: Merge Photos into One PDF",
   description:
     "Combine JPG, PNG and WebP images into a single paginated PDF. Reorder pages, set A4, Letter or Fit-to-image, choose margins and orientation, all privately in the browser.",
   path: PATH,
-  keywords: [
-    "image to pdf",
-    "jpg to pdf",
-    "png to pdf",
-    "photos to pdf",
-    "merge images into pdf",
-    "combine images to pdf",
-    "convert images to pdf online",
-    "free image to pdf",
-  ],
 });
 
 export default function ImageToPdfPage() {

@@ -18,20 +18,10 @@ const TOOL_NAME = "Background Remover";
 const PATH = "/background-remover";
 
 export const metadata = buildMetadata({
-  title: "Free AI Background Remover — Transparent PNG & Bulk ZIP | MediaDocks",
+  title: "AI Background Remover: Transparent PNG and ZIP",
   description:
     "Remove image backgrounds with on-device AI. Get a transparent PNG from one photo, or process up to 25 images at once and download them as a ZIP. Nothing is uploaded.",
   path: PATH,
-  keywords: [
-    "background remover",
-    "remove background from image",
-    "transparent background maker",
-    "remove bg free",
-    "bulk background remover",
-    "background eraser online",
-    "make background transparent",
-    "ai background removal",
-  ],
 });
 
 export default function BackgroundRemoverPage() {

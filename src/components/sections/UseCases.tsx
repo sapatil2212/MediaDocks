@@ -10,37 +10,36 @@ import { Reveal } from "@/components/Reveal";
 
 const USE_CASES = [
   {
-    title: "Content Creators & YouTubers",
+    title: "Content creators",
     icon: Video,
-    desc: "Archive published clips for highlight reels, extract royalty-free public music tracks, and generate synchronized subtitles for YouTube Shorts and Instagram Reels to capture viewers watching on mute.",
-    relevantTools: "Downloader · Subtitle Studio · YouTube to MP3",
+    desc: "Add subtitles to your own clips so they read well for viewers watching on mute, and pull the audio track out of a recording you made.",
+    relevantTools: "Subtitle Studio · Video to Audio",
   },
   {
-    title: "Students & Educators",
+    title: "Students & educators",
     icon: GraduationCap,
-    desc: "Convert recorded webinars, university lectures, and tutorials into readable plain-text transcripts. Generate concise bullet-point summaries and Q&A pairs for rapid exam revision.",
+    desc: "Turn a recorded lecture or webinar into a readable transcript, then condense it into key points for revision.",
     relevantTools: "Video to Text · Audio Summarizer · Audio to Text",
   },
   {
-    title: "Social Media Managers",
+    title: "Social media managers",
     icon: Megaphone,
-    desc: "Collect high-resolution campaign assets from X, Pinterest, Facebook, and Instagram. Extract audio tracks to analyze trending audio and export clean WebVTT caption files.",
-    relevantTools: "Instagram Downloader · Pinterest Downloader · Subtitle Studio",
+    desc: "Prepare images for each channel: resize, convert formats, cut out a background, and export clean caption files for video posts.",
+    relevantTools: "Image Resizer · Background Remover · Subtitle Studio",
   },
   {
-    title: "Journalists & Researchers",
+    title: "Journalists & researchers",
     icon: Newspaper,
-    desc: "Archive public press briefings, interviews, and investigative footage. Produce verbatim written transcripts with automatic language detection to quote sources accurately.",
-    relevantTools: "Audio to Text · Video to Text · X Downloader",
+    desc: "Transcribe your own interview recordings so you can search them and quote the speaker accurately.",
+    relevantTools: "Audio to Text · Video to Text",
   },
   {
-    title: "Video & Audio Editors",
+    title: "Editors & designers",
     icon: Film,
-    desc: "Extract pristine audio streams (original M4A) without double-transcode generation loss. Download full resolution ladders (1080p/4K) with synchronized audio tracks for offline assembly.",
-    relevantTools: "Video to Audio · Precision Downloader · YouTube to MP3",
+    desc: "Convert images and PDFs, build QR codes, and extract audio from long video files you already have.",
+    relevantTools: "Video to Audio · Image Converter · PDF to Image",
   },
 ];
-
 export function UseCases() {
   return (
     <section id="use-cases" className="scroll-mt-24 border-t border-border py-20 lg:py-24">
@@ -49,8 +48,7 @@ export function UseCases() {
           <p className="eyebrow">Real-World Workflows</p>
           <h2 className="section-title mt-2">Who uses MediaDocks?</h2>
           <p className="mt-3 text-muted-foreground">
-            Authentic, practical workflows enabled by our stream multiplexing and AI transcription
-            tools.
+            Practical examples of the jobs these tools are built for.
           </p>
         </Reveal>
 

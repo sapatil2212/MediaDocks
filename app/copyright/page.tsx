@@ -19,17 +19,10 @@ import { CTASection } from "@/components/sections/CTASection";
 import { breadcrumbJsonLd, buildMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = buildMetadata({
-  title: "Copyright & DMCA Takedown Policy — MediaDocks",
+  title: "Copyright and DMCA Policy",
   description:
     "MediaDocks respects intellectual property rights. Review our DMCA policy, designated copyright agent contact, takedown procedure, and counter-notification process.",
   path: "/copyright",
-  keywords: [
-    "mediadocks dmca policy",
-    "copyright compliance",
-    "dmca takedown notice",
-    "digital millennium copyright act",
-    "designated copyright agent",
-  ],
 });
 
 export default function CopyrightPage() {

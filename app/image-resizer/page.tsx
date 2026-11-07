@@ -18,20 +18,10 @@ const TOOL_NAME = "Image Resizer";
 const PATH = "/image-resizer";
 
 export const metadata = buildMetadata({
-  title: "Free Image Resizer — Resize by Pixels, Dimensions & Percentage | MediaDocks",
+  title: "Image Resizer: Pixels, Dimensions, Percentage",
   description:
     "Resize any image by exact pixels or percentage with the aspect ratio locked, and reformat to PNG, JPEG or WebP on export. Processed privately in your browser.",
   path: PATH,
-  keywords: [
-    "image resizer",
-    "resize image online",
-    "resize image by pixels",
-    "resize image percentage",
-    "change image dimensions",
-    "photo resizer",
-    "resize jpg png",
-    "free image resizer",
-  ],
 });
 
 export default function ImageResizerPage() {

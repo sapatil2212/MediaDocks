@@ -36,13 +36,9 @@ export function WhatIsMediaDocks() {
                 text you can skim in a minute, quote accurately, and search months later.
               </p>
               <p>
-                The surrounding tooling exists because the alternatives are unpleasant: desktop
-                converters bundled with adware, sites buried under pop-up redirects, and cloud
-                services that quietly retain your files. MediaDocks processes everything in a
-                request-scoped temporary location, streams the result to your browser, and leaves{" "}
-                <strong className="text-foreground">zero permanent footprint</strong> on our
-                servers. It also converts public media links to MP4 or MP3 when that is what you
-                need.
+                The image, PDF and audio tools follow the same idea: do the job in your browser or
+                in a request-scoped temporary location, hand the result back, and keep no copy of
+                your media on our servers.
               </p>
             </div>
 
@@ -75,7 +71,7 @@ export function WhatIsMediaDocks() {
                 How MediaDocks operates differently
               </h3>
               <p className="mt-2 text-xs text-muted-foreground sm:text-sm">
-                Every feature is built on genuine technical capabilities without marketing exaggerations.
+                What each tool does is described on its own page.
               </p>
 
               <ul className="mt-6 space-y-3.5 text-xs sm:text-sm text-muted-foreground">
@@ -90,13 +86,11 @@ export function WhatIsMediaDocks() {
               <div className="mt-8 rounded-xl border border-border bg-surface-strong/50 p-4 text-xs text-muted-foreground">
                 <div className="flex items-center gap-2 text-foreground font-semibold">
                   <Shield className="h-4 w-4 text-primary" />
-                  <span>100% Lawful & Ethical Scope</span>
+                  <span>Scope</span>
                 </div>
                 <p className="mt-1.5 leading-relaxed">
-                  The AI tools work on files you provide. Link-based conversion reads only publicly
-                  accessible media — we do not sign in or circumvent DRM, passwords, paywalls, age
-                  gates or friends-only barriers, and you remain responsible for holding the rights
-                  to anything you save.
+                  The AI tools work on files you provide, and you remain responsible for holding the
+                  rights to anything you upload or save.
                 </p>
               </div>
             </div>

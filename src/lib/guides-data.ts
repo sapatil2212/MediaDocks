@@ -29,9 +29,12 @@ export interface GuideArticle {
     | "Workflow & Accessibility";
   publishedAt: string;
   updatedAt: string;
+  /** Slugs of three topically related guides, rendered after the article body. */
+  relatedGuides: string[];
   author: string;
   keywords: string[];
-  relatedTool: {
+  /** First-party tool this guide leads to. Omitted when no existing tool is a clean fit. */
+  relatedTool?: {
     name: string;
     path: string;
     description: string;
@@ -52,7 +55,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
   {
     slug: "mp4-vs-webm-video-format-comparison",
     title: "MP4 vs WebM: Complete Comparison of Video Container Formats",
-    metaTitle: "MP4 vs WebM Video Formats Compared — Codecs, Quality & Speed",
+    metaTitle: "MP4 vs WebM: Codecs, Quality and Compatibility",
     metaDescription:
       "Understand the key differences between MP4 and WebM. Learn about H.264, VP9, AV1 codecs, browser compatibility, streaming performance, and file size efficiency.",
     summary:
@@ -60,6 +63,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     category: "Video Formats",
     publishedAt: "2026-01-15T09:00:00Z",
     updatedAt: "2026-03-20T10:00:00Z",
+    relatedGuides: ["understanding-video-codecs-h264-hevc-vp9-av1", "how-video-compression-affects-quality", "optimizing-media-for-web-and-social"],
     author: "MediaDocks Engineering Team",
     keywords: [
       "mp4 vs webm",
@@ -71,12 +75,11 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
       "webm file size comparison",
     ],
     relatedTool: {
-      name: "Precision Video Downloader",
-      path: "/",
-      description: "Extract public video streams directly as standard MP4 files compatible with all devices.",
-      cta: "Try Video Downloader",
-    },
-    tableOfContents: [
+      name: "Video to Audio Converter",
+      path: "/video-to-audio",
+      description: "Pull the audio track out of a video file you already have and save it as MP3, WAV, M4A, FLAC, OGG or OPUS.",
+      cta: "Open Video to Audio",
+    },    tableOfContents: [
       { id: "container-vs-codec", title: "Container vs. Codec: The Foundation" },
       { id: "core-differences", title: "Core Architectural Differences" },
       { id: "compatibility-matrix", title: "Device & Browser Compatibility" },
@@ -216,7 +219,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     ],
     faqs: [
       {
-        q: "Why does MediaDocks download files as MP4 by default?",
+        q: "Why is MP4 the safest default when sharing video?",
         a: "MP4 with AAC audio offers 99.9% playback compatibility across all operating systems, mobile devices, and media players without requiring third-party codec packs.",
       },
       {
@@ -244,14 +247,15 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
   {
     slug: "video-resolution-guide-720p-1080p-4k",
     title: "Video Resolutions Explained: 720p, 1080p, 1440p, and 4K UHD",
-    metaTitle: "Video Resolutions Guide — 720p, 1080p, 1440p & 4K Compared",
+    metaTitle: "Video Resolution Guide: 720p, 1080p, 1440p, 4K",
     metaDescription:
       "Demystify video resolutions: pixel dimensions, aspect ratios, recommended bitrates, display scaling, download speeds, and whether 4K is truly necessary for your screen.",
     summary:
-      "A complete guide to video resolutions: understanding pixel dimensions, aspect ratios, bitrate requirements, and how to choose the right download rung for your device and bandwidth.",
+      "A complete guide to video resolutions: understanding pixel dimensions, aspect ratios, bitrate requirements, and how to choose the right resolution for your device and bandwidth.",
     category: "Video Formats",
     publishedAt: "2026-01-20T09:00:00Z",
     updatedAt: "2026-03-22T10:00:00Z",
+    relatedGuides: ["mp4-vs-webm-video-format-comparison", "how-video-compression-affects-quality", "optimizing-media-for-web-and-social"],
     author: "MediaDocks Engineering Team",
     keywords: [
       "video resolution guide",
@@ -262,12 +266,6 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
       "bitrate for 4k video",
       "how to choose video resolution",
     ],
-    relatedTool: {
-      name: "YouTube Video Downloader",
-      path: "/yt-downloader",
-      description: "Select from the full resolution ladder—from 144p to 4K 2160p—with zero upscaled fake rungs.",
-      cta: "Explore YouTube Downloader",
-    },
     tableOfContents: [
       { id: "pixel-grid-overview", title: "The Pixel Grid: Dimensions Explained" },
       { id: "bitrate-relationship", title: "Resolution vs. Bitrate: The Quality Truth" },
@@ -276,7 +274,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
       { id: "viewing-distance", title: "Viewing Distance: When 4K Stops Being Visible" },
       { id: "scaling-interpolation", title: "What Happens When Resolution Doesn't Match Your Screen" },
       { id: "resolution-vs-framerate", title: "Resolution vs. Frame Rate: Spending a Fixed Bitrate" },
-      { id: "choosing-right-rung", title: "Which Resolution Should You Download?" },
+      { id: "choosing-right-rung", title: "Which Resolution Should You Choose?" },
     ],
     sections: [
       {
@@ -374,7 +372,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
       },
       {
         id: "choosing-right-rung",
-        heading: "Which Resolution Should You Download?",
+        heading: "Which Resolution Should You Choose?",
         paragraphs: [
           "Select 720p if you have a capped mobile data plan, low device storage, or are downloading a podcast or tutorial where visual fidelity is secondary.",
           "Select 1080p for the optimal balance between visual excellence, rapid download speed, and modest file sizes. It renders crisply on laptops, tablets, and desktop monitors.",
@@ -384,12 +382,12 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     ],
     faqs: [
       {
-        q: "Why does a 1080p download take longer than 360p on YouTube?",
-        a: "YouTube serves 360p as a single pre-combined file, but delivers 1080p and 4K as separate adaptive video and audio streams. MediaDocks must fetch both streams and multiplex them with FFmpeg before serving the file.",
+        q: "Why can 1080p video take longer to prepare than 360p?",
+        a: "Platforms often serve a low resolution as one combined file, but deliver higher resolutions as separate adaptive video and audio streams that a player or tool has to combine before you get a single playable file.",
       },
       {
-        q: "Can MediaDocks upscale a 720p upload to 4K?",
-        a: "No. MediaDocks only provides the authentic rungs published by the source platform. Upscaling an original 720p file to 4K only bloats file size without adding genuine visual information.",
+        q: "Does upscaling a 720p video to 4K improve it?",
+        a: "No. Upscaling an original 720p file to 4K only bloats the file size without adding genuine visual information.",
       },
       {
         q: "What is 60fps and how does it affect file size?",
@@ -400,7 +398,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
   {
     slug: "understanding-video-codecs-h264-hevc-vp9-av1",
     title: "Understanding Video Codecs: H.264, HEVC (H.265), VP9, and AV1",
-    metaTitle: "Video Codecs Explained — H.264, HEVC, VP9, and AV1 Comparison",
+    metaTitle: "Video Codecs Explained: H.264, HEVC, VP9, AV1",
     metaDescription:
       "Deep dive into modern video codecs: compression algorithms, licensing models, hardware decoding support, power efficiency, and future streaming standards.",
     summary:
@@ -408,6 +406,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     category: "Video Formats",
     publishedAt: "2026-02-01T09:00:00Z",
     updatedAt: "2026-03-24T10:00:00Z",
+    relatedGuides: ["mp4-vs-webm-video-format-comparison", "video-resolution-guide-720p-1080p-4k", "troubleshooting-common-media-playback-errors"],
     author: "MediaDocks Engineering Team",
     keywords: [
       "video codecs explained",
@@ -420,8 +419,8 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     relatedTool: {
       name: "How MediaDocks Works",
       path: "/how-it-works",
-      description: "Learn how our server multiplexes adaptive video and audio tracks in memory.",
-      cta: "Read Architecture Guide",
+      description: "How the transcription pipeline works and which tools run in your browser.",
+      cta: "Read how it works",
     },
     tableOfContents: [
       { id: "what-is-a-codec", title: "What Does a Video Codec Actually Do?" },
@@ -544,8 +543,8 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
         a: "This almost always indicates a missing video codec. The container (e.g. MP4) opened, but your media player lacks the decoder for the inner video stream (often HEVC or AV1). VLC Media Player or IINA resolves this.",
       },
       {
-        q: "Which codec does MediaDocks use when multiplexing 1080p and 4K?",
-        a: "MediaDocks preserves the stream provided by the source platform—typically H.264 for universal compatibility, or VP9/AV1 for 4K streams—packaged into a standard MP4 container.",
+        q: "Which codec ends up inside an MP4 file?",
+        a: "MP4 is a container, so it can hold different codecs. H.264 is the most compatible choice, while VP9 and AV1 appear mostly in streaming and 4K material.",
       },
       {
         q: "Why do I see banding in skies and gradients even at a high bitrate?",
@@ -560,7 +559,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
   {
     slug: "audio-bitrates-explained-128-192-320-kbps",
     title: "Audio Bitrate Explained: Comparing 128 kbps, 192 kbps, and 320 kbps",
-    metaTitle: "Audio Bitrates Guide — 128, 192, and 320 kbps Compared",
+    metaTitle: "Audio Bitrates Explained: 128, 192, 320 kbps",
     metaDescription:
       "Understand audio bitrates: psychoacoustic compression, CBR vs VBR, MP3 vs AAC, human hearing limits, and why upscaling audio bitrate never restores lost frequencies.",
     summary:
@@ -568,6 +567,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     category: "Audio Processing",
     publishedAt: "2026-02-08T09:00:00Z",
     updatedAt: "2026-03-22T10:00:00Z",
+    relatedGuides: ["how-to-extract-audio-from-video-cleanly", "understanding-video-codecs-h264-hevc-vp9-av1", "troubleshooting-common-media-playback-errors"],
     author: "MediaDocks Engineering Team",
     keywords: [
       "audio bitrate explained",
@@ -578,12 +578,11 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
       "audio fidelity human hearing",
     ],
     relatedTool: {
-      name: "YouTube to MP3 Converter",
-      path: "/youtube-to-mp3",
-      description: "Extract clean MP3 at 128, 192, or 320 kbps, or keep the untouched original M4A track.",
-      cta: "Convert YouTube to MP3",
-    },
-    tableOfContents: [
+      name: "Video to Audio Converter",
+      path: "/video-to-audio",
+      description: "Extract the audio from a video file you already have and choose the format that suits it.",
+      cta: "Open Video to Audio",
+    },    tableOfContents: [
       { id: "what-is-audio-bitrate", title: "What Does Audio Bitrate Mean?" },
       { id: "psychoacoustic-masking", title: "How Lossy Audio Compression Works" },
       { id: "bitrate-tier-breakdown", title: "The 128, 192, and 320 kbps Tiers" },
@@ -696,14 +695,14 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
         heading: "The Myth of Converting Low-Bitrate to 320 kbps",
         paragraphs: [
           "Many online conversion tools boast: 'Convert any video to 320 kbps MP3!' This is often deceptive. If an upload's source audio was originally compressed at 128 kbps AAC, transcoding it into a 320 kbps MP3 does not recover lost audio data.",
-          "In fact, re-encoding already-compressed audio introduces generational loss (quantization noise) while more than doubling the file size. MediaDocks caps MP3 options at the source bitrate to protect you from bloated, degraded files.",
+          "In fact, re-encoding already-compressed audio introduces generational loss (quantization noise) while more than doubling the file size. Matching the source bitrate avoids bloated, degraded files.",
         ],
       },
     ],
     faqs: [
       {
-        q: "Why doesn't MediaDocks offer 320 kbps on every YouTube video?",
-        a: "YouTube's source audio streams typically top out around 128 to 160 kbps Opus/AAC. If the source stream does not contain high-frequency data, offering a 320 kbps MP3 would only create an artificially bloated file.",
+        q: "Is a 320 kbps MP3 always better than 192 kbps?",
+        a: "No. Streaming platforms often keep audio at modest bitrates. If the source stream does not contain high-frequency data, encoding it as a 320 kbps MP3 only creates an artificially bloated file.",
       },
       {
         q: "What is the difference between CBR and VBR?",
@@ -714,7 +713,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
   {
     slug: "how-to-extract-audio-from-video-cleanly",
     title: "How to Extract Audio from Video Without Quality Loss",
-    metaTitle: "Extract Audio from Video Without Quality Loss — Complete Guide",
+    metaTitle: "Extract Audio from Video Without Quality Loss",
     metaDescription:
       "Learn the difference between demuxing (stream copying) and transcoding. Extract pristine audio tracks from MP4, MOV, and web videos without re-encoding.",
     summary:
@@ -722,6 +721,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     category: "Audio Processing",
     publishedAt: "2026-02-14T09:00:00Z",
     updatedAt: "2026-03-20T10:00:00Z",
+    relatedGuides: ["audio-bitrates-explained-128-192-320-kbps", "troubleshooting-common-media-playback-errors", "transcribing-interviews-and-meetings-workflow"],
     author: "MediaDocks Engineering Team",
     keywords: [
       "extract audio from video",
@@ -837,29 +837,27 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
         id: "workflow-walkthrough",
         heading: "Step-by-Step Clean Extraction Workflow",
         paragraphs: [
-          "1. Paste the source video link into MediaDocks.",
-          "2. Allow the resolver to inspect the available audio and video rungs.",
-          "3. If you want the cleanest possible output, choose 'Original M4A'. The server will stream the audio track directly from the source with zero re-encoding.",
-          "4. If you require an MP3 for legacy playback, select 'MP3 192 kbps' or 'MP3 320 kbps' (capped at the source bitrate).",
-          "5. Click Download to save the finished audio file immediately.",
+          "1. Open Video to Audio and choose the video file you want to work with.",
+          "2. Pick the output format. If you want the cleanest possible result and your player supports it, choose a lossless or untouched format; otherwise choose MP3 for the widest compatibility.",
+          "3. Start the extraction and wait for the file to be prepared on the server.",
+          "4. Download the finished audio file and listen to the start, middle and end before you delete the source video.",
         ],
       },
     ],
     faqs: [
       {
-        q: "Does extracting audio take less time than downloading video?",
-        a: "Yes, significantly less. A 10-minute 1080p video might be 80 MB, whereas its audio track is only 10 MB. MediaDocks only fetches the audio stream, finishing in a fraction of the time.",
+        q: "Is extracting audio faster than working with the whole video?",
+        a: "Usually, yes. The audio track is a small fraction of a video file, so there is far less data to process once the file has reached the server.",
       },
       {
-        q: "Can I extract audio from private videos?",
-        a: "No. MediaDocks operates strictly on public links visible to signed-out users.",
-      },
-    ],
+        q: "Should I keep the original video?",
+        a: "Yes, until you have checked the extracted audio. Extraction cannot be undone once the source is gone.",
+      },    ],
   },
   {
     slug: "complete-guide-to-srt-vtt-subtitles",
     title: "Complete Guide to Video Subtitles: SRT vs. WebVTT Formats",
-    metaTitle: "SRT vs WebVTT Subtitles Guide — Specifications & Timing Sync",
+    metaTitle: "SRT vs WebVTT Subtitles: Format and Timing Guide",
     metaDescription:
       "Understand subtitle formats: SRT syntax, WebVTT styling, timecode formats, accessibility standards, browser video integration, and solving subtitle sync drift.",
     summary:
@@ -867,6 +865,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     category: "Subtitles & Text",
     publishedAt: "2026-02-18T09:00:00Z",
     updatedAt: "2026-03-24T10:00:00Z",
+    relatedGuides: ["how-speech-to-text-ai-transcription-works", "video-accessibility-captions-transcripts-wcag", "optimizing-media-for-web-and-social"],
     author: "MediaDocks Engineering Team",
     keywords: [
       "srt vs vtt",
@@ -1022,7 +1021,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
   {
     slug: "how-speech-to-text-ai-transcription-works",
     title: "How AI Speech-to-Text Transcription Works: Acoustic & Language Models",
-    metaTitle: "How AI Speech-to-Text Works — Acoustic Models & Transcription",
+    metaTitle: "How AI Speech-to-Text Works",
     metaDescription:
       "Explore the engineering behind modern AI speech-to-text transcription: spectrograms, acoustic neural networks, language tokenizers, and handling accents.",
     summary:
@@ -1030,6 +1029,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     category: "Subtitles & Text",
     publishedAt: "2026-02-22T09:00:00Z",
     updatedAt: "2026-03-24T10:00:00Z",
+    relatedGuides: ["complete-guide-to-srt-vtt-subtitles", "video-accessibility-captions-transcripts-wcag", "transcribing-interviews-and-meetings-workflow"],
     author: "MediaDocks Engineering Team",
     keywords: [
       "how speech to text works",
@@ -1169,7 +1169,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
       },
       {
         q: "Are my audio files kept on the server after transcription?",
-        a: "Never. MediaDocks operates with zero persistent storage. The audio buffer is held only in memory for the duration of the transcription call and immediately erased.",
+        a: "MediaDocks does not keep a library of uploads. The audio is processed in a temporary location for the request and is sent to the speech provider to produce the transcript; the privacy policy describes this.",
       },
       {
         q: "What does a 95% accuracy claim actually mean for my recording?",
@@ -1188,7 +1188,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
   {
     slug: "how-video-compression-affects-quality",
     title: "How Video Compression Works: Lossy vs. Lossless and Artifact Reduction",
-    metaTitle: "Video Compression Explained — Lossy vs Lossless & Artifacts",
+    metaTitle: "Video Compression Explained: Lossy vs Lossless",
     metaDescription:
       "Understand digital video compression: spatial vs temporal redundancy, I-frames, P-frames, B-frames, macroblocking, and preserving visual clarity.",
     summary:
@@ -1196,6 +1196,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     category: "Media Optimization",
     publishedAt: "2026-02-28T09:00:00Z",
     updatedAt: "2026-03-24T10:00:00Z",
+    relatedGuides: ["mp4-vs-webm-video-format-comparison", "video-resolution-guide-720p-1080p-4k", "understanding-video-codecs-h264-hevc-vp9-av1"],
     author: "MediaDocks Engineering Team",
     keywords: [
       "how video compression works",
@@ -1205,12 +1206,6 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
       "macroblocking in video",
       "reduce video file size without losing quality",
     ],
-    relatedTool: {
-      name: "Pinterest Video Downloader",
-      path: "/pinterest-downloader",
-      description: "Save Pin photos and videos at their true published dimensions without added compression.",
-      cta: "Explore Pinterest Downloader",
-    },
     tableOfContents: [
       { id: "lossless-vs-lossy", title: "Lossless vs. Lossy Video Compression" },
       { id: "spatial-temporal-redundancy", title: "Spatial & Temporal Redundancy" },
@@ -1331,8 +1326,8 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     ],
     faqs: [
       {
-        q: "Does MediaDocks re-compress videos when downloading?",
-        a: "No. MediaDocks streams the exact published MP4 rungs directly from the origin CDN without adding secondary compression or watermarks.",
+        q: "Does saving a video again make it lower quality?",
+        a: "Only if it is re-encoded. Copying the file or changing its container leaves the picture data untouched, while every lossy re-encode adds another generation of loss.",
       },
       {
         q: "Why do dark video scenes look pixelated?",
@@ -1343,7 +1338,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
   {
     slug: "optimizing-media-for-web-and-social",
     title: "Optimizing Video and Audio for Web Performance and Social Media",
-    metaTitle: "Optimizing Video for Web & Social Media — Dimensions & Faststart",
+    metaTitle: "Optimizing Video for Web and Social Media",
     metaDescription:
       "Master video optimization: aspect ratios (9:16 vs 16:9), faststart moov atom placement, variable frame rate traps, and web delivery best practices.",
     summary:
@@ -1351,6 +1346,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     category: "Media Optimization",
     publishedAt: "2026-03-05T09:00:00Z",
     updatedAt: "2026-03-24T10:00:00Z",
+    relatedGuides: ["video-resolution-guide-720p-1080p-4k", "audio-bitrates-explained-128-192-320-kbps", "how-video-compression-affects-quality"],
     author: "MediaDocks Engineering Team",
     keywords: [
       "optimize video for web",
@@ -1360,12 +1356,6 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
       "html5 video player optimization",
       "instagram reels aspect ratio",
     ],
-    relatedTool: {
-      name: "Instagram Reel Downloader",
-      path: "/insta-downloader",
-      description: "Save public vertical Reels and photos as crisp MP4 with audio intact.",
-      cta: "Explore Instagram Downloader",
-    },
     tableOfContents: [
       { id: "aspect-ratios", title: "Aspect Ratios: 16:9 Landscape vs. 9:16 Vertical" },
       { id: "faststart-moov", title: "The Faststart (moov atom) Requirement" },
@@ -1490,7 +1480,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
   {
     slug: "troubleshooting-common-media-playback-errors",
     title: "Troubleshooting Media Playback and Conversion Failures",
-    metaTitle: "Fix Common Media Playback & Video Download Errors — Guide",
+    metaTitle: "Fix Common Media Playback Errors",
     metaDescription:
       "Diagnose and fix media playback issues: corrupted moov atoms, audio/video sync drift, unsupported codec profiles, rate limits, and platform link errors.",
     summary:
@@ -1498,6 +1488,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     category: "Media Optimization",
     publishedAt: "2026-03-10T09:00:00Z",
     updatedAt: "2026-03-24T10:00:00Z",
+    relatedGuides: ["audio-bitrates-explained-128-192-320-kbps", "how-to-extract-audio-from-video-cleanly", "complete-guide-to-srt-vtt-subtitles"],
     author: "MediaDocks Engineering Team",
     keywords: [
       "troubleshoot video playback",
@@ -1520,8 +1511,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
       { id: "diagnose-methodically", title: "Diagnose Before You Convert" },
       { id: "corrupt-truncated", title: "Corrupt, Truncated & Zero-Byte Files" },
       { id: "track-problems", title: "Missing Audio Tracks & Subtitle Failures" },
-      { id: "stream-resolution-fails", title: "Why Public Link Resolvers Fail" },
-      { id: "rate-limits-file-caps", title: "Handling 500 MB Size Caps & Rate Limits" },
+      { id: "stream-resolution-fails", title: "When a Remote Source Will Not Play" },
     ],
     sections: [
       {
@@ -1573,11 +1563,6 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
           "A truncated download is the common case: the bytes that arrived are valid, but the file stops partway through. Because the container's index describes material that is not present, players either refuse to open it or play up to the cut and then stop. Many such files are partially recoverable — remuxing with an error-tolerant tool can often rebuild a playable file from whatever did arrive, which is worth attempting before re-downloading something large. A zero-byte file means the transfer never began, and the cause is upstream: an expired link, a failed authorisation, or a server error that produced an empty response rather than an error page.",
           "The more confusing variant is a file of plausible size that will not play at all. Frequently this is not media. A server returning an HTML error page while your client saves the response under a .mp4 name yields a file of a few kilobytes that every player rejects, because it is a web page wearing a video extension. Opening it in a text editor settles the question immediately — if you can read an error message, you have your answer, and no amount of transcoding will help.",
         ],
-        callout: {
-          type: "note",
-          title: "Why MediaDocks verifies content type",
-          body: "Downloads are checked against their live content type before being offered, specifically so an error page cannot be handed to you under a media filename. A clear failure message is more useful than a file that cannot possibly work.",
-        },
       },
       {
         id: "track-problems",
@@ -1601,44 +1586,28 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
       },
       {
         id: "stream-resolution-fails",
-        heading: "Why Public Link Resolvers Fail",
+        heading: "When a Remote Source Will Not Play",
         paragraphs: [
-          "When MediaDocks reports 'This link is no longer available' or 'Could not resolve media stream', the cause is almost always platform permission boundaries:",
-          "1. Login-Walled Posts: Instagram and Facebook frequently withhold video streams from signed-out visitors. If a post is visible only when signed into an account, MediaDocks cannot access it.",
-          "2. Private Accounts or Stories: MediaDocks operates strictly on public links and never bypasses passwords, cookies, or friend-only barriers.",
-          "3. Age-Gated or Geographic Restrictions: YouTube videos requiring age verification or region-restricted broadcasts do not publish public streams.",
-        ],
-        callout: {
-          type: "warning",
-          title: "Privacy Reminder",
-          body: "MediaDocks will never ask for your account credentials or attempt to bypass DRM or private access controls. Only genuinely public links can be processed.",
-        },
-      },
-      {
-        id: "rate-limits-file-caps",
-        heading: "Handling 500 MB Size Caps & Rate Limits",
-        paragraphs: [
-          "To maintain high server responsiveness and prevent memory exhaustion for all users, MediaDocks enforces two sensible guardrails:",
-          "• 500 MB Payload Cap: Single video downloads are capped at 500 MB. For a 3-hour video, downloading in 4K or 1080p will exceed this threshold. To download long videos, choose 720p or 480p, or extract the audio as MP3/M4A.",
-          "• Rate Limiting: A gentle rate limit (10 resolves and 5 downloads per minute) prevents automated bot abuse. If you encounter a rate limit warning, simply wait 60 seconds before initiating your next request.",
+          "Sometimes the file is fine and the source is the problem. Posts behind a login, private accounts, age-gated items and region-restricted broadcasts do not expose a public stream to an anonymous visitor, so a player that is not signed in cannot load them however good its codec support is.",
+          "If a remote clip will not play in one place but plays in the app that hosts it, check whether you are signed in there. If it plays only when you are signed in, the limit is access, not format, and re-encoding will not help.",
         ],
       },
     ],
     faqs: [
       {
-        q: "What should I do if a download gets stuck at 99%?",
-        a: "High-resolution downloads require multiplexing video and audio on the server before transferring. For very large files, this combining phase can take 1-2 minutes. Keep the tab open until the save dialog appears.",
+        q: "Why does a file stop playing partway through?",
+        a: "It is usually truncated: the transfer was interrupted, so the container's index describes material that is not present. Fetch the file again and compare its size with the original.",
       },
       {
-        q: "Why did my download link expire?",
-        a: "Resolved media tokens have a 30-minute time-to-live (TTL) to ensure stream freshness and comply with origin token expiry. If expired, simply paste the link again.",
+        q: "Why does a tiny file refuse to open?",
+        a: "A few kilobytes with a media extension is often an HTML error page saved under the wrong name. Open it in a text editor to check.",
       },
     ],
   },
   {
     slug: "video-accessibility-captions-transcripts-wcag",
     title: "Video Accessibility: Captions, Transcripts and What WCAG Asks For",
-    metaTitle: "Video Accessibility Guide — Captions, Transcripts & WCAG",
+    metaTitle: "Video Accessibility: Captions, Transcripts, WCAG",
     metaDescription:
       "What captions, transcripts and audio description each do, which WCAG success criteria apply to video, the accuracy standard captions are held to, and a practical workflow for getting there.",
     summary:
@@ -1646,6 +1615,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     category: "Workflow & Accessibility",
     publishedAt: "2026-04-02T09:00:00Z",
     updatedAt: "2026-04-02T09:00:00Z",
+    relatedGuides: ["complete-guide-to-srt-vtt-subtitles", "how-speech-to-text-ai-transcription-works", "transcribing-interviews-and-meetings-workflow"],
     author: "MediaDocks Engineering Team",
     keywords: [
       "video accessibility",
@@ -1800,7 +1770,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
   {
     slug: "transcribing-interviews-and-meetings-workflow",
     title: "Transcribing Interviews and Meetings: A Practical Workflow",
-    metaTitle: "How to Transcribe Interviews & Meetings — Practical Workflow",
+    metaTitle: "How to Transcribe Interviews and Meetings",
     metaDescription:
       "Recording setup that doubles transcript accuracy, consent and privacy obligations, a proofreading pass that targets the errors that matter, and how to turn a transcript into notes people use.",
     summary:
@@ -1808,6 +1778,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     category: "Workflow & Accessibility",
     publishedAt: "2026-04-08T09:00:00Z",
     updatedAt: "2026-04-08T09:00:00Z",
+    relatedGuides: ["how-speech-to-text-ai-transcription-works", "how-to-extract-audio-from-video-cleanly", "video-accessibility-captions-transcripts-wcag"],
     author: "MediaDocks Engineering Team",
     keywords: [
       "how to transcribe an interview",
@@ -2012,4 +1983,16 @@ export function getGuideReadTime(article: GuideArticle): string {
 /** Exposed for the guides index, where total depth is worth stating. */
 export function getGuideWordCount(article: GuideArticle): number {
   return countArticleWords(article);
+}
+
+/** Guides that lead to a given first-party tool, derived from each guide's relatedTool. */
+export function getGuidesForTool(toolPath: string): GuideArticle[] {
+  return GUIDE_ARTICLES.filter((g) => g.relatedTool?.path === toolPath);
+}
+
+/** Guides a given guide points to, in the order they are authored. */
+export function getRelatedGuides(article: GuideArticle): GuideArticle[] {
+  return article.relatedGuides
+    .map((slug) => GUIDE_ARTICLES.find((g) => g.slug === slug))
+    .filter((g): g is GuideArticle => g !== undefined);
 }

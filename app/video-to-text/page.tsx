@@ -6,6 +6,7 @@ import { InteractiveBackground } from "@/components/InteractiveBackground";
 import { JsonLd } from "@/components/JsonLd";
 import { Reveal } from "@/components/Reveal";
 import { CTASection } from "@/components/sections/CTASection";
+import { ToolGuides } from "@/components/sections/ToolGuides";
 import {
   breadcrumbJsonLd,
   buildMetadata,
@@ -15,27 +16,10 @@ import {
 } from "@/lib/seo";
 
 export const metadata: Metadata = buildMetadata({
-  title: "Transcribe Video to Text Online — AI Video to Text Converter",
+  title: "Video to Text: AI Transcription Online",
   description:
     "Convert video or audio to accurate, editable plain text. Upload a file or paste a supported public video link with automatic language detection and TXT download.",
   path: "/video-to-text",
-  keywords: [
-    "transcribe video to text",
-    "video to text converter",
-    "online video to text",
-    "convert video to text",
-    "transcribe video online",
-    "ai video transcriber",
-    "video transcript generator",
-    "youtube video to text",
-    "zoom meeting transcript",
-    "speech to text video",
-    "mp4 to text",
-    "mov to text",
-    "video subtitle generator",
-    "export srt subtitles",
-    "free video transcription",
-  ],
 });
 
 const STEPS = [
@@ -165,6 +149,7 @@ export default function VideoToTextPage() {
 
       {/* ── Bottom CTA ──────────────────────────────────────────────────── */}
       <div className="mt-28">
+        <ToolGuides toolPath="/video-to-text" />
         <CTASection />
       </div>
     </>

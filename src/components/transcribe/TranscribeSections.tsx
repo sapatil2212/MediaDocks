@@ -180,8 +180,7 @@ export function TranscribeSections() {
     { name: "Audio to Text Transcriber", path: "/audio-to-text" },
     { name: "AI Audio Summarizer", path: "/audio-summarizer" },
     { name: "Subtitle & Caption Studio", path: "/add-subtitles-to-video" },
-    { name: "YouTube to MP3 Converter", path: "/youtube-to-mp3" },
-    { name: "Precision Video Downloader", path: "/" },
+    { name: "Video to Audio Converter", path: "/video-to-audio" },
     { name: "Resource Center & Guides", path: "/guides" },
   ];
 

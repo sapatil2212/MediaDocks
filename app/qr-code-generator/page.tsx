@@ -18,20 +18,10 @@ const TOOL_NAME = "QR Code Generator";
 const PATH = "/qr-code-generator";
 
 export const metadata = buildMetadata({
-  title: "Free QR Code Generator — Vector SVG, EPS, PDF & High-Res PNG | MediaDocks",
+  title: "QR Code Generator: SVG, PDF and PNG Export",
   description:
     "Create static QR codes that never expire for URLs, Wi-Fi, vCards and text. Add a logo, pick colours, and export vector SVG, EPS and PDF or high-resolution PNG. Private and free.",
   path: PATH,
-  keywords: [
-    "qr code generator",
-    "free qr code generator",
-    "qr code with logo",
-    "vector qr code svg",
-    "wifi qr code",
-    "vcard qr code",
-    "static qr code",
-    "qr code for print",
-  ],
 });
 
 export default function QrCodeGeneratorPage() {

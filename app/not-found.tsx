@@ -57,11 +57,11 @@ export default function NotFound() {
         <div className="mt-12 rounded-2xl border border-border/70 bg-surface/50 p-5 text-left text-xs">
           <p className="font-semibold text-foreground">Popular Utilities:</p>
           <div className="mt-3 grid grid-cols-2 gap-2 text-muted-foreground">
-            <Link href="/" className="hover:text-primary transition-colors">
-              • Universal Video Downloader
+            <Link href="/audio-to-text" className="hover:text-primary transition-colors">
+              • AI Audio to Text
             </Link>
-            <Link href="/youtube-to-mp3" className="hover:text-primary transition-colors">
-              • YouTube to MP3 Converter
+            <Link href="/image-converter" className="hover:text-primary transition-colors">
+              • Image Converter
             </Link>
             <Link href="/video-to-text" className="hover:text-primary transition-colors">
               • AI Video to Text

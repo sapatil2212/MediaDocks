@@ -6,6 +6,7 @@ import { InteractiveBackground } from "@/components/InteractiveBackground";
 import { JsonLd } from "@/components/JsonLd";
 import { Reveal } from "@/components/Reveal";
 import { CTASection } from "@/components/sections/CTASection";
+import { ToolGuides } from "@/components/sections/ToolGuides";
 import {
   breadcrumbJsonLd,
   buildMetadata,
@@ -15,26 +16,10 @@ import {
 } from "@/lib/seo";
 
 export const metadata: Metadata = buildMetadata({
-  title: "Audio to Text — Free AI Audio Transcription Online",
+  title: "Audio to Text: Free AI Transcription Online",
   description:
     "Convert audio to text online. Upload MP3, WAV, M4A, FLAC or OGG and get an editable plain-text transcript with automatic language detection and TXT download.",
   path: "/audio-to-text",
-  keywords: [
-    "audio to text",
-    "audio to text converter",
-    "transcribe audio to text",
-    "audio transcription online",
-    "mp3 to text",
-    "wav to text",
-    "m4a to text",
-    "voice to text",
-    "voice memo to text",
-    "podcast transcription",
-    "interview transcription",
-    "speech to text online",
-    "free audio transcription",
-    "dictation to text",
-  ],
 });
 
 const STEPS = [
@@ -158,6 +143,7 @@ export default function AudioToTextPage() {
       <AudioTranscribeSections />
 
       <div className="mt-28">
+        <ToolGuides toolPath="/audio-to-text" />
         <CTASection />
       </div>
     </>

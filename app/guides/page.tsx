@@ -9,19 +9,10 @@ import { GUIDE_ARTICLES, getGuideReadTime } from "@/lib/guides-data";
 import { breadcrumbJsonLd, buildMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = buildMetadata({
-  title: "Resource Center & Media Guides — MediaDocks",
+  title: "Media Guides: Formats, Codecs and Captions",
   description:
     "Explore educational guides on video container formats, codecs (H.264, VP9, AV1), audio bitrates, subtitles (SRT vs VTT), AI transcription, and compression.",
   path: "/guides",
-  keywords: [
-    "media guides",
-    "video format guide",
-    "audio bitrate guide",
-    "srt vtt subtitle guide",
-    "h264 vs vp9 vs av1",
-    "video compression tutorial",
-    "mediadocks learning center",
-  ],
 });
 
 const CATEGORIES = [
@@ -130,10 +121,11 @@ export default function GuidesIndexPage() {
                   {/* Footer metadata & Read CTA */}
                   <div className="mt-6 flex items-center justify-between border-t border-border pt-4 text-xs">
                     <span className="text-[0.75rem] text-muted-foreground">
-                      {new Date(article.publishedAt).toLocaleDateString("en-US", {
+                      Updated{" "}
+                      {new Date(article.updatedAt).toLocaleDateString("en-US", {
                         month: "short",
-                        day: "numeric",
                         year: "numeric",
+                        timeZone: "UTC",
                       })}
                     </span>
                     <Link
@@ -160,15 +152,15 @@ export default function GuidesIndexPage() {
                 Put technical knowledge into practice
               </h2>
               <p className="mt-3 text-sm text-muted-foreground">
-                MediaDocks applies these exact engineering standards—multi-rung stream extraction,
-                lossless stream copying, and AI speech recognition—in every tool.
+                These guides explain the formats and techniques behind the MediaDocks tools. Try the
+                same ideas on your own files.
               </p>
               <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
                 <Link
-                  href="/"
+                  href="/video-to-audio"
                   className="rounded-xl border border-primary/50 bg-primary px-5 py-2.5 text-xs font-semibold text-primary-foreground shadow-soft transition-all hover:bg-primary/90"
                 >
-                  Universal Downloader
+                  Video to Audio
                 </Link>
                 <Link
                   href="/video-to-text"

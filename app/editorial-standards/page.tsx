@@ -7,18 +7,10 @@ import { GUIDE_ARTICLES, getGuideWordCount } from "@/lib/guides-data";
 import { absoluteUrl, breadcrumbJsonLd, buildMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = buildMetadata({
-  title: "Editorial Standards — How We Write and Review Content",
+  title: "Editorial Standards: How Guides Are Written",
   description:
     "Who writes the MediaDocks guides, how technical claims are verified against real pipelines, our correction policy, our position on AI-generated text, and how we handle the limits of our own tools.",
   path: "/editorial-standards",
-  keywords: [
-    "editorial standards",
-    "editorial policy",
-    "content review process",
-    "fact checking policy",
-    "corrections policy",
-    "mediadocks editorial",
-  ],
 });
 
 const PRINCIPLES = [

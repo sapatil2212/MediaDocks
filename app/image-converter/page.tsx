@@ -18,20 +18,10 @@ const TOOL_NAME = "Image Converter";
 const PATH = "/image-converter";
 
 export const metadata = buildMetadata({
-  title: "Free Batch Image Converter — JPG, PNG, WebP, AVIF, GIF, SVG | MediaDocks",
+  title: "Image Converter: JPG, PNG, WebP, AVIF, GIF",
   description:
     "Convert up to 10 images between JPG, PNG, WebP, AVIF, GIF, BMP, SVG and ICO with per-file control. Processed in your browser with an instant ZIP download.",
   path: PATH,
-  keywords: [
-    "image converter",
-    "convert jpg to png",
-    "png to webp converter",
-    "convert to avif",
-    "batch image converter",
-    "image format converter",
-    "webp converter",
-    "free image converter online",
-  ],
 });
 
 export default function ImageConverterPage() {

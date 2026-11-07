@@ -8,18 +8,10 @@ import { CTASection } from "@/components/sections/CTASection";
 import { breadcrumbJsonLd, buildMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = buildMetadata({
-  title: "Privacy Policy — Ephemeral Pipelines & Data Protection",
+  title: "Privacy Policy",
   description:
     "Review the MediaDocks privacy policy: zero permanent file storage, ephemeral streaming pipelines, local storage usage, advertising cookies, and analytics disclosures.",
   path: "/privacy",
-  keywords: [
-    "mediadocks privacy policy",
-    "private video downloader",
-    "ephemeral streaming privacy",
-    "cookie policy",
-    "adsense privacy compliance",
-    "gdpr ccpa rights",
-  ],
 });
 
 export default function PrivacyPage() {

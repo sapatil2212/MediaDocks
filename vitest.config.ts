@@ -34,6 +34,8 @@ function tsconfigPathsFallback(): Plugin {
 
 export default defineConfig({
   plugins: [tsconfigPathsFallback()],
+  // App code relies on the automatic JSX runtime (no React import in scope).
+  esbuild: { jsx: "automatic" },
   test: {
     environment: "node",
     globals: true,

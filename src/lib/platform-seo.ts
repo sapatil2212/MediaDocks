@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { DOWNLOADERS_INDEXABLE } from "./downloader-visibility";
 import type { PlatformPage } from "./platform-pages";
 import {
   breadcrumbJsonLd,
@@ -14,7 +15,7 @@ export function platformMetadata(page: PlatformPage): Metadata {
     title: page.metaTitle,
     description: page.metaDescription,
     path: page.slug,
-    keywords: page.keywords,
+    noIndex: !DOWNLOADERS_INDEXABLE,
     ogTitle: `${page.h1} — ${page.tagline}`,
   });
 }

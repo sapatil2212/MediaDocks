@@ -110,15 +110,14 @@ describe("POST /api/download", () => {
 });
 
 describe("GET /api/health", () => {
-  it("reports the database state", async () => {
+  it("reports only a minimal status with no tool paths or commands", async () => {
     const res = await healthRoute();
-    const body = (await res.json()) as { status: string; database: string };
-
+    const body = (await res.json()) as Record<string, unknown>;
+    expect(Object.keys(body)).toEqual(["status"]);
     expect(["ok", "degraded"]).toContain(body.status);
-    expect(["ok", "unavailable"]).toContain(body.database);
-    expect(res.status).toBe(body.database === "ok" ? 200 : 503);
-  }, 10000);
-});
+    expect([200, 503]).toContain(res.status);
+    expect(JSON.stringify(body)).not.toMatch(/ffmpeg|yt-dlp|python|[A-Za-z]:\\|\/usr\//i);
+  }, 10000);});
 
 describe("mock resolver", () => {
   afterEach(() => {

@@ -27,6 +27,8 @@ export const ALL_GUIDE_SLUGS: readonly string[] = [
  * plus a first-party tool CTA) must equal this list; a test fails on drift.
  */
 export const ALLOWLISTED_GUIDE_SLUGS: readonly string[] = [
+  "mp4-vs-webm-video-format-comparison",
+  "audio-bitrates-explained-128-192-320-kbps",
   "how-to-extract-audio-from-video-cleanly",
   "complete-guide-to-srt-vtt-subtitles",
   "how-speech-to-text-ai-transcription-works",

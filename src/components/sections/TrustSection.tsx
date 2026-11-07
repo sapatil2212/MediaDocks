@@ -1,30 +1,29 @@
 import Link from "next/link";
-import { CheckCircle2, Clock, HardDrive, Lock, Shield, ShieldCheck, Zap } from "lucide-react";
+import { Clock, HardDrive, Lock, Shield, ShieldCheck } from "lucide-react";
 import { Reveal } from "@/components/Reveal";
 
 const TRUST_FACTS = [
   {
     icon: HardDrive,
-    title: "Zero Permanent Disk Storage",
-    body: "When you download or transcode media, chunks are buffered ephemerally in server memory. As soon as the final byte reaches your browser, the temporary buffer is unlinked and destroyed.",
+    title: "No media library",
+    body: "Files you send to the server for processing are handled in a temporary location scoped to the request and are not kept as a library or archive.",
   },
   {
     icon: Clock,
-    title: "30-Minute Token Lifespan",
-    body: "Resolved media format links carry a 30-minute time-to-live (TTL). This ensures origin link tokens remain fresh and complies with source security policies.",
+    title: "Many tools stay in your browser",
+    body: "The image converter, resizer, PDF, SVG, Base64 and QR tools, and the Background Remover, run in your browser, so those files do not need to be uploaded.",
   },
   {
     icon: Lock,
-    title: "No Account & No Personal Data",
-    body: "We never ask for your email address, passwords, or personal details. The 'Recent links' history in your browser is stored strictly in your local device's localStorage.",
+    title: "No account",
+    body: "There is no sign-up and no password. Anything you do not send to a server stays on your device.",
   },
   {
     icon: ShieldCheck,
-    title: "500 MB Transparent Safeguard",
-    body: "To prevent server memory exhaustion and keep response times fast for everyone, individual download jobs are capped at 500 MB (~60 minutes of 1080p).",
+    title: "Stated limits",
+    body: "AI transcription accepts uploads up to 100 MB and two hours by default. Each tool page lists its own limits.",
   },
 ];
-
 export function TrustSection() {
   return (
     <section id="trust" className="scroll-mt-24 border-t border-border bg-surface-strong/20 py-20 lg:py-24">
@@ -41,7 +40,7 @@ export function TrustSection() {
               How MediaDocks handles your files and privacy
             </h2>
             <p className="mt-3 text-sm text-muted-foreground sm:text-base">
-              Transparent, verifiable infrastructure details on how media flows through our servers.
+              What happens to the files you use with each tool.
             </p>
           </Reveal>
         </div>

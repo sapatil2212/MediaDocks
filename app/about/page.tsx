@@ -20,18 +20,10 @@ import { CTASection } from "@/components/sections/CTASection";
 import { aboutPageJsonLd, breadcrumbJsonLd, buildMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = buildMetadata({
-  title: "About MediaDocks — Mission, Architecture & Privacy Philosophy",
+  title: "About MediaDocks: Mission and Privacy Approach",
   description:
     "Learn about MediaDocks: our privacy-centric architecture, zero persistent storage streaming pipelines, media workflows, and commitment to lawful, responsible use.",
   path: "/about",
-  keywords: [
-    "about mediadocks",
-    "private video downloader",
-    "zero storage media tool",
-    "mediadocks mission",
-    "mediadocks architecture",
-    "sap digitech solutions",
-  ],
 });
 
 const PILLARS = [

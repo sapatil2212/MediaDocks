@@ -29,24 +29,10 @@ import {
 } from "@/lib/seo";
 
 export const metadata: Metadata = buildMetadata({
-  title: "AI Audio Summarizer — Turn Recordings Into Key Insights",
+  title: "AI Audio Summarizer: Recordings to Key Points",
   description:
     "Summarize audio with AI. Upload a file, paste a public link or record from your microphone to get a brief recap, key points, action items or Q&A you can copy or download.",
   path: "/audio-summarizer",
-  keywords: [
-    "ai audio summarizer",
-    "audio summarizer",
-    "summarize audio",
-    "podcast summarizer",
-    "meeting recording summary",
-    "lecture summarizer",
-    "audio to summary",
-    "ai meeting notes",
-    "interview summary",
-    "voice note summary",
-    "mp3 summarizer",
-    "audio summary generator",
-  ],
 });
 
 const STEPS = [

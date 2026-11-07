@@ -18,20 +18,10 @@ const TOOL_NAME = "URL Shortener";
 const PATH = "/url-shortener";
 
 export const metadata = buildMetadata({
-  title: "Free URL Shortener — Custom Aliases, UTM Tags & QR Codes | MediaDocks",
+  title: "URL Shortener: Custom Aliases, UTM Tags, QR",
   description:
     "Turn long URLs into clean, permanent short links with custom aliases, a UTM builder and a QR code each. Direct redirects, a safety preview and anonymous aggregate click counts.",
   path: PATH,
-  keywords: [
-    "url shortener",
-    "free url shortener",
-    "short link generator",
-    "custom alias url shortener",
-    "link shortener with qr code",
-    "utm link builder",
-    "shorten url online",
-    "permanent short links",
-  ],
 });
 
 export default function UrlShortenerPage() {

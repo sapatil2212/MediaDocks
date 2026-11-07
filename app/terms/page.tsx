@@ -8,17 +8,10 @@ import { CTASection } from "@/components/sections/CTASection";
 import { breadcrumbJsonLd, buildMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = buildMetadata({
-  title: "Terms of Service & Acceptable Use Policy — MediaDocks",
+  title: "Terms of Service and Acceptable Use",
   description:
     "Review MediaDocks Terms of Service: user responsibilities, lawful acceptable use, intellectual property notice, service limitations, and legal disclaimers.",
   path: "/terms",
-  keywords: [
-    "mediadocks terms of service",
-    "downloader terms and conditions",
-    "acceptable use policy",
-    "intellectual property terms",
-    "media downloader disclaimer",
-  ],
 });
 
 const SECTIONS = [

@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getShortUrl, recordClick } from "@/lib/shortener/store";
 
+/** Short links and their preview pages are never indexed. */
+const NOINDEX_HTML_HEADERS = {
+  "Content-Type": "text/html; charset=utf-8",
+  "X-Robots-Tag": "noindex, nofollow",
+};
+
 export async function GET(
   req: NextRequest,
   context: { params: Promise<{ slug: string }> }
@@ -44,7 +50,7 @@ export async function GET(
 </html>`;
     return new NextResponse(html, {
       status: 404,
-      headers: { "Content-Type": "text/html; charset=utf-8" },
+      headers: NOINDEX_HTML_HEADERS,
     });
   }
 
@@ -115,7 +121,7 @@ export async function GET(
 </html>`;
     return new NextResponse(html, {
       status: 200,
-      headers: { "Content-Type": "text/html; charset=utf-8" },
+      headers: NOINDEX_HTML_HEADERS,
     });
   }
 
@@ -123,5 +129,7 @@ export async function GET(
   void recordClick(slug);
 
   // Instant 307 Temporary Redirect
-  return NextResponse.redirect(record.targetUrl, { status: 307 });
+  const redirect = NextResponse.redirect(record.targetUrl, { status: 307 });
+  redirect.headers.set("X-Robots-Tag", "noindex, nofollow");
+  return redirect;
 }

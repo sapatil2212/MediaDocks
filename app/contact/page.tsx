@@ -17,17 +17,10 @@ import { CTASection } from "@/components/sections/CTASection";
 import { breadcrumbJsonLd, buildMetadata, contactPageJsonLd } from "@/lib/seo";
 
 export const metadata: Metadata = buildMetadata({
-  title: "Contact MediaDocks Support — Technical Help & Inquiries",
+  title: "Contact MediaDocks: Support and Feedback",
   description:
     "Get in touch with the MediaDocks team for technical assistance, bug reports, feature requests, and DMCA copyright inquiries. Fast support via email.",
   path: "/contact",
-  keywords: [
-    "contact mediadocks",
-    "mediadocks support",
-    "report broken link",
-    "mediadocks help",
-    "dmca contact mediadocks",
-  ],
 });
 
 const SUPPORT_CHANNELS = [

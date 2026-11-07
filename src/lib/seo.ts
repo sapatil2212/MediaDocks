@@ -33,39 +33,6 @@ export const SITE = {
   twitter: "@mediadocks",
 } as const;
 
-/**
- * Keywords that apply to every page. Platform pages append their own.
- *
- * Worth being clear-eyed about these: Google dropped the keywords meta tag as a
- * ranking signal in 2009 and has never reinstated it, so this list does not
- * affect Google or Bing rankings. It is kept because Yandex still reads it and
- * it costs nothing. The signals that actually rank these pages are the title
- * tag, the H1/H2 structure, the on-page intent coverage in `searchIntents`, and
- * internal links with descriptive anchor text.
- */
-export const GLOBAL_KEYWORDS = [
-  "video downloader",
-  "media downloader",
-  "online video downloader",
-  "free video downloader",
-  "download videos online",
-  "4k video downloader",
-  "1080p video downloader",
-  "mp4 downloader",
-  "mp3 downloader",
-  "audio downloader",
-  "photo downloader",
-  "image downloader",
-  "social media downloader",
-  "no watermark downloader",
-  "video downloader without app",
-  "downloader no sign up",
-  "download reels photos videos",
-  "save video from link",
-  "paste link download video",
-  "mediadocks",
-];
-
 export function absoluteUrl(path = "/"): string {
   return `${SITE.url}${path.startsWith("/") ? path : `/${path}`}`;
 }
@@ -74,22 +41,20 @@ export interface PageSeo {
   title: string;
   description: string;
   path: string;
-  keywords?: string[];
   /** Overrides the OG title when the meta title is long. */
   ogTitle?: string;
   noIndex?: boolean;
 }
 
 /**
- * Single source of truth for page metadata: canonical URL, OpenGraph, Twitter
- * card and keywords. Keeps every route consistent and prevents duplicate-content
+ * Single source of truth for page metadata: canonical URL, OpenGraph and Twitter
+ * card. No keywords meta is emitted. Keeps every route consistent and prevents duplicate-content
  * signals between the home page and the platform pages.
  */
 export function buildMetadata({
   title,
   description,
   path,
-  keywords = [],
   ogTitle,
   noIndex = false,
 }: PageSeo): Metadata {
@@ -98,7 +63,6 @@ export function buildMetadata({
   return {
     title,
     description,
-    keywords: [...keywords, ...GLOBAL_KEYWORDS],
     alternates: { canonical },
     openGraph: {
       title: ogTitle ?? title,

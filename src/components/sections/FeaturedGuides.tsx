@@ -12,10 +12,10 @@ export function FeaturedGuides() {
         <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
           <Reveal className="max-w-2xl">
             <p className="eyebrow">Knowledge Center</p>
-            <h2 className="section-title mt-2">Media engineering guides</h2>
+            <h2 className="section-title mt-2">Media guides</h2>
             <p className="mt-3 text-muted-foreground">
               Educational documentation on codecs, container formats, audio bitrates, and web video
-              performance written by our engineering team.
+              performance.
             </p>
           </Reveal>
           <Reveal delay={60}>

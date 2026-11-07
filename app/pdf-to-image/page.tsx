@@ -18,20 +18,10 @@ const TOOL_NAME = "PDF to Image";
 const PATH = "/pdf-to-image";
 
 export const metadata = buildMetadata({
-  title: "Free PDF to Image Converter — PDF to PNG, JPG, WebP | MediaDocks",
+  title: "PDF to Image: Export Pages as PNG, JPG, WebP",
   description:
     "Rasterize PDF pages to high-resolution PNG, JPG or WebP images. Export single pages or the whole document as a ZIP, at the scale that fits screen or print. Private in-browser.",
   path: PATH,
-  keywords: [
-    "pdf to image",
-    "pdf to png",
-    "pdf to jpg",
-    "convert pdf to image",
-    "pdf page to image",
-    "extract pdf pages as images",
-    "pdf to webp",
-    "free pdf to image",
-  ],
 });
 
 export default function PdfToImagePage() {

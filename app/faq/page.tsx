@@ -8,20 +8,10 @@ import { ALL_FAQ_ITEMS, FAQ_CATEGORIES } from "@/lib/faq-data";
 import { breadcrumbJsonLd, buildMetadata, faqJsonLd } from "@/lib/seo";
 
 export const metadata: Metadata = buildMetadata({
-  title: "FAQ — Formats, Quality, Privacy, Limits & Legal",
+  title: "FAQ: Tools, Accuracy, Privacy and Limits",
   description:
-    "Forty answers on resolution ladders and DASH muxing, MP3 bitrate ceilings, AI transcription accuracy and limits, what is logged and for how long, every error message, and where the legal line sits.",
+    "Answers about the MediaDocks speech and image tools: transcription accuracy and limits, subtitle formats, what runs in your browser, and what data is kept.",
   path: "/faq",
-  keywords: [
-    "media downloader faq",
-    "is video downloader safe",
-    "download without account",
-    "which video resolution should i pick",
-    "mp3 bitrate which is best",
-    "is downloading videos legal",
-    "video downloader size limit",
-    "transcription accuracy",
-  ],
 });
 
 export default function FaqPage() {
@@ -48,9 +38,8 @@ export default function FaqPage() {
             <p className="eyebrow">Reference</p>
             <h1 className="hero-title mt-4">Frequently asked questions</h1>
             <p className="mt-5 text-lg text-muted-foreground">
-              {ALL_FAQ_ITEMS.length} answers covering how the resolution ladder is built, why 4K
-              takes longer than 360p, when a 320 kbps MP3 is a waste of bytes, how accurate the
-              transcriber really is, exactly what gets logged, and where the legal line sits.
+              {ALL_FAQ_ITEMS.length} answers about how the speech tools behave, which tools run in your browser,
+              what data is kept, and where your responsibility as a user begins.
             </p>
             <p className="mt-4 text-sm text-muted-foreground">
               Looking for something more in-depth? The{" "}
@@ -123,8 +112,7 @@ export default function FaqPage() {
             <p className="eyebrow">Not covered here</p>
             <h2 className="section-title mt-3">Still stuck?</h2>
             <p className="mt-4 text-muted-foreground">
-              If your question is not above, the platform pages document scope link-by-link, the
-              guides explain the underlying formats, and the contact page reaches a human.
+              If your question is not above, the guides explain the underlying formats and the contact page is the way to reach us.
             </p>
           </Reveal>
 
@@ -139,7 +127,7 @@ export default function FaqPage() {
                     How it works
                   </h3>
                   <p className="mt-2 text-xs text-muted-foreground">
-                    The pipeline end to end, plus where to copy a link in each app.
+                    How the transcription pipeline and the in-browser tools work.
                   </p>
                 </Link>
               </li>
@@ -165,7 +153,7 @@ export default function FaqPage() {
                     Contact us
                   </h3>
                   <p className="mt-2 text-xs text-muted-foreground">
-                    Bug reports, platform requests and copyright enquiries.
+                    Bug reports, feedback and copyright enquiries.
                   </p>
                 </Link>
               </li>

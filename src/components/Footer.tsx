@@ -1,10 +1,38 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ShieldAlert, BookOpen, Globe } from "lucide-react";
 import { Logo } from "@/components/Logo";
-import { PLATFORM_PAGES } from "@/lib/platform-pages";
-import { scrollToDownloader } from "@/lib/scroll";
+import { hasAdapter, reopenConsent, subscribe } from "@/lib/ads/consent";
+
+/**
+ * "Privacy choices" is a link to the ad-choices section of the privacy page
+ * everywhere. Once a consent tool is installed (only on guide pages, only when ads
+ * are enabled) it becomes a button that reopens the tool. The swap happens in an
+ * effect, never during render, so server and first client render match.
+ */
+function PrivacyChoices({ className }: { className: string }) {
+  const [installed, setInstalled] = useState(false);
+  useEffect(() => {
+    const sync = () => setInstalled(hasAdapter());
+    sync();
+    return subscribe(sync);
+  }, []);
+
+  if (installed) {
+    return (
+      <button type="button" onClick={() => reopenConsent()} className={className}>
+        Privacy choices
+      </button>
+    );
+  }
+  return (
+    <Link href="/privacy#ad-choices" className={className}>
+      Privacy choices
+    </Link>
+  );
+}
 
 export function Footer() {
   return (
@@ -14,8 +42,7 @@ export function Footer() {
         <div className="lg:col-span-1">
           <Logo height={38} />
           <p className="mt-4 max-w-xs text-xs sm:text-sm text-muted-foreground leading-relaxed">
-            Privacy-first universal media utility. Extract high-resolution video and audio from
-            public links, transcribe speech with AI, and generate subtitles.
+            Browser-based tools for transcribing speech, creating subtitles, summarizing recordings and converting images and documents. No account needed.
           </p>
           <div className="mt-5 space-y-1 text-xs text-muted-foreground">
             <p className="font-semibold text-foreground">Developed & Operated by:</p>
@@ -36,27 +63,11 @@ export function Footer() {
           <h2 className="font-display text-sm font-semibold text-foreground">Tools & AI</h2>
           <ul className="mt-4 space-y-2.5 text-xs sm:text-sm text-muted-foreground">
             <li>
-              <button
-                onClick={scrollToDownloader}
-                className="transition-colors hover:text-foreground text-left"
-              >
-                Universal Downloader
-              </button>
-            </li>
-            <li>
               <Link
                 href="/video-to-audio"
                 className="transition-colors hover:text-foreground font-medium text-foreground"
               >
                 Video to Audio
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/youtube-to-mp3"
-                className="transition-colors hover:text-foreground font-medium text-foreground"
-              >
-                YouTube to MP3
               </Link>
             </li>
             <li>
@@ -142,17 +153,10 @@ export function Footer() {
           </ul>
         </div>
 
-        {/* Column 3: Platform Portals */}
+        {/* Column 3: How it works */}
         <div>
-          <h2 className="font-display text-sm font-semibold text-foreground">Platforms</h2>
+          <h2 className="font-display text-sm font-semibold text-foreground">Learn</h2>
           <ul className="mt-4 space-y-2.5 text-xs sm:text-sm text-muted-foreground">
-            {PLATFORM_PAGES.map((page) => (
-              <li key={page.slug}>
-                <Link href={page.slug} className="transition-colors hover:text-foreground">
-                  {page.navLabel} Downloader
-                </Link>
-              </li>
-            ))}
             <li>
               <Link href="/how-it-works" className="transition-colors hover:text-foreground">
                 How it works
@@ -269,17 +273,23 @@ export function Footer() {
             <div className="flex items-start gap-3">
               <ShieldAlert className="h-5 w-5 shrink-0 text-muted-foreground mt-0.5" />
               <div className="space-y-2 text-xs text-muted-foreground leading-relaxed">
-                <p className="font-semibold text-foreground">
-                  Disclaimer & Intellectual Property Notice
+                <p className="font-semibold text-foreground">Notice</p>
+                <p>
+                  MediaDocks is an independent service and is not affiliated with, endorsed by or
+                  sponsored by YouTube, Instagram, X, Pinterest, Facebook, Meta or Google. Platform
+                  names and marks belong to their owners.
                 </p>
                 <p>
-                  MediaDocks is an independent tool and is <strong>not affiliated, associated, authorized, endorsed by, or in any way officially connected</strong> with YouTube™, Instagram™, X (Twitter)™, Pinterest™, Facebook™, Meta™, Google™, or any of their subsidiaries or affiliates. All platform names, trademarks, logos, and registered marks are the property of their respective rights holders.
-                </p>
-                <p>
-                  <strong>We do not host, store, or archive media files on our servers.</strong> All content belongs exclusively to its original owners and content creators. MediaDocks serves strictly as an ephemeral client-side streaming utility for publicly accessible media.
-                </p>
-                <p>
-                  Please do not use this service to download copyrighted, proprietary, or restricted material without explicit authorization from the copyright holder. We strictly comply with <strong>DMCA policies</strong> and international copyright standards, and respond promptly to all valid infringement notices submitted to <a href="mailto:sapdigitechsolutions@gmail.com" className="text-primary hover:underline">sapdigitechsolutions@gmail.com</a>.
+                  You are responsible for holding the rights to any file you upload, convert or save.
+                  Rights holders can find how to contact us on the{" "}
+                  <Link href="/copyright" className="text-primary hover:underline">
+                    copyright page
+                  </Link>
+                  , or write to{" "}
+                  <a href="mailto:sapdigitechsolutions@gmail.com" className="text-primary hover:underline">
+                    sapdigitechsolutions@gmail.com
+                  </a>
+                  .
                 </p>
               </div>
             </div>
@@ -313,8 +323,10 @@ export function Footer() {
             </Link>
             <span className="text-border">•</span>
             <Link href="/copyright" className="hover:text-foreground transition-colors">
-              DMCA
+              Copyright
             </Link>
+            <span className="text-border">•</span>
+            <PrivacyChoices className="hover:text-foreground transition-colors" />
           </div>
         </div>
       </div>

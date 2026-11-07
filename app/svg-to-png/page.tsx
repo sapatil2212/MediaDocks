@@ -18,20 +18,10 @@ const TOOL_NAME = "SVG to PNG";
 const PATH = "/svg-to-png";
 
 export const metadata = buildMetadata({
-  title: "Free SVG to PNG Converter — Rasterize Vectors at High Resolution | MediaDocks",
+  title: "SVG to PNG Converter: High-Resolution Export",
   description:
     "Convert SVG vector graphics to crisp PNG images. Scale from 1x to 8x, keep transparency or add a solid background. Rendered privately in your browser, nothing uploaded.",
   path: PATH,
-  keywords: [
-    "svg to png",
-    "convert svg to png",
-    "svg to png converter",
-    "rasterize svg",
-    "svg to png high resolution",
-    "svg to png transparent",
-    "vector to png",
-    "free svg to png",
-  ],
 });
 
 export default function SvgToPngPage() {

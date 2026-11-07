@@ -3,11 +3,11 @@ import {
   ArrowRight,
   AudioLines,
   Captions,
-  FileVideo2,
+  Eraser,
+  Image as ImageIcon,
   ListChecks,
   Music2,
   Sparkles,
-  Zap,
 } from "lucide-react";
 import { Reveal } from "@/components/Reveal";
 
@@ -16,8 +16,7 @@ import { Reveal } from "@/components/Reveal";
  *
  * The AI tools come first: they work on recordings you already own, they
  * produce something that did not exist before, and they are what distinguishes
- * this from the dozens of interchangeable link scrapers. The link-based
- * converters follow, still fully supported, just not the lead.
+ * this from interchangeable converters. The image and audio tools follow.
  */
 const TOOLS = [
   {
@@ -76,28 +75,27 @@ const TOOLS = [
     highlight: false,
   },
   {
-    name: "YouTube to MP3 & M4A Audio",
-    path: "/youtube-to-mp3",
-    icon: Music2,
-    badge: "Audio Extraction",
+    name: "Background Remover",
+    path: "/background-remover",
+    icon: Eraser,
+    badge: "On-device AI",
     description:
-      "Extract pristine soundtracks from YouTube without downloading video. Choose original M4A or high-bitrate MP3 capped at the source.",
-    useCase: "Music producers, students, and podcast listeners wanting offline audio files for headphones or car stereos.",
-    cta: "Extract MP3",
+      "Cut the background from a photo and save a transparent PNG, or process a batch and download the results as one ZIP.",
+    useCase: "Anyone preparing product shots, profile photos or cut-outs without opening an editor.",
+    cta: "Remove Background",
     highlight: false,
   },
   {
-    name: "Public Media Downloader",
-    path: "/how-it-works",
-    icon: FileVideo2,
-    badge: "Format Conversion",
+    name: "Image Converter",
+    path: "/image-converter",
+    icon: ImageIcon,
+    badge: "In-browser",
     description:
-      "Resolve a public link from YouTube, Instagram, X, Pinterest or Facebook to the MP4 rungs the source actually publishes, from 144p to 4K UHD.",
-    useCase: "Creators and archivists saving their own uploads, or public-domain and openly licensed footage, for offline work.",
-    cta: "See how it works",
+      "Convert images between JPG, PNG, WebP, AVIF and GIF in your browser, several files at a time.",
+    useCase: "Designers and site owners who need the right format for the web without uploading files anywhere.",
+    cta: "Convert Images",
     highlight: false,
-  },
-];
+  },];
 
 export function ToolsSuite() {
   return (
@@ -106,11 +104,10 @@ export function ToolsSuite() {
         <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
           <Reveal className="max-w-2xl">
             <p className="eyebrow">What you can do here</p>
-            <h2 className="section-title mt-2">Seven tools for working with recordings</h2>
+            <h2 className="section-title mt-2">Tools for recordings, images and documents</h2>
             <p className="mt-3 text-muted-foreground">
-              Speech to text, timed captions and summaries for files you already have, plus format
-              conversion for public links. Everything runs in the browser with no account, no
-              installed software, and nothing retained once your result reaches you.
+              Speech to text, timed captions and summaries for recordings you already have, plus
+              converters for images and documents. No account and no installed software.
             </p>
           </Reveal>
         </div>

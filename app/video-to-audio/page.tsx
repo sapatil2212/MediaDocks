@@ -5,6 +5,7 @@ import { InteractiveBackground } from "@/components/InteractiveBackground";
 import { JsonLd } from "@/components/JsonLd";
 import { Reveal } from "@/components/Reveal";
 import { CTASection } from "@/components/sections/CTASection";
+import { ToolGuides } from "@/components/sections/ToolGuides";
 import {
   breadcrumbJsonLd,
   buildMetadata,
@@ -14,28 +15,10 @@ import {
 } from "@/lib/seo";
 
 export const metadata: Metadata = buildMetadata({
-  title: "Extract Audio from Video Online — Video to MP3 & Audio Converter",
+  title: "Video to Audio: Extract MP3, WAV, M4A and More",
   description:
     "Extract audio from any video online. Convert MP4, MKV, MOV, WebM to MP3 (up to 320 kbps), WAV, M4A, FLAC, OGG, or OPUS. Upload videos of any length without file size limits.",
   path: "/video-to-audio",
-  keywords: [
-    "video to audio",
-    "extract audio from video",
-    "video to mp3",
-    "convert video to audio",
-    "video to audio converter",
-    "extract mp3 from mp4",
-    "convert mkv to mp3",
-    "extract audio from long video",
-    "large video to mp3 converter",
-    "video to wav converter",
-    "video to m4a",
-    "video to flac",
-    "video to opus",
-    "extract sound from video",
-    "mp4 to mp3 320kbps",
-    "free video to audio extractor",
-  ],
 });
 
 const HOW_TO_STEPS = [
@@ -391,6 +374,7 @@ export default function VideoToAudioPage() {
       </section>
 
       {/* ── Call to Action ────────────────────────────────────────────────── */}
+      <ToolGuides toolPath="/video-to-audio" />
       <CTASection />
     </>
   );

@@ -29,8 +29,7 @@ import {
   getAllGuideSlugs,
   getGuideArticle,
   getGuideReadTime,
-  GUIDE_ARTICLES,
-  type GuideArticle,
+  getRelatedGuides,
 } from "@/lib/guides-data";
 import {
   articleJsonLd,
@@ -76,10 +75,7 @@ export default async function GuideArticlePage({ params }: GuidePageProps) {
   }
 
   const adSlots = placeSlots(article.sections);
-  const relatedArticles = GUIDE_ARTICLES.filter((g) => g.slug !== article.slug).slice(
-    0,
-    3,
-  );
+  const relatedArticles = getRelatedGuides(article);
 
   return (
     <>
@@ -312,6 +308,7 @@ export default async function GuideArticlePage({ params }: GuidePageProps) {
           </div>
 
           {/* Related Tool Hero Banner */}
+          {article.relatedTool ? (
           <div className="mt-16 rounded-2xl border border-primary/40 bg-gradient-to-br from-primary/10 via-surface to-surface p-6 shadow-lift sm:p-8">
             <div className="flex flex-col justify-between gap-6 sm:flex-row sm:items-center">
               <div>
@@ -335,6 +332,7 @@ export default async function GuideArticlePage({ params }: GuidePageProps) {
               </Link>
             </div>
           </div>
+          ) : null}
 
           {/* FAQ Accordion Section */}
           {article.faqs && article.faqs.length > 0 ? (

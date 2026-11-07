@@ -18,20 +18,10 @@ const TOOL_NAME = "Base64 Image Converter";
 const PATH = "/base64-image";
 
 export const metadata = buildMetadata({
-  title: "Free Base64 Image Converter — Encode & Decode Data URIs | MediaDocks",
+  title: "Base64 Image Converter: Encode and Decode",
   description:
     "Encode images to Base64 Data URIs with ready-made HTML and CSS snippets, or decode a Base64 string back to a downloadable file. Runs locally on your CPU, nothing uploaded.",
   path: PATH,
-  keywords: [
-    "base64 image",
-    "image to base64",
-    "base64 to image",
-    "base64 encode image",
-    "data uri generator",
-    "base64 decode image",
-    "image data uri",
-    "free base64 converter",
-  ],
 });
 
 export default function Base64ImagePage() {

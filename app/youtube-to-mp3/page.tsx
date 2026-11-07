@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowUpRight, Check, Info, Music2 } from "lucide-react";
 import { Downloader } from "@/components/downloader/Downloader";
+import { DOWNLOADERS_INDEXABLE } from "@/lib/downloader-visibility";
 import { FaqAccordion } from "@/components/FaqAccordion";
 import { InteractiveBackground } from "@/components/InteractiveBackground";
 import { JsonLd } from "@/components/JsonLd";
@@ -30,20 +31,7 @@ export const metadata: Metadata = buildMetadata({
   description:
     "Convert a YouTube link to MP3 at 128, 192 or 320 kbps, or keep the original M4A with no re-encoding. Paste, pick a bitrate, save. Free, no sign up.",
   path: "/youtube-to-mp3",
-  keywords: [
-    "youtube to mp3",
-    "youtube mp3 converter",
-    "youtube audio downloader",
-    "yt to mp3",
-    "youtube to mp3 320kbps",
-    "youtube to m4a",
-    "download youtube audio",
-    "youtube music downloader",
-    "convert youtube video to mp3",
-    "youtube to mp3 free no sign up",
-    "extract audio from youtube",
-    "youtube shorts to mp3",
-  ],
+  noIndex: !DOWNLOADERS_INDEXABLE,
 });
 
 const FORMATS = [
